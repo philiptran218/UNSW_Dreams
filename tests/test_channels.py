@@ -12,6 +12,7 @@ def test_channels_create_v1():
     
     #Valid case
     assert(channels_create_v1(userId, "channelname", True) == {1})
+   
     #channel name is more than 20 characters long
     invalidName = "nameismorethantwentycharacters"
     with pytest.raises(InputError):
