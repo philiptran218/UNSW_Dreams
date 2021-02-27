@@ -11,7 +11,7 @@ def test_channels_create_v1():
     userId = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     
     #Valid case
-    assert(channels_create_v1(userId, "channelname", True) == {1})
+    assert(channels_create_v1(userId, "channelname", True) == {'channel_id': 1})
    
     #channel name is more than 20 characters long
     invalidName = "nameismorethantwentycharacters"
