@@ -29,22 +29,24 @@ def supply_user3():
 @pytest.fixture
 def supply_chan1(supply_user1):   
 
-    new_chan1 = channels_create_v1(supply_user1, 'channel1', True) ''' channel1 is public ''' 
+    ''' channel1 is public ''' 
+    new_chan1 = channels_create_v1(supply_user1, 'channel1', True) 
     return new_chan1
 
 @pytest.fixture    
 def supply_chan2(supply_user2):
     
-    new_chan2 = channels_create_v1(supply_user2, 'channel2', False) ''' channel2 is private '''
+    ''' channel2 is private '''
+    new_chan2 = channels_create_v1(supply_user2, 'channel2', False) 
     return new_chan2
 
 @pytest.fixture
-def supply_message1(supply_user1, supply_chan1)
+def supply_message1(supply_user1, supply_chan1):
     
-    message_send_v1(new_user1, new_chan1, 'A new message')
+    message_send_v1(supply_user1, supply_chan1, 'A new message')
 
 @pytest.fixture    
-def supply_multi1(supply_user1, supply_chan1, supply_message1)
+def supply_multi1(supply_user1, supply_chan1, supply_message1):
 
     i = 1
     while i <= 55:
@@ -103,14 +105,15 @@ def supply_multi1(supply_user1, supply_chan1, supply_message1)
     }
 '''
                           
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-channel_messages_v1 tests
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' 
+################################################################################
+# channel_messages_v1 tests
+################################################################################
     
 def test_channel_messages_invalid_channel(supply_user1, supply_chan1):
     
     with pytest.raises(InputError):
-        channel_messages_v1(supply_user1, 123456, 0) ''' channel_id 123456 doesnt exist '''
+        channel_messages_v1(supply_user1, 123456, 0) 
+        ''' channel_id 123456 doesnt exist '''
         
         
 def test_channel_messages_invalid_start(supply_user2, supply_chan2):
@@ -123,13 +126,15 @@ def test_channel_messages_invalid_start(supply_user2, supply_chan2):
 def test_channel_messages_authid_not_member(supply_user1, supply_chan1, supply_user2):
     
     with pytest.raises(AccessError):
-        channel_messages_v1(supply_user2, supply_chan1, 0) ''' fails since supply_user2 is not in supply_chan1 '''
+        channel_messages_v1(supply_user2, supply_chan1, 0) 
+        ''' fails since supply_user2 is not in supply_chan1 '''
         
                
 def test_channel_messages_invalid_authid(supply_user1, supply_chan1):
 
     with pytest.raises(AccessError):
-        channel_messages_v1(123456, supply_chan1, 0) ''' auth_id 123456 doesnt exist '''
+        channel_messages_v1(123456, supply_chan1, 0) 
+        ''' auth_id 123456 doesnt exist '''
         
         
 def test_channel_messages_valid_single(supply_user1, supply_chan1, supply_message1):
@@ -163,20 +168,22 @@ def test_channel_messages_multiple(supply_user1, supply_chan1, supply_message1, 
 
     
     
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-channel_join_v1 tests
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+################################################################################
+# channel_join_v1 tests
+################################################################################
     
 def test_channel_join_invalid_authid(supply_user1, supply_user2, supply_chan1):
 
     with pytest.raises(AccessError):
-        channel_join_v1(123456, supply_chan1) ''' fails since auth_user_id 123456 doesnt exist '''
-   
+        channel_join_v1(123456, supply_chan1) 
+        ''' fails since auth_user_id 123456 doesnt exist '''
+        
     
 def test_channel_join_invalid_channel(supply_user1, supply_chan1):
 
     with pytest.raises(InputError):
-        channel_join_v1(supply_user1, 2) ''' should fail since channel_id 2 does not exist'''
+        channel_join_v1(supply_user1, 2) 
+        ''' should fail since channel_id 2 does not exist'''
         
         
 def test_channel_join_private_channel(supply_user2, supply_chan2, supply_user3):        
