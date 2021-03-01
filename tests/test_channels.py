@@ -16,23 +16,23 @@ def test_user():
     return userid
 
 def test_channels_list_v1_valid():
-    clear()
+    clr = clear()
     userid = test_user()
     assert(channels_list_v1(userid) == {"channels"})
 
 def test_channels_list_v1_invalid():
-    clear()
+    clr = clear()
     inv_userid = test_user()
     with pytest.raises(InputError):
         assert(channels_list_v1(inv_userid) == {"channels"})
 
 def test_channels_listall_v1_valid():
-    clear()
+    clr = clear()
     userid = test_user()
     assert(channels_listall_v1(userid) == {"channels"})
 
 def test_channels_listall_v1_invalid():
-    clear()
+    clr = clear()
     inv_userid = test_user()
     with pytest.raises(InputError):
         assert channels_listall_v1(inv_userid) == {"channels"}
