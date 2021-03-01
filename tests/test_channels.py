@@ -17,22 +17,22 @@ def test_user():
 
 def test_channels_list_v1_valid():
     clear
-    userid = test_user()
+    userid = test_user
     assert(channels_list_v1(userid) == {"channels"})
 
 def test_channels_list_v1_invalid():
     clear
-    inv_userid = test_user()
+    inv_userid = test_user
     with pytest.raises(InputError):
         assert(channels_list_v1(inv_userid) == {"channels"})
 
 def test_channels_listall_v1_valid():
     clear
-    userid = test_user()
+    userid = test_user
     assert(channels_listall_v1(userid) == {"channels"})
 
 def test_channels_listall_v1_invalid():
     clear
-    inv_userid = test_user()
+    inv_userid = test_user
     with pytest.raises(InputError):
         assert channels_listall_v1(inv_userid) == {"channels"}
