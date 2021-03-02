@@ -109,8 +109,8 @@ def supply_multi1(supply_user1, supply_chan1, supply_message1):
 # channel_messages_v1 tests
 ################################################################################
     
-def test_channel_messages_invalid_channel(supply_user1, supply_chan1):
-    
+def test_channel_messages_invalid_channel(clear_v1, supply_user1, supply_chan1):
+    #clear_v1()
     with pytest.raises(InputError):
         channel_messages_v1(supply_user1, 123456, 0) 
         ''' channel_id 123456 doesnt exist '''
