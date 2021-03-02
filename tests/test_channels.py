@@ -16,7 +16,7 @@ def test_valid_channels_create_v1(clear_data):
     #Valid case where a public channel with name "ValidChannelName" is created by user with auth_id userId
     assert(channels_create_v1(userId, "ValidChannelName", True) == {'channel_id': 1})
     
-
+#testing an invalid case(channel name is more than 20 characters long) 
 def test_invalidName_channels_create_v1(clear_data):
     #created a user_id by regestring a valid user
     userId = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
