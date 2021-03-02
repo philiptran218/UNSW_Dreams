@@ -5,6 +5,7 @@ from src.error import InputError
 from src.channels import channels_list_v1
 from src.channels import channels_listall_v1
 from src.other import clear_v1
+from src.data import channels
 
 @pytest.fixture
 def clear():
@@ -15,24 +16,12 @@ def test_user():
     userid = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     return userid
 
-def test_channels_list_v1_valid():
+def test_channels_list_v1():
     clear
     userid = test_user
-    assert(channels_list_v1(userid) == {"channels"})
+    assert(channels_listall_v1(userid) == {f"{channels}"})
 
-def test_channels_list_v1_invalid():
-    clear
-    inv_userid = test_user
-    with pytest.raises(InputError):
-        assert(channels_list_v1(inv_userid) == {"channels"})
-
-def test_channels_listall_v1_valid():
+def test_channels_listall_v1():
     clear
     userid = test_user
-    assert(channels_listall_v1(userid) == {"channels"})
-
-def test_channels_listall_v1_invalid():
-    clear
-    inv_userid = test_user
-    with pytest.raises(InputError):
-        assert channels_listall_v1(inv_userid) == {"channels"}
+    assert(channels_list_v1(userid) == {f"{channels}"})

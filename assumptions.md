@@ -3,6 +3,7 @@ Author: theme
 
 John: channels_list_v1
     Channels_list should take users id
+    Assumes channels data type has a way of checking to see if theres a person inside the channel.
     Assume if id is invalid, then an input error occurs.
     If id is valid, needs to scan through the channel to find the persons id
     If id is in channel, it and all its information will be printed.
@@ -14,5 +15,6 @@ John: channels_list_v1
 John: channels_listall_v1
     Pretty much same as channels_list. 
     Only difference is there's no need to check for id inside
-    Just prints off channels disctionary, no need to create new one.
+    Just prints off channels data structure, no need to create new one.
+    Channels data structure contains list of directories.
     
