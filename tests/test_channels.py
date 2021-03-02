@@ -25,3 +25,4 @@ def test_channels_listall_v1():
     clear
     userid = test_user
     assert(channels_list_v1(userid) == {f"{channels}"})
+
