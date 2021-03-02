@@ -10,8 +10,10 @@ def test_clear_v1():
     
 
     clear_v1()
-    assert(channels_listall_v1(auth_user_id) == {'channels' : [] })
-    assert(user_profile_v1(auth_user_id, auth_user_id) == {'user':{}})
+    assert(data['users'] == [])
+    assert(data['channels'] == [])
+    assert(data['messages'] == [])
+    
 
 
 
