@@ -22,8 +22,10 @@ def channels_listall_v1(auth_user_id):
     }
 
 
-#channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
-'''
+def channels_create_v1(auth_user_id, name, is_public):
+    '''
+channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
+
 Arguments:
     <auth_user_id> (int)    - <a unique id number given to a user on regestration>
     <name> (string)    - <the name of the channel that the user wants to create>
@@ -36,9 +38,8 @@ Exceptions:
 
 Return Value:
     Returns <{channel_id}
-    
-'''
-def channels_create_v1(auth_user_id, name, is_public):
+    '''
+
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
     for user in data['users']:
