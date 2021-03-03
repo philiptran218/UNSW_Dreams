@@ -2,6 +2,7 @@ from src.other import clear_v1
 from src.auth import auth_register_v1, auth_login_v1
 from src.channels import channels_create_v1, channels_listall_v1
 from src.user import user_profile_v1
+from src.data import data
 def test_clear_v1():
     email = "bob.b@gmail.com"
     password = "valpassword"

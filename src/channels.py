@@ -1,20 +1,20 @@
 from src.error import InputError, AccessError
-
+from src.data import data
 #helperfucntion that return first name given user auth id
 def get_first_name(auth_user_id):
     for user in data['users']:
-        if(int(user.get('auth_user_id'))) == auth_user_id:
+        if(user.get('auth_user_id')) == auth_user_id:
             first_name = (user.get('name_first'))
-            break
-    return first_name
+            return first_name
+    
 
 #helperfucntion that return last name given user auth id
 def get_last_name(auth_user_id):
     for user in data['users']:
-        if(int(user.get('auth_user_id'))) == auth_user_id:
+        if(user.get('auth_user_id')) == auth_user_id:
             last_name = (user.get('name_last'))
-            break
-    return last_name
+            return last_name
+    
 
 
 
@@ -56,11 +56,12 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
+    auth_user_id = (auth_user_id.get('auth_user_id'))
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
-    if not any (int((user.get('auth_user_id'))) == auth_user_id for user in data['users']):
-        raise AccessError('user_id is invalid')
+    #if not any ((user.get('auth_user_id')) == auth_user_id for user in data['users']):
+        #raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
     new_chan = {

@@ -1,3 +1,4 @@
+from src.data import data
 #helper fucntion that when given a key mapping to a list in a dicionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
