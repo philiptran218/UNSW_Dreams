@@ -1,5 +1,5 @@
 from channels import channels_listall_v1, channels_list_v1
-import data
+import database
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
 '''
@@ -23,16 +23,18 @@ Exceptions:
     authorised_channels = channels_list_v1(auth_user_id)
         if channel_id not in authorised_channels
             raise Exception(AccessError)
-    valid_uids = data.uid_listall_v1()
+    valid_uids = database.uid_listall_v1()
         if u_id not in valid_uids
             raise Exception(InputError)
     channel_details = channel_details_v1(auth_user_id, channel_id)
-    if u_id in channel_details['owner_memebers'] or u_id in channel_details['owner_memebers']:
+    if u_id in channel_details['all_members']
         return {}
     else:
-        data.add_uid_to_channel(u_id, channel_id)
+        database.add_uid_to_channel(u_id, channel_id)
     return {}
 
+
+def channel_details_v1(auth_user_id, channel_id):
 '''
 Function:
     Given a Channel with ID channel_id that the authorised user is part of, 
@@ -47,14 +49,18 @@ Exceptions:
     AccessError when any of:
         - Authorised user is not a member of channel with channel_id.
 '''
-def channel_details_v1(auth_user_id, channel_id):
     authorised_channels = channels_list_v1(auth_user_id)
         if channel_id not in authorised_channels
             raise Exception(AccessError)
     valid_uids = data.uid_listall_v1()
         if u_id not in valid_uids
             raise Exception(InputError)
-    return {
+    channel_details = {}
+    channel_details['name'] = data.channel_name(channel_id)
+    channel_details['owner_members'] = data.channel_owners(channel_id)
+    channel_details['all_members'] = data.channel_members(channel_id)
+    return channel_details
+'''
         'name': 'Hayden',
         'owner_members': [
             {
@@ -70,7 +76,7 @@ def channel_details_v1(auth_user_id, channel_id):
                 'name_last': 'Jacobs',
             }
         ],
-    }
+'''    
 
 '''
 Function:
