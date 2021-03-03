@@ -19,13 +19,13 @@ Exceptions:
 ''' 
     valid_channels = channels_listall_v1(auth_user_id)
         if channel_id not in valid_channels
-            raise Exception(InputError)
+            raise InputError(f"Please enter a valid channel_id")
     authorised_channels = channels_list_v1(auth_user_id)
         if channel_id not in authorised_channels
-            raise Exception(AccessError)
+            raise AccessError(f"Authorised user is not a member of the channel")
     valid_uids = database.uid_listall_v1()
         if u_id not in valid_uids
-            raise Exception(InputError)
+            raise InputError(f"Please enter a valid u_id")
     channel_details = channel_details_v1(auth_user_id, channel_id)
     if u_id in channel_details['all_members']
         return {}
@@ -51,10 +51,10 @@ Exceptions:
 '''
     authorised_channels = channels_list_v1(auth_user_id)
         if channel_id not in authorised_channels
-            raise Exception(AccessError)
+            raise AccessError(f"Authorised user is not a member of the channel")
     valid_uids = data.uid_listall_v1()
         if u_id not in valid_uids
-            raise Exception(InputError)
+            raise InputError(f"Please enter a valid u_id")
     channel_details = {}
     channel_details['name'] = data.channel_name(channel_id)
     channel_details['owner_members'] = data.channel_owners(channel_id)
