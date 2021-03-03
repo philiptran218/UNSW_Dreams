@@ -1,5 +1,22 @@
 from src.error import InputError, AccessError
 
+#helperfucntion that return first name given user auth id
+def get_first_name(auth_user_id):
+    for user in data['users']:
+        if(int(user.get('auth_user_id'))) == auth_user_id:
+            first_name = (user.get('name_first'))
+            break
+    return first_name
+
+#helperfucntion that return last name given user auth id
+def get_last_name(auth_user_id):
+    for user in data['users']:
+        if(int(user.get('auth_user_id'))) == auth_user_id:
+            last_name = (user.get('name_last'))
+            break
+    return last_name
+
+
 
 def channels_list_v1(auth_user_id):
     return {
@@ -42,16 +59,31 @@ Return Value:
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
-    for user in data['users']:
-        if user.get('u_id') != auth_user_id:
-            raise AccessError('user_id is invalid')
+    if not any (int((user.get('auth_user_id'))) == auth_user_id for user in data['users']):
+        raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
-    
-    data['channels'].append({
-    'channel_id': channel_id,
-    'name': name
-    })
+    new_chan = {
+        'channel_id': channel_id,
+        'name':name,
+        'all members':[
+            {
+                'u_id':auth_user_id,
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+            },
+        ],
+        'owner members':[
+            {
+                'u_id':auth_user_id,
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+
+            },
+        ],
+        'is_public': is_public,
+    }
+    data['channels'].append(new_chan)
     return {
         'channel_id': channel_id,
     }
