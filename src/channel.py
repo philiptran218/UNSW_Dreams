@@ -1,3 +1,7 @@
+from channels import channels_listall_v1, channels_list_v1
+import data
+
+def channel_invite_v1(auth_user_id, channel_id, u_id):
 '''
 Function:
     Invites a user (with user id u_id) to join a channel with ID channel_id. 
@@ -12,10 +16,22 @@ Exceptions:
         - u_id does not refer to a valid user.
     AccessError when any of:
         - the authorised user is not already a member of the channel.
-'''
-def channel_invite_v1(auth_user_id, channel_id, u_id):
-    return {
-    }
+''' 
+    valid_channels = channels_listall_v1(auth_user_id)
+        if channel_id not in valid_channels
+            raise Exception(InputError)
+    authorised_channels = channels_list_v1(auth_user_id)
+        if channel_id not in authorised_channels
+            raise Exception(AccessError)
+    valid_uids = data.uid_listall_v1()
+        if u_id not in valid_uids
+            raise Exception(InputError)
+    channel_details = channel_details_v1(auth_user_id, channel_id)
+    if u_id in channel_details['owner_memebers'] or u_id in channel_details['owner_memebers']:
+        return {}
+    else:
+        data.add_uid_to_channel(u_id, channel_id)
+    return {}
 
 '''
 Function:
