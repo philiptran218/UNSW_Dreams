@@ -48,6 +48,12 @@ Exceptions:
         - Authorised user is not a member of channel with channel_id.
 '''
 def channel_details_v1(auth_user_id, channel_id):
+    authorised_channels = channels_list_v1(auth_user_id)
+        if channel_id not in authorised_channels
+            raise Exception(AccessError)
+    valid_uids = data.uid_listall_v1()
+        if u_id not in valid_uids
+            raise Exception(InputError)
     return {
         'name': 'Hayden',
         'owner_members': [
