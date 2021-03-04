@@ -3,7 +3,7 @@ from src.data import data
 #helperfucntion that return first name given user auth id
 def get_first_name(auth_user_id):
     for user in data['users']:
-        if(user.get('auth_user_id')) == auth_user_id:
+        if(user.get('u_id')) == auth_user_id:
             first_name = (user.get('name_first'))
             return first_name
     
@@ -11,7 +11,7 @@ def get_first_name(auth_user_id):
 #helperfucntion that return last name given user auth id
 def get_last_name(auth_user_id):
     for user in data['users']:
-        if(user.get('auth_user_id')) == auth_user_id:
+        if(user.get('u_id')) == auth_user_id:
             last_name = (user.get('name_last'))
             return last_name
     
@@ -56,7 +56,7 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
-    auth_user_id = (auth_user_id.get('auth_user_id'))
+    
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
