@@ -10,8 +10,8 @@ data = {
 users = [
     {
         'u_id': 1,
-        'first_name': 'John',
-        'last_name': 'Smith', 
+        'name_first': 'John',
+        'name_last': 'Smith', 
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
