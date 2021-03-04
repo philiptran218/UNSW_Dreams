@@ -56,6 +56,7 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
+    auth_user_id = auth_user_id.get('auth_user_id')
     
 
     if len(name) > 20:
@@ -88,5 +89,3 @@ Return Value:
     return {
         'channel_id': channel_id,
     }
-
-
