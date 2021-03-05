@@ -1,5 +1,6 @@
 from src.error import InputError, AccessError
-from src.data import data
+from src.database import data
+from src.helper import is_valid_uid
 #helperfucntion that return first name given user auth id
 def get_first_name(auth_user_id):
     for user in data['users']:
@@ -56,12 +57,12 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
-    auth_user_id = auth_user_id.get('auth_user_id')
+    
     
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
-    #if not any ((user.get('auth_user_id')) == auth_user_id for user in data['users']):
+    #if not is_valid_uid(auth_user_id,):
         #raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
