@@ -19,14 +19,15 @@ def test_valid_channels_create_v1_u_id(clear_data):
     #check number of channels
 
 
+#testing if a channel is actaully being added to the list of channels
 def test_valid_channels_create_v1(clear_data):
     #created a user_id by regestring a valid user
     userId = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     #Valid case where a public channel with name "ValidChannelName" is created by user with auth_id userId
     channels_create_v1(userId['auth_user_id'], "ValidChannelName", True)
-    assert( bool (data['channels']))
+    assert(bool(data['channels']))
 
-
+#testing if more than one channel is being added to the list of channels
 def test_valid_channels_create_v1_multiple(clear_data):
     #created a user_id by regestring a valid user
     userId1 = auth_register_v1("validemail1@g.com", "validpass1", "validname1","validname1")    
@@ -36,7 +37,7 @@ def test_valid_channels_create_v1_multiple(clear_data):
     channels_create_v1(userId1['auth_user_id'], "ValidChannelName1", True)
     #Valid case where a public channel with name "ValidChannelName2" is created by user with auth_id userId2
     channels_create_v1(userId2['auth_user_id'], "ValidChannelName2", True)
-    assert(len(data['channels']) == 2)
+    assert(len(data['channels']) > 1)
 
 
 
@@ -54,7 +55,7 @@ def test_invalidName_channels_create_v1(clear_data):
 '''#testing when a user with an invalid u_id trys to create a channel
 def test_invalid_user(clear_data):
     #invalid case where a public channel with name "ValidChannelName" is created by user with an INvalid u_id
-    with pytest.raises(AccessError):
+    with pytest.raises(AccessError): An accesserror is raised when user trying to register is an invlaid user
         channels_create_v1(8,'channelname',True)'''
 
 
