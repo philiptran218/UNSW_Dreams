@@ -38,6 +38,16 @@ data = {
             ],
             "is_public": True
         },  
+    ],
+    "users": [
+        {
+            'u_id': 1,
+            'first_name': 'John',
+            'last_name': 'Smith', 
+            'perm_id': 1,
+            'password': 'Goodpass',
+            'email': 'johnsmith@gmail.com'
+        },
     ]
 
 }
