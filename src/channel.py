@@ -1,6 +1,5 @@
 from channels import channels_listall_v1, channels_list_v1
-import database
-
+import helper
 def channel_invite_v1(auth_user_id, channel_id, u_id):
 '''
 Function:
@@ -17,20 +16,16 @@ Exceptions:
     AccessError when any of:
         - the authorised user is not already a member of the channel.
 ''' 
-    valid_channels = channels_listall_v1(auth_user_id)
-        if channel_id not in valid_channels
-            raise InputError(f"Please enter a valid channel_id")
-    authorised_channels = channels_list_v1(auth_user_id)
-        if channel_id not in authorised_channels
+    if helper.is_valid_channelid(channel_id) == False:
+        raise InputError(f"Please enter a valid channel_id")
+    if helper.is_owner_in_channel(channel_id) == False:
             raise AccessError(f"Authorised user is not a member of the channel")
-    valid_uids = database.uid_listall_v1()
-        if u_id not in valid_uids
+    if helper.is_valid_uid(auth_user_id) == False:
             raise InputError(f"Please enter a valid u_id")
-    channel_details = channel_details_v1(auth_user_id, channel_id)
-    if u_id in channel_details['all_members']
+    if helper.is_already_in_channel(u_id, channel_id) == True:
         return {}
     else:
-        database.add_uid_to_channel(u_id, channel_id)
+        helper.add_uid_to_channel(u_id, channel_id)
     return {}
 
 
@@ -49,16 +44,15 @@ Exceptions:
     AccessError when any of:
         - Authorised user is not a member of channel with channel_id.
 '''
-    authorised_channels = channels_list_v1(auth_user_id)
-        if channel_id not in authorised_channels
-            raise AccessError(f"Authorised user is not a member of the channel")
-    valid_uids = data.uid_listall_v1()
-        if u_id not in valid_uids
-            raise InputError(f"Please enter a valid u_id")
+    #Write helper to check auth
+    if helper.is_owner_in_channel(channel_id) == False:
+        raise AccessError(f"Authorised user is not a member of the channel")
+    if helper.is_valid_uid(auth_user_id) == False:
+        raise InputError(f"Please enter a valid u_id")
     channel_details = {}
-    channel_details['name'] = data.channel_name(channel_id)
-    channel_details['owner_members'] = data.channel_owners(channel_id)
-    channel_details['all_members'] = data.channel_members(channel_id)
+    channel_details['name'] = helper.channel_name(channel_id)
+    channel_details['owner_members'] = helper.channel_owners(channel_id)
+    channel_details['all_members'] = helper.channel_members(channel_id)
     return channel_details
 '''
         'name': 'Hayden',
