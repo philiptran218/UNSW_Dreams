@@ -1,15 +1,20 @@
-from database import data
-from channels import channels_list_v1
+from src.database import data
+from src.channels import channels_list_v1
 
 def is_valid_uid(u_id):
-
     for user in data['users']:
         if user['u_id'] == u_id:
             return True           
     return False
 
+def is_valid_channelid(channel_id):
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            return True
+            
+    return False
+
 def find_permissions(u_id):
-    
     for user in data['users']:
         if user['u_id'] == u_id:
             break
@@ -21,7 +26,6 @@ def find_permissions(u_id):
         
     
 def is_channel_public(channel_id):
-    
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             break
@@ -41,22 +45,17 @@ def is_already_in_channel(u_id, channel_id):
     for members in selected_channel['all_members']:
         if members['u_id'] == u_id:
             return True
-    
     return False
 
 def is_owner_in_channel(u_id, channel_id):
     authorised_channels = channels_list_v1(u_id)
-    for channel in authorised_channels
-        if channel['channel_id'] == channel_id
+    for channel in authorised_channels['channels']:
+        if channel['channel_id'] == channel_id:
             return True
-    
     return False
 
 
 def add_uid_to_channel(u_id, channel_id):
-'''
-This function appends a user to a channel
-'''
     first_name = None
     last_name = None
     for user in data.users:
@@ -73,9 +72,6 @@ This function appends a user to a channel
             channel['all_members'].append(new_member)
 
 def channel_name(channel_id):
-'''
-Given the channel_id, this function returns the channel's name (string)
-'''
     name = None
     for channel in data.channels:
         if channel['channel_id'] == channel_id:
@@ -83,11 +79,6 @@ Given the channel_id, this function returns the channel's name (string)
     return name
 
 def channel_members(channel_id):
-'''
-Given the channel_id, this function returns a list of all the memebers in the 
-channel. (List of dictionaries where each dictionary has u_id, first name and 
-last name)
-'''
     list_of_members = []
     for channel in data.channels:
         if channel['channel_id'] == channel_id:
@@ -95,11 +86,6 @@ last name)
     return list_of_members
 
 def channel_owners(channel_id):
-'''
-Given the channel_id, this function returns a list of all the owners in the 
-channel (List of dictionaries where each dictionary has u_id, first name and 
-last name)
-'''
     list_of_owners = []
     for channel in data.channels:
         if channel['channel_id'] == channel_id:
@@ -107,7 +93,6 @@ last name)
     return list_of_owners
 
 def get_len_messages(channel_id):
-    
     total = 0
     for message in data['messages']:
         if message['channel_id'] == channel_id:
