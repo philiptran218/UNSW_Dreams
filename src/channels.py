@@ -38,7 +38,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     return {
         'channel_id': 1,
     }
-
+"""
 if __name__ == "__main__":
     auth_user_id = 1
     listall = channels_listall_v1(auth_user_id)
@@ -52,3 +52,4 @@ if __name__ == "__main__":
     print(listall)
     print(lis)
     
+"""
