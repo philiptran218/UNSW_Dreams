@@ -8,17 +8,17 @@ from src.other import clear_v1
 @pytest.fixture
 def user_1():
     user = auth_register_v1("john@gmail.com", "password", "John", "Smith")
-    return user_1
+    return user_1['auth_user_id']
 
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terry@gmail.com", "password", "Terry", "Nguyen")
-    return user_2
+    return user_2['auth_user_id']
 
 @pytest.fixture
 def public_channel(user_1):
     channel = channels_create_v1(user_1, "John's Channel", True)
-    return channel
+    return channel['channel_id']
 
 @pytest.fixture
 def clear():
@@ -51,6 +51,7 @@ def test_invite_valid_inputs(clear, user_1, user_2, public_channel):
             member_found == True
     assert member_found == True
 
+################################################################################
 @pytest.fixture
 def expected_output_details():
     John_Channel_Details = {
