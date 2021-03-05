@@ -4,16 +4,17 @@ from src.auth import auth_register_v1
 from src.channels import channels_create_v1, channels_listall_v1
 from src.channel import channel_invite_v1, channel_details_v1
 from src.other import clear_v1
+from src.helper import is_valid_channelid
 
 @pytest.fixture
 def user_1():
     user = auth_register_v1("john@gmail.com", "password", "John", "Smith")
-    return user_1['auth_user_id']
+    return user['auth_user_id']
 
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terry@gmail.com", "password", "Terry", "Nguyen")
-    return user_2['auth_user_id']
+    return user['auth_user_id']
 
 @pytest.fixture
 def public_channel(user_1):
@@ -74,7 +75,6 @@ def expected_output_details():
     return John_Channel_Details
 
 def test_details_invalid_channel(clear, user_1):
-    clear_v1()
     channel = public_channel
     with pytest.raises(InputError):
         channel_details_v1(user_1, 2)
