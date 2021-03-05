@@ -4,6 +4,6 @@ def auth_login_v1(email, password):
     }
 
 def auth_register_v1(email, password, name_first, name_last):
-    return {
+    return{
         'auth_user_id': 1,
     }
