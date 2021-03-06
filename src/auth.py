@@ -1,5 +1,6 @@
 #import database
 import pytest
+from error import InputError
 
 registered_users = []
 
