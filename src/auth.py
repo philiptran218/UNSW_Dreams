@@ -41,7 +41,7 @@ def auth_login_v1(email, password):
     return {'auth_user_id': user.get('u_id')}
 
 def auth_register_v1(email, password, name_first, name_last):
-    if len(users) == 0:
+    if len(data['users']) == 0:
         pass
     else:
         for user in data['users']:
