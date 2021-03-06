@@ -35,7 +35,7 @@ def generate_handle(name_first, name_last):
 
 def is_handle_taken(handle):
     for user in data['users']:
-        if user['handle'] = handle:
+        if user['handle'] == handle:
             return True
 
 
