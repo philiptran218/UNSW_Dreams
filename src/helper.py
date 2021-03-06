@@ -16,8 +16,8 @@ def generate_handle(name_first, name_last):
         if handle_num >= 1:
             handle = handle.replace(handle[len(handle) - 1], "")
         
-            handle = handle + str(handle_num)
-            handle_num += 1
+        handle = handle + str(handle_num)
+        handle_num += 1
 
         return handle
 
