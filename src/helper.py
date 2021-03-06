@@ -84,7 +84,7 @@ def add_uid_to_channel(u_id, channel_id):
             channel['all_members'].append(new_member)    
    
    
-def add_uid_to_private_channel(u_id, channel_id):
+def add_owner_to_channel(u_id, channel_id):
     '''
     This function appends a user to a channel
     '''
@@ -110,11 +110,10 @@ def list_of_messages(channel_id, start, message_limit):
     messages = []
     message_count = 0
     
-    # Appending messages from the given channel_id
     for message in ordered_messages:
         if message_count >= message_limit:
             break
-            
+        # Appends message if it's in the channel, and is from index 'start'
         if message['channel_id'] == channel_id and message_count >= start:
             message_details = {
                 'message_id': message['message_id'],
@@ -123,7 +122,7 @@ def list_of_messages(channel_id, start, message_limit):
                 'time_created': message['time_created'],  
             }     
             messages.append(message_details)
-        
+        # Increments counter to keep track of number of messages appended
         if message['channel_id'] == channel_id: 
             message_count += 1
    
