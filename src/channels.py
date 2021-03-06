@@ -13,7 +13,7 @@ def channels_listall_v1(auth_user_id):
                 "channel_name": i["channel_name"]
             }
             channel_list.append(output)
-        return channel_list
+        return {'channels': channel_list}
     else:
         raise AccessError("Please enter a valid user id")
 
@@ -29,7 +29,7 @@ def channels_list_v1(auth_user_id):
                         "channel_name": i["channel_name"]
                     }
                     channel_list.append(output)
-        return channel_list
+        return {'channels': channel_list}
     else:
         raise AccessError("Please enter a valid user id")
 
@@ -60,14 +60,14 @@ Return Value:
     new_chan = {
         'channel_id': channel_id,
         'name':name,
-        'all members':[
+        'all_members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
             },
         ],
-        'owner members':[
+        'owner_members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),

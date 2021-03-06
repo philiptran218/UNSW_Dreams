@@ -69,6 +69,25 @@ def add_uid_to_channel(u_id, channel_id):
         if channel['channel_id'] == channel_id:
             channel['all_members'].append(new_member)
 
+def add_owner_to_channel(u_id, channel_id):
+    '''
+    This function appends a user to a channel
+    '''
+    first_name = None
+    last_name = None
+    for user in data['users']:
+        if user['u_id'] == u_id:
+            first_name = user['name_first']
+            last_name = user['name_last']
+            new_member = {
+                'u_id': u_id,
+                'name_first': first_name,
+                'name_last': last_name,
+            }
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel['owner_members'].append(new_member)
+
 def channel_name(channel_id):
     name = None
     for channel in data['channels']:
@@ -87,7 +106,7 @@ def channel_owners(channel_id):
     list_of_owners = []
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            list_of_owners = channel['all_owners']
+            list_of_owners = channel['owner_members']
     return list_of_owners
 
 def get_len_messages(channel_id):
