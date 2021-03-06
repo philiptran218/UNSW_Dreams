@@ -1,4 +1,3 @@
-#import database
 import pytest
 from src.error import InputError
 import re
