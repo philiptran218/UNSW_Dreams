@@ -2,11 +2,10 @@
 import pytest
 from src.error import InputError
 import re
+from src.database import data
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-
-
 
 
 def generate_handle(name_first, name_last):
@@ -38,6 +37,8 @@ def is_handle_taken(handle):
         if user['handle'] == handle:
             return True
 
+    return False
+
 
 
 def auth_login_v1(email, password):
@@ -48,9 +49,8 @@ def auth_login_v1(email, password):
 
     # Check whether the email used is registered with the site
     user_not_found = True
-    for user in registered_users:
+    for user in data['users']:
         if user.get('email') == email:
-            u_id = user.get("u_id")
             user_not_found = False
             break
 
@@ -60,7 +60,7 @@ def auth_login_v1(email, password):
     incorrect_password = True
 
     # Check if enter password matches the password used to register
-    for user in users:
+    for user in data['users']:
         if user.get('email') == email:
             if user.get('password') == password:
                 incorrect_password = False
@@ -68,13 +68,13 @@ def auth_login_v1(email, password):
     if incorrect_password:
         raise InputError(description="Invalid Password")
  
-    return {}
+    return {'auth_user_id': user.get('u_id')}
 
 def auth_register_v1(email, password, name_first, name_last):
     if len(users) == 0:
         pass
     else:
-        for data in users:
+        for user in data['users']:
             if data.get("email") == email:
                 raise InputError(description="Email is already taken")
     # check if email entered has the correct format
@@ -86,11 +86,11 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError(description="Invalid Password")
     
     # Check whether the first name is valid
-    if len(name_first == 0 or name_first > 50):
+    if len(name_first) == 0 or len(name_first) > 50:
         raise InputError(description="Invalid First Name")
 
     # Check whether the last name is valid
-    if len(name_last == 0 or name_last >50):
+    if len(name_last) == 0 or len(name_last) > 50:
         raise InputError(description="Invalid Last Name")
     
     # Check the number of registered users 
@@ -114,4 +114,4 @@ def auth_register_v1(email, password, name_first, name_last):
     }
     
     data['users'].append(user)
-    return {}
+    return {'auth_user_id': number_users + 1}
