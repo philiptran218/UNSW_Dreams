@@ -1,43 +1,44 @@
+
 from src.error import InputError, AccessError
 from src.database import data
 from src.helper import is_valid_uid
-#helperfucntion that return first name given user auth id
-def get_first_name(auth_user_id):
-    for user in data['users']:
-        if(user.get('u_id')) == auth_user_id:
-            first_name = (user.get('name_first'))
-            return first_name
-    
-
-#helperfucntion that return last name given user auth id
-def get_last_name(auth_user_id):
-    for user in data['users']:
-        if(user.get('u_id')) == auth_user_id:
-            last_name = (user.get('name_last'))
-            return last_name
-    
+from src.helper import get_first_name, get_last_name
 
 
 
-def channels_list_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+
 
 def channels_listall_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+    validator = is_valid_uid(auth_user_id)
+    channel_list = []
+    if validator == True:
+        for i in data["channels"]:
+            output = {
+                "channel_id": i["channel_id"],
+                "channel_name": i["channel_name"]
+            }
+            channel_list.append(output)
+        return channel_list
+    else:
+        raise AccessError("Please enter a valid user id")
+
+
+def channels_list_v1(auth_user_id):   
+    validator = is_valid_uid(auth_user_id)
+    channel_list = []
+    if validator == True:
+        for i in data["channels"]:
+            for j in i["all_members"]:
+                if j["u_id"]== auth_user_id:
+                    output = {
+                        "channel_id": i["channel_id"],
+                        "channel_name": i["channel_name"]
+                    }
+                    channel_list.append(output)
+        return channel_list
+    else:
+        raise AccessError("Please enter a valid user id")
+
 
 
 def channels_create_v1(auth_user_id, name, is_public):
@@ -90,3 +91,4 @@ Return Value:
     return {
         'channel_id': channel_id,
     }
+
