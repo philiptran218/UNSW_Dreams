@@ -1,6 +1,9 @@
 from error import InputError, AccessError
 from data import data
-from helper import is_valid_uid, is_valid_channelid, is_already_in_channel, get_len_messages, find_permissions, is_channel_public, add_uid_to_channel, add_uid_to_private_channel, list_of_messages
+from helper import is_valid_uid, is_valid_channelid, is_already_in_channel, get_len_messages, find_permissions, is_channel_public, add_uid_to_channel, add_owner_to_channel, list_of_messages
+
+OWNER = 1
+MEMBER = 2
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
@@ -53,16 +56,16 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     
      # Check for valid u_id
     if is_valid_uid(auth_user_id) == False:
-        raise AccessError()  
+        raise AccessError("Please enter a valid u_id")  
     # Check for valid channel_id
     if is_valid_channelid(channel_id) == False:
-        raise InputError()
+        raise InputError("Please enter a valid channel_id")
     # Check if user is not in the channel
     if is_already_in_channel(auth_user_id, channel_id) == False:
-        raise AccessError()
+        raise AccessError("User is not a member of the channel")
     # Check if start is greater than number of messages
     if start > get_len_messages(channel_id):
-        raise InputError()    
+        raise InputError("Start is greater than the number of messages in the channel")    
     # If start is equal to number of messages
     if start == get_len_messages(channel_id) :
         return {'messages': [], 'start': start, 'end': -1}
@@ -112,7 +115,7 @@ def channel_join_v1(auth_user_id, channel_id):
     if is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id") 
     # Check if auth_user_id cannot join a private channel
-    if find_permissions(auth_user_id) == 2 and is_channel_public(channel_id) == False:
+    if find_permissions(auth_user_id) == MEMBER and is_channel_public(channel_id) == False:
         raise AccessError("Members cannot join a private channel")
     # If auth_user_id is already in the channel     
     if is_already_in_channel(auth_user_id, channel_id):
@@ -120,9 +123,9 @@ def channel_join_v1(auth_user_id, channel_id):
         
     add_uid_to_channel(auth_user_id, channel_id)
     # Adding user into the owners list if they have global permissions
-    if is_channel_public(channel_id) == False:
-        add_uid_to_private_channel(auth_user_id, channel_id) 
-    
+    if find_permissions(auth_user_id) == OWNER:
+        add_owner_to_channel(auth_user_id, channel_id) 
+  
     return {}
     
 
@@ -133,4 +136,4 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
-        
+    
