@@ -1,7 +1,15 @@
-from src.helper import is_valid_channelid, is_owner_in_channel, is_valid_uid, is_already_in_channel
+#from src.helper import is_valid_channelid, is_owner_in_channel, is_valid_uid, is_already_in_channel
 from src.channels import channels_listall_v1, channels_list_v1
 from src.error import InputError, AccessError
 
+import src.helper as helper
+
+def is_in_channel(u_id, channel_id):
+    authorised_channels = channels_list_v1(u_id)
+    for channel in authorised_channels['channels']:
+        if channel['channel_id'] == channel_id:
+            return True
+    return False
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
@@ -19,16 +27,16 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         AccessError when any of:
             - the authorised user is not already a member of the channel.
     ''' 
-    if is_valid_channelid(channel_id) == False:
-        raise InputError(f"Please enter a valid channel_id")
-    if is_owner_in_channel(channel_id) == False:
-        raise AccessError(f"Authorised user is not a member of the channel")
-    if is_valid_uid(auth_user_id) == False:
-        raise InputError(f"Please enter a valid u_id")
-    if is_already_in_channel(u_id, channel_id) == True:
+    if helper.is_valid_channelid(channel_id) == False:
+        raise InputError("Please enter a valid channel_id")
+    if helper.is_owner_in_channel(auth_user_id, channel_id) == False:
+        raise AccessError("Authorised user is not a member of the channel")
+    if helper.is_valid_uid(auth_user_id) == False:
+        raise InputError("Please enter a valid u_id")
+    if helper.is_already_in_channel(u_id, channel_id) == True:
         return {}
     else:
-        add_uid_to_channel(u_id, channel_id)
+        helper.add_uid_to_channel(u_id, channel_id)
     return {}
 
 
@@ -48,14 +56,14 @@ def channel_details_v1(auth_user_id, channel_id):
             - Authorised user is not a member of channel with channel_id.
     '''
 
-    if is_valid_channelid(channel_id) == False:
-        raise InputError(f"Please enter a valid channel_id")
-    if is_already_in_channel(auth_user_id) == False:
-        raise AccessError(f"Please enter a valid u_id")
+    if helper.is_valid_channelid(channel_id) == False:
+        raise InputError("Please enter a valid channel_id")
+    if helper.is_already_in_channel(auth_user_id, channel_id) == False:
+        raise AccessError("Please enter a valid u_id")
     channel_details = {}
-    channel_details['name'] = channel_name(channel_id)
-    channel_details['owner_members'] = channel_owners(channel_id)
-    channel_details['all_members'] = channel_members(channel_id)
+    channel_details['name'] = helper.channel_name(channel_id)
+    channel_details['owner_members'] = helper.channel_owners(channel_id)
+    channel_details['all_members'] = helper.channel_members(channel_id)
     return channel_details
 '''
 'name': 'Hayden',
