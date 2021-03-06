@@ -67,7 +67,11 @@ def auth_login_v1(email, password):
 
     if incorrect_password:
         raise InputError(description="Invalid Password")
- 
+
+    for user in data['users']:
+        if user.get('email') == email:
+            break
+
     return {'auth_user_id': user.get('u_id')}
 
 def auth_register_v1(email, password, name_first, name_last):
