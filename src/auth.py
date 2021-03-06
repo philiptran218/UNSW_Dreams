@@ -107,7 +107,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'name_last': name_last,
         'perm_id': perm_id,
         'password': password,
-        'handle': generate_handle(name_first, name_last),
+        'handle_str': generate_handle(name_first, name_last),
         'email': email
     }
     
