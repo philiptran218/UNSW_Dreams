@@ -12,12 +12,15 @@ def test_clear_v1():
     password = "valpassword"
     user_id = auth_register_v1(email, password, "bobby", "flay")
     channel = channels_create_v1(user_id['auth_user_id'],"bobschannel", True)
-
     clear_v1()
+    # Should raise InputError as registered user has been deleted and thus
+    # cannot login.
     with pytest.raises(InputError):
         auth_login_v1(email, password)
-    with pytest.raises(AccessError):
-        channels_listall_v1(user_id['auth_user_id'])
-    with pytest.raises(AccessError):
-        channel_messages_v1(user_id['auth_user_id'], channel['channel_id'], 0) 
+    # Create a user inorder to run channels_listall_v1() which should return
+    # an empty list as all channels have been deleted.
+    user_id = auth_register_v1(email, password, "bobby", "flay")
+    assert(channels_listall_v1(user_id['auth_user_id']) == {'channels': []})
+
+    # Cannot check if messages have been cleared yet (Iteration 1). 
     
