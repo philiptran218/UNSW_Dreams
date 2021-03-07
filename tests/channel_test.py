@@ -58,7 +58,7 @@ def test_invite_valid_inputs(clear_data, user_1, user_2, public_channel):
     assert member_found == True
 
 ################################################################################
-@pytest.fixture
+#@pytest.fixture
 def expected_output_details():
     John_Channel_Details = {
         'name': "John's Channel",
@@ -100,9 +100,9 @@ def test_details_invalid_auth_id(clear_data, user_2, public_channel):
     with pytest.raises(AccessError):
         channel_details_v1(user_2, public_channel)
 
-def test_details_valid_inputs(clear_data, user_1, user_2, public_channel, expected_output_details):
+def test_details_valid_inputs(clear_data, user_1, user_2, public_channel):
     channel_invite_v1(user_1, public_channel, user_2)
-    assert channel_details_v1(user_1, public_channel) == expected_output_details
+    assert channel_details_v1(user_1, public_channel) == expected_output_details()
 
 ################################################################################
 
