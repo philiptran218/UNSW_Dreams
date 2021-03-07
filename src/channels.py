@@ -26,22 +26,50 @@ def channels_listall_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
+def channels_list_v1(auth_user_id):   
+    """ 
+    Code takes input auth_user_id and sends it through helper function is_valid_id. Very similar 
+    functionality to channels_listall, except for the looping through of all_members list.  
+    This checks to see if a user is actually inside the channel (assuming the id is valid. Once 
+    user is verified to be inside the channel, the channel_id and channel_name is taken and  
+    appended into dictionary inside a new list, which is the returned data type.    
+
+    Not all of data[channels] is returned as additional components have been added in for  
+    functionality. These are long and not needed in output (see assumptions.md for more info) 
+
+    If id is false, AccessError exception is thrown as per specification. 
+    """ 
+    channel_list = []
+    if is_valid_uid(auth_user_id) == True:
+        for channel in data["channels"]:
+            for member in channel["all_members"]:
+                if member["u_id"]== auth_user_id:
+                    output = {
+                        "channel_id": channel["channel_id"],
+                        "name":channel["name"]
+                    }
+                    channel_list.append(output)
+        return {'channels': channel_list}
+    else:
+        raise AccessError("Please enter a valid user id")
+
+
 def channels_create_v1(auth_user_id, name, is_public):
     '''
-channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
+    channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
 
-Arguments:
-    <auth_user_id> (int)    - <a unique id number given to a user on regestration>
-    <name> (string)    - <the name of the channel that the user wants to create>
-    <is_public> (Bool)    - <boolean value corresponding to a  public or private channel>
-    ...
+    Arguments:
+        <auth_user_id> (int)    - <a unique id number given to a user on regestration>
+        <name> (string)    - <the name of the channel that the user wants to create>
+        <is_public> (Bool)    - <boolean value corresponding to a  public or private channel>
+        ...
 
-Exceptions:
-    InputError  - Occurs when the name given for the channel is more than 20 characters long
-    AccessError - Occurs when the user trying to create a channel is not registred on the app
+    Exceptions:
+        InputError  - Occurs when the name given for the channel is more than 20 characters long
+        AccessError - Occurs when the user trying to create a channel is not registred on the app
 
-Return Value:
-    Returns <{channel_id}
+    Return Value:
+        Returns <{channel_id}
     '''
 
     if len(name) > 20:
@@ -76,4 +104,4 @@ Return Value:
         'channel_id': channel_id,
     }
 
->>>>>>> src/channels.py
+
