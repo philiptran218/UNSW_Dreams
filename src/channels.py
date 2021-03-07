@@ -1,16 +1,14 @@
 from src.error import InputError, AccessError
 from src.database import data
-from src.helper import is_valid_uid
-from src.helper import get_first_name, get_last_name
+from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
 
 def channels_listall_v1(auth_user_id):
-    validator = is_valid_uid(auth_user_id)
     channel_list = []
-    if validator == True:
-        for i in data["channels"]:
+    if is_valid_uid(auth_user_id) == True:
+        for channel in data["channels"]:
             output = {
-                "channel_id": i["channel_id"],
-                "channel_name": i["channel_name"]
+                "channel_id": channel["channel_id"],
+                "name": channel["name"]
             }
             channel_list.append(output)
         return {'channels': channel_list}
@@ -18,15 +16,14 @@ def channels_listall_v1(auth_user_id):
         raise AccessError("Please enter a valid user id")
 
 def channels_list_v1(auth_user_id):   
-    validator = is_valid_uid(auth_user_id)
     channel_list = []
-    if validator == True:
-        for i in data["channels"]:
-            for j in i["all_members"]:
-                if j["u_id"]== auth_user_id:
+    if is_valid_uid(auth_user_id) == True:
+        for channel in data["channels"]:
+            for member in channel["all_members"]:
+                if member["u_id"]== auth_user_id:
                     output = {
-                        "channel_id": i["channel_id"],
-                        "channel_name": i["channel_name"]
+                        "channel_id": channel["channel_id"],
+                        "name":channel["name"]
                     }
                     channel_list.append(output)
         return {'channels': channel_list}
@@ -65,6 +62,8 @@ Return Value:
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
         'owner_members':[
@@ -72,7 +71,8 @@ Return Value:
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
-
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
         'is_public': is_public,
