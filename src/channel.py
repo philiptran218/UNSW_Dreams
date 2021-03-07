@@ -35,8 +35,30 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {}
 
 def channel_details_v1(auth_user_id, channel_id):
-    return {
-    }
+    '''
+    Function:
+        Given a Channel with ID channel_id that the authorised user is part of, 
+        provide basic details about the channel.
+
+    Return Type:
+        { name, owner_members, all_members }
+
+    Exceptions:
+        InputError when any of:
+            - Channel ID is not a valid channel.
+        AccessError when any of:
+            - Authorised user is not a member of channel with channel_id.
+    '''
+    if helper.is_valid_channelid(channel_id) == False:
+        raise InputError("Please enter a valid channel_id")
+    if helper.is_already_in_channel(auth_user_id, channel_id) == False:
+        raise AccessError("Please enter a valid u_id")
+    channel_details = {}
+    channel_details['name'] = helper.channel_name(channel_id)
+    channel_details['owner_members'] = helper.channel_owners(channel_id)
+    channel_details['all_members'] = helper.channel_members(channel_id)
+    return channel_details
+
 def channel_messages_v1(auth_user_id, channel_id, start):
     return {
     }
