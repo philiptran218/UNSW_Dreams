@@ -1,11 +1,14 @@
+
 from src.database import data
 #from src.channels import channels_list_v1
+
 
 def is_valid_uid(u_id):
     for user in data['users']:
         if user['u_id'] == u_id:
-            return True           
+            return True
     return False
+
 
 '''def is_valid_channelid(channel_id):
     for channel in data['channels']:

@@ -2,29 +2,38 @@ from src.error import InputError, AccessError
 from src.database import data
 from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
 
-    
-
-
-
-def channels_list_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
 
 def channels_listall_v1(auth_user_id):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+    validator = is_valid_uid(auth_user_id)
+    channel_list = []
+    if validator == True:
+        for i in data["channels"]:
+            output = {
+                "channel_id": i["channel_id"],
+                "channel_name": i["channel_name"]
+            }
+            channel_list.append(output)
+        return channel_list
+    else:
+        raise AccessError("Please enter a valid user id")
+
+
+def channels_list_v1(auth_user_id):   
+    validator = is_valid_uid(auth_user_id)
+    channel_list = []
+    if validator == True:
+        for i in data["channels"]:
+            for j in i["all_members"]:
+                if j["u_id"]== auth_user_id:
+                    output = {
+                        "channel_id": i["channel_id"],
+                        "channel_name": i["channel_name"]
+                    }
+                    channel_list.append(output)
+        return channel_list
+    else:
+        raise AccessError("Please enter a valid user id")
+
 
 
 def channels_create_v1(auth_user_id, name, is_public):
