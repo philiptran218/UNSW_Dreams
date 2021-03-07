@@ -28,4 +28,3 @@ testing in this iteration.
 We are assuming:
 -users can creat a channel only after they log in.
 -one user can create multiple channels, and they're members and owners of that channel.
-
