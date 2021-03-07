@@ -59,11 +59,27 @@ def get_last_name(auth_user_id):
             last_name = user['name_last']
     return last_name
 
+def get_email(auth_user_id):
+    email = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            email = user['email']
+    return email
+
+def get_handle(auth_user_id):
+    handle = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            handle = user['handle_str']
+    return handle
+
 def add_uid_to_channel(u_id, channel_id):
     new_member = {
                 'u_id': u_id,
                 'name_first': get_first_name(u_id),
                 'name_last': get_last_name(u_id),
+                'email': get_email(u_id),
+                'handle_str': get_handle(u_id),
                 }   
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
@@ -73,17 +89,13 @@ def add_owner_to_channel(u_id, channel_id):
     '''
     This function appends a user to a channel
     '''
-    first_name = None
-    last_name = None
-    for user in data['users']:
-        if user['u_id'] == u_id:
-            first_name = user['name_first']
-            last_name = user['name_last']
-            new_member = {
+    new_member = {
                 'u_id': u_id,
-                'name_first': first_name,
-                'name_last': last_name,
-            }
+                'name_first': get_first_name(u_id),
+                'name_last': get_last_name(u_id),
+                'email': get_email(u_id),
+                'handle_str': get_handle(u_id),
+                } 
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
@@ -141,3 +153,4 @@ def list_of_messages(channel_id, start, message_limit):
             message_count += 1
    
     return messages
+

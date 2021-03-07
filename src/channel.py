@@ -192,4 +192,4 @@ if __name__ == '__main__':
     user2 = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
     channel = channels_create_v1(user1['auth_user_id'], "John's Channel", True)
     channel_invite_v1(user1['auth_user_id'], channel['channel_id'], user2['auth_user_id'])
-    print(data)
+    print(channel_details_v1(user1['auth_user_id'], channel['channel_id']))
