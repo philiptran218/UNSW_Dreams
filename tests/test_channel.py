@@ -10,6 +10,10 @@ from src.database import data
 
 INVALID_VALUE = -1
 
+################################################################################
+# channel_invites_v1 tests                                                     #
+################################################################################
+
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
@@ -28,7 +32,6 @@ def public_channel(user_1):
 @pytest.fixture
 def clear_data():
     clear_v1()
-################################################################################
 
 def test_invite_invalid_channel(clear_data, user_1, user_2):
     with pytest.raises(InputError):
@@ -58,7 +61,9 @@ def test_invite_valid_inputs(clear_data, user_1, user_2, public_channel):
     assert member_found == True
 
 ################################################################################
-@pytest.fixture
+# channel_details_v1 tests                                                     #
+################################################################################
+
 def expected_output_details():
     John_Channel_Details = {
         'name': "John's Channel",
@@ -100,12 +105,13 @@ def test_details_invalid_auth_id(clear_data, user_2, public_channel):
     with pytest.raises(AccessError):
         channel_details_v1(user_2, public_channel)
 
-def test_details_valid_inputs(clear_data, user_1, user_2, public_channel, expected_output_details):
+def test_details_valid_inputs(clear_data, user_1, user_2, public_channel):
     channel_invite_v1(user_1, public_channel, user_2)
-    assert channel_details_v1(user_1, public_channel) == expected_output_details
+    assert channel_details_v1(user_1, public_channel) == expected_output_details()
 
 ################################################################################
-
+# channel_messages_v1 tests                                                    #
+################################################################################
 
 @pytest.fixture
 def user1():
@@ -150,11 +156,6 @@ def supply_multi1(user1, channel1, supply_message1):
 @pytest.fixture
 def clear_database():
     clear_v1()
-   
-                          
-################################################################################
-# channel_messages_v1 tests
-################################################################################
     
 def test_channel_messages_invalid_channel(clear_database, user1, channel1):
     # Raises InputError since channel_id 123456 does not exist
@@ -217,7 +218,7 @@ def test_channel_messages_multiple(clear_database, user1, channel1, supply_multi
 ''' 
     
 ################################################################################
-# channel_join_v1 tests
+# channel_join_v1 tests                                                        #
 ################################################################################
     
 def test_channel_join_invalid_authid(clear_database, user1, channel1):
