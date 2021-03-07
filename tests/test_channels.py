@@ -6,7 +6,7 @@ from src.helper import is_valid_uid
 from src.database import data
 import pytest
 
-#DEFINE INVALID_USER 130
+INVALID_USER = -1
 
 #a fixture that clears and resets all the internal data of the application
 @pytest.fixture
@@ -18,27 +18,69 @@ def test_user():
     userid = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     return userid["auth_user_id"]
 
-def test_channels_list_v1_valid(clear_data, test_user):
-    assert(channels_list_v1(test_user)["channels"] == data["channels"])
+@pytest.fixture
+def test_user2():
+    user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
+    return user['auth_user_id']
 
-def test_channels_listall_v1_valid(clear_data, test_user):
-    assert(channels_listall_v1(test_user)["channels"] == data["channels"])
+@pytest.fixture
+def test_channel(test_user):
+    channels_create_v1(test_user, "validname's Channel", True)
+
+@pytest.fixture
+def test_channel2(test_user2):
+    channels_create_v1(test_user2, "John's Channel", True)
+
+@pytest.fixture
+def expected_output_list_v1():
+    return {
+        'channels':
+        [
+            {
+                "channel_id": 1,
+                "name":"validname's Channel"
+            }
+        ]
+    }
+
+@pytest.fixture
+def expected_output_listall_v1():
+    return {
+        'channels': [
+            {
+                "channel_id": 1,
+                "name":"validname's Channel"
+            },
+            {
+                "channel_id": 2,
+                "name":"John's Channel"
+            }
+        ]
+    }
+def test_channels_list_v1_empty(clear_data, test_user):
+    assert(channels_list_v1(test_user) == {'channels': []})
+
+def test_channels_listall_v1_empty(clear_data, test_user):
+    assert(channels_list_v1(test_user) == {'channels': []})
+
+def test_channels_list_v1_valid(clear_data, test_user, test_channel,test_channel2, expected_output_list_v1):
+    assert(channels_list_v1(test_user) == expected_output_list_v1)
+
+def test_channels_listall_v1_valid(clear_data, test_user, test_channel,test_channel2,expected_output_listall_v1):
+    assert(channels_listall_v1(test_user) == expected_output_listall_v1)
 
 def test_channels_list_v1_invalid(clear_data):
     with pytest.raises(AccessError):
-        channels_list_v1(130)
+        channels_list_v1(INVALID_USER)
 
 def test_channels_listall_v1_invalid(clear_data):
     with pytest.raises(AccessError):
-        channels_listall_v1(130)
-
-
+        channels_listall_v1(INVALID_USER)
 
 #testing a valid case for channels_create
 def test_valid_channels_create_v1_u_id(clear_data,test_user):
     #Valid case where a public channel with name "ValidChannelName" is created by user with auth_id userId
     assert(channels_create_v1(test_user, "ValidChannelName", True) == {'channel_id': 1})
-
 
 #testing if a channel is actaully being added to the list of channels
 def test_valid_channels_create_v1(clear_data,test_user):
@@ -55,8 +97,6 @@ def test_valid_channels_create_v1_multiple(clear_data,test_user):
     #Valid case where a public channel with name "ValidChannelName2" is created by user with auth_id userId2
     channels_create_v1(userId2['auth_user_id'], "ValidChannelName2", True)
     assert(len(data['channels']) > 1)
-
-
 
 #testing an invalid case(channel name is more than 20 characters long) 
 def test_invalidName_channels_create_v1(clear_data,test_user):

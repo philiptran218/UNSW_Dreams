@@ -8,6 +8,8 @@ from src.message import message_send_v1
 from src.helper import is_valid_channelid
 from src.database import data
 
+INVALID_VALUE = -1
+
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
@@ -30,11 +32,11 @@ def clear_data():
 
 def test_invite_invalid_channel(clear_data, user_1, user_2):
     with pytest.raises(InputError):
-        channel_invite_v1(user_1, 2, user_2)
+        channel_invite_v1(user_1, INVALID_VALUE, user_2)
 
 def test_invite_invalid_uid(clear_data, user_1, user_2, public_channel):
     with pytest.raises(InputError):
-        channel_invite_v1(user_1, public_channel, 132)
+        channel_invite_v1(user_1, public_channel, INVALID_VALUE)
 
 def test_invite_invalid_auth_id(clear_data, user_1, user_2, public_channel):
     with pytest.raises(AccessError):
@@ -65,6 +67,8 @@ def expected_output_details():
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
             }
         ],
         'all_members': [
@@ -72,13 +76,17 @@ def expected_output_details():
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
             },
             {
                 'u_id': 2,
                 'name_first': 'Terry',
                 'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
             }
-        ],
+        ]
     }
 
     return John_Channel_Details
@@ -86,7 +94,7 @@ def expected_output_details():
 def test_details_invalid_channel(clear_data, user_1):
     channel = public_channel
     with pytest.raises(InputError):
-        channel_details_v1(user_1, 2)
+        channel_details_v1(user_1, INVALID_VALUE)
 
 def test_details_invalid_auth_id(clear_data, user_2, public_channel):
     with pytest.raises(AccessError):
