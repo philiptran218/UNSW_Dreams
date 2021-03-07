@@ -1,20 +1,7 @@
 from src.error import InputError, AccessError
 from src.database import data
-from src.helper import is_valid_uid
-#helperfucntion that return first name given user auth id
-def get_first_name(auth_user_id):
-    for user in data['users']:
-        if(user.get('u_id')) == auth_user_id:
-            first_name = (user.get('name_first'))
-            return first_name
-    
+from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
 
-#helperfucntion that return last name given user auth id
-def get_last_name(auth_user_id):
-    for user in data['users']:
-        if(user.get('u_id')) == auth_user_id:
-            last_name = (user.get('name_last'))
-            return last_name
     
 
 
@@ -57,31 +44,32 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
-    
-    
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
-    #if not is_valid_uid(auth_user_id,):
-        #raise AccessError('user_id is invalid')
+    if not is_valid_uid(auth_user_id,):
+        raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
     new_chan = {
         'channel_id': channel_id,
         'name':name,
-        'all members':[
+        'all_members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
-        'owner members':[
+        'owner_members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
-
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
         'is_public': is_public,
@@ -90,3 +78,4 @@ Return Value:
     return {
         'channel_id': channel_id,
     }
+
