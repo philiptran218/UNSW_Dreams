@@ -2,16 +2,48 @@ import pytest
 from src.error import InputError
 import re
 from src.database import data
-from src.helper import generate_handle, is_handle_taken
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+
+
+def generate_handle(name_first, name_last):
+    handle = name_first + name_last
+    handle = handle.lower()
+    handle = handle.replace("@", "")
+    handle = handle.replace(" ", "")
+
+    if len(handle) > 20:
+        handle = handle[:20]
+    else:
+        pass
+    
+    handle_num = 0
+
+    while is_handle_taken(handle):
+        if len(handle) == 20:
+            handle = handle[:len(handle) - len(str(handle_num))]
+        elif len(str(handle_num)) != len(str(handle_num - 1)) and handle_num > 0:
+            handle = handle[:len(handle) - len(str(handle_num - 1))]  
+        elif handle_num >= 1:
+             handle = handle[:len(handle) - len(str(handle_num))]
+        handle += str(handle_num)
+        handle_num += 1
+    return handle
+
+def is_handle_taken(handle):
+    for user in data['users']:
+        if user['handle_str'] == handle:
+            return True
+    return False
+
+
 
 def auth_login_v1(email, password):
 
     # invalid email entered
     if not re.search(REGEX, email):
-        raise InputError(description="Invalid Email")
+        raise InputError("Invalid Email")
 
     # Check whether the email used is registered with the site
     user_not_found = True
@@ -21,7 +53,7 @@ def auth_login_v1(email, password):
             break
 
     if user_not_found:
-        raise InputError(description="User not found")
+        raise InputError("User not found")
 
     incorrect_password = True
 
@@ -32,7 +64,7 @@ def auth_login_v1(email, password):
                 incorrect_password = False
 
     if incorrect_password:
-        raise InputError(description="Invalid Password")
+        raise InputError("Invalid Password")
 
     for user in data['users']:
         if user.get('email') == email:
@@ -45,23 +77,23 @@ def auth_register_v1(email, password, name_first, name_last):
         pass
     else:
         for user in data['users']:
-            if data.get("email") == email:
-                raise InputError(description="Email is already taken")
+            if user.get("email") == email:
+                raise InputError("Email is already taken")
     # check if email entered has the correct format
     if not re.search(REGEX, email):
-        raise InputError(description="Invalid Email")
+        raise InputError("Invalid Email")
     
     # Check whether the password is valid
     if len(password) < 6:
-        raise InputError(description="Invalid Password")
+        raise InputError("Invalid Password")
     
     # Check whether the first name is valid
     if len(name_first) == 0 or len(name_first) > 50:
-        raise InputError(description="Invalid First Name")
+        raise InputError("Invalid First Name")
 
     # Check whether the last name is valid
     if len(name_last) == 0 or len(name_last) > 50:
-        raise InputError(description="Invalid Last Name")
+        raise InputError("Invalid Last Name")
     
     # Check the number of registered users 
     number_users = len(data['users'])
@@ -79,8 +111,8 @@ def auth_register_v1(email, password, name_first, name_last):
         'name_last': name_last,
         'perm_id': perm_id,
         'password': password,
-        'handle': generate_handle(name_first, name_last),
-        'email': email
+        'email': email,
+        'handle_str': generate_handle(name_first, name_last),
     }
     
     data['users'].append(user)
