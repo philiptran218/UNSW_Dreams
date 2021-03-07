@@ -8,6 +8,10 @@ import pytest
 
 INVALID_USER = -1
 
+################################################################################
+# channel_list_v1 and channel_listall_v1 tests                                 #
+################################################################################
+
 # Fixture that clears and resets all the internal data of the application
 @pytest.fixture
 def clear_data():
@@ -31,7 +35,6 @@ def test_channel(test_user):
 def test_channel2(test_user2):
     channels_create_v1(test_user2, "John's Channel", True)
 
-@pytest.fixture
 def expected_output_list_v1():
     return {
         'channels':
@@ -43,7 +46,6 @@ def expected_output_list_v1():
         ]
     }
 
-@pytest.fixture
 def expected_output_listall_v1():
     return {
         'channels': [
@@ -63,11 +65,11 @@ def test_channels_list_v1_empty(clear_data, test_user):
 def test_channels_listall_v1_empty(clear_data, test_user):
     assert(channels_list_v1(test_user) == {'channels': []})
 
-def test_channels_list_v1_valid(clear_data, test_user, test_channel,test_channel2, expected_output_list_v1):
-    assert(channels_list_v1(test_user) == expected_output_list_v1)
+def test_channels_list_v1_valid(clear_data, test_user, test_channel,test_channel2):
+    assert(channels_list_v1(test_user) == expected_output_list_v1())
 
-def test_channels_listall_v1_valid(clear_data, test_user, test_channel,test_channel2,expected_output_listall_v1):
-    assert(channels_listall_v1(test_user) == expected_output_listall_v1)
+def test_channels_listall_v1_valid(clear_data, test_user, test_channel,test_channel2):
+    assert(channels_listall_v1(test_user) == expected_output_listall_v1())
 
 def test_channels_list_v1_invalid(clear_data):
     with pytest.raises(AccessError):
@@ -76,6 +78,10 @@ def test_channels_list_v1_invalid(clear_data):
 def test_channels_listall_v1_invalid(clear_data):
     with pytest.raises(AccessError):
         channels_listall_v1(INVALID_USER)
+
+################################################################################
+# channel_create_v1 tests                                                      #
+################################################################################
 
 # Testing a valid case for channels_create
 def test_valid_channels_create_v1_u_id(clear_data,test_user):
