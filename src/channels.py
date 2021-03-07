@@ -56,8 +56,6 @@ Return Value:
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
-    if not is_valid_uid(auth_user_id,):
-        raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
     new_chan = {
