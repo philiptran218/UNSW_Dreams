@@ -61,7 +61,7 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_details['owner_members'] = helper.channel_owners(channel_id)
     channel_details['all_members'] = helper.channel_members(channel_id)
     return channel_details
-
+    
 def channel_messages_v1(auth_user_id, channel_id, start):
     '''
     Function:
