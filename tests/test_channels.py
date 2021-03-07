@@ -120,10 +120,5 @@ def test_invalid_user(clear_data):
     # by user with an Invalid u_id
     with pytest.raises(AccessError): 
         channels_create_v1(INVALID_USER,'channelname',True)
-
-
-
-
-
     
 

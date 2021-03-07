@@ -1,4 +1,3 @@
-
 from src.channels import channels_listall_v1, channels_list_v1, channels_create_v1
 from src.auth import auth_register_v1
 from src.error import InputError, AccessError
@@ -31,11 +30,12 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     if helper.is_valid_uid(u_id) == False:
         raise InputError("Please enter a valid u_id")
     if helper.is_already_in_channel(u_id, channel_id) == True:
+        # If u_id is already in channel, u_id is not appended again.
         return {}
     else:
+        # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
     return {}
-
 
 def channel_details_v1(auth_user_id, channel_id):
     '''
@@ -52,7 +52,6 @@ def channel_details_v1(auth_user_id, channel_id):
         AccessError when any of:
             - Authorised user is not a member of channel with channel_id.
     '''
-
     if helper.is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id")
     if helper.is_already_in_channel(auth_user_id, channel_id) == False:
@@ -62,23 +61,7 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_details['owner_members'] = helper.channel_owners(channel_id)
     channel_details['all_members'] = helper.channel_members(channel_id)
     return channel_details
-'''
-'name': 'Hayden',
-'owner_members': [
-    {
-        'u_id': 1,
-        'name_first': 'Hayden',
-        'name_last': 'Jacobs',
-    }
-],
-'all_members': [
-    {
-        'u_id': 1,
-        'name_first': 'Hayden',
-        'name_last': 'Jacobs',
-    }
-],
-'''    
+
 def channel_messages_v1(auth_user_id, channel_id, start):
     '''
     Function:
@@ -134,7 +117,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': end,
     }        
 
-
 def channel_leave_v1(auth_user_id, channel_id):
     return {
     }
@@ -177,8 +159,7 @@ def channel_join_v1(auth_user_id, channel_id):
         helper.add_owner_to_channel(auth_user_id, channel_id) 
   
     return {}
-
-
+    
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
@@ -186,10 +167,3 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
-
-if __name__ == '__main__':
-    user1 = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    user2 = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
-    channel = channels_create_v1(user1['auth_user_id'], "John's Channel", True)
-    channel_invite_v1(user1['auth_user_id'], channel['channel_id'], user2['auth_user_id'])
-    print(channel_details_v1(user1['auth_user_id'], channel['channel_id']))

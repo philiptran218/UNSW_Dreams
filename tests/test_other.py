@@ -22,5 +22,4 @@ def test_clear_v1():
     user_id = auth_register_v1(email, password, "bobby", "flay")
     assert(channels_listall_v1(user_id['auth_user_id']) == {'channels': []})
 
-    # Cannot check if messages have been cleared yet (Iteration 1). 
-    
+    # Cannot check if messages have been cleared yet (Iteration 1).

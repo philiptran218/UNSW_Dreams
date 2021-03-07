@@ -17,7 +17,6 @@ def generate_handle(name_first, name_last):
         handle = handle[:20]
     else:
         pass
-    
     handle_num = 0
 
     while is_handle_taken(handle):
@@ -37,10 +36,7 @@ def is_handle_taken(handle):
             return True
     return False
 
-
-
 def auth_login_v1(email, password):
-
     # invalid email entered
     if not re.search(REGEX, email):
         raise InputError("Invalid Email")
