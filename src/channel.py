@@ -122,9 +122,44 @@ def channel_leave_v1(auth_user_id, channel_id):
     }
 
 def channel_join_v1(auth_user_id, channel_id):
+    '''
+    Function:
+        Given a channel_id of a channel that the authorised user can join, adds 
+        them to that channel.
+        
+    Arguments:
+        auth_user_id (int) - this is the ID of a registered user
+        channel_id (int) - this is the ID of a created channel
+    
+    Exceptions:
+        InputError - occurs when the channel ID is not a valid channel
+        AccessError - occurs when the user ID is not a valid ID and when a non-
+                      global user is attempting to join a private channel
+        
+    Return Value:
+        Returns {} if successful or if the user is already in the channel
+    '''
+    
+    # Check for valid u_id
+    if helper.is_valid_uid(auth_user_id) == False:
+        raise AccessError("Please enter a valid u_id")
+    # Check for valid channel_id
+    if helper.is_valid_channelid(channel_id) == False:
+        raise InputError("Please enter a valid channel_id") 
+    # Check if auth_user_id cannot join a private channel
+    if helper.find_permissions(auth_user_id) == MEMBER and helper.is_channel_public(channel_id) == False:
+        raise AccessError("Members cannot join a private channel")
+    # If auth_user_id is already in the channel     
+    if helper.is_already_in_channel(auth_user_id, channel_id):
+        return {}
+        
+    helper.add_uid_to_channel(auth_user_id, channel_id)
+    # Adding user into the owners list if they have global permissions
+    if helper.find_permissions(auth_user_id) == OWNER:
+        helper.add_owner_to_channel(auth_user_id, channel_id) 
+  
     return {}
     
-
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
