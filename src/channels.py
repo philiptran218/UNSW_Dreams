@@ -26,7 +26,7 @@ def channels_listall_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
-def channels_list_v1(auth_user_id):   
+def channels_list_v1(auth_user_id): 
     """ 
     Code takes input auth_user_id and sends it through helper function is_valid_id. Very similar 
     functionality to channels_listall, except for the looping through of all_members list.  
@@ -53,7 +53,6 @@ def channels_list_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
-
 def channels_create_v1(auth_user_id, name, is_public):
     '''
     channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
@@ -74,6 +73,9 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
+
+    if not is_valid_uid(auth_user_id,):
+        raise AccessError('user_id is invalid')
     
     channel_id = len(data['channels'])+1
     new_chan = {
