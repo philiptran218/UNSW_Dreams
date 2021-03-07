@@ -12,6 +12,8 @@ def generate_handle(name_first, name_last):
     handle = handle.lower()
     handle = handle.replace("@", "")
     handle = handle.replace(" ", "")
+    handle = handle.replace("\n", "")
+    handle = handle.replace("\t", "")
 
     if len(handle) > 20:
         handle = handle[:20]
