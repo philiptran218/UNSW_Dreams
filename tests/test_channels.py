@@ -118,8 +118,6 @@ def test_invalidName_channels_create_v1(clear_data,test_user):
     with pytest.raises(InputError): 
         channels_create_v1(test_user,invalidName, True)
     
-
-
 # Testing when a user with an invalid u_id trys to create a channel
 def test_invalid_user(clear_data):
     # Invalid case where a public channel with name "ValidChannelName" is created 
