@@ -1,34 +1,45 @@
+
 from src.error import InputError, AccessError
 from src.database import data
-from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
+from src.helper import is_valid_uid
+from src.helper import get_first_name, get_last_name
+
+
+
+
 
 def channels_listall_v1(auth_user_id):
+    validator = is_valid_uid(auth_user_id)
     channel_list = []
-    if is_valid_uid(auth_user_id) == True:
-        for channel in data["channels"]:
+    if validator == True:
+        for i in data["channels"]:
             output = {
-                "channel_id": channel["channel_id"],
-                "name": channel["name"]
+                "channel_id": i["channel_id"],
+                "channel_name": i["channel_name"]
             }
             channel_list.append(output)
-        return {'channels': channel_list}
+        return channel_list
     else:
         raise AccessError("Please enter a valid user id")
 
+
 def channels_list_v1(auth_user_id):   
+    validator = is_valid_uid(auth_user_id)
     channel_list = []
-    if is_valid_uid(auth_user_id) == True:
-        for channel in data["channels"]:
-            for member in channel["all_members"]:
-                if member["u_id"]== auth_user_id:
+    if validator == True:
+        for i in data["channels"]:
+            for j in i["all_members"]:
+                if j["u_id"]== auth_user_id:
                     output = {
-                        "channel_id": channel["channel_id"],
-                        "name":channel["name"]
+                        "channel_id": i["channel_id"],
+                        "channel_name": i["channel_name"]
                     }
                     channel_list.append(output)
-        return {'channels': channel_list}
+        return channel_list
     else:
         raise AccessError("Please enter a valid user id")
+
+
 
 def channels_create_v1(auth_user_id, name, is_public):
     '''
@@ -47,6 +58,8 @@ Exceptions:
 Return Value:
     Returns <{channel_id}
     '''
+    
+    
 
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
@@ -57,22 +70,19 @@ Return Value:
     new_chan = {
         'channel_id': channel_id,
         'name':name,
-        'all_members':[
+        'all members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
-                'email': get_email(auth_user_id),
-                'handle_str': get_handle(auth_user_id),
             },
         ],
-        'owner_members':[
+        'owner members':[
             {
                 'u_id':auth_user_id,
                 'name_first':get_first_name(auth_user_id),
                 'name_last' :get_last_name(auth_user_id),
-                'email': get_email(auth_user_id),
-                'handle_str': get_handle(auth_user_id),
+
             },
         ],
         'is_public': is_public,
@@ -81,3 +91,4 @@ Return Value:
     return {
         'channel_id': channel_id,
     }
+

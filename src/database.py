@@ -10,8 +10,8 @@ data = {
 users = [
     {
         'u_id': 1,
-        'first_name': 'John',
-        'last_name': 'Smith', 
+        'name_first': 'John',
+        'name_last': 'Smith', 
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
@@ -21,14 +21,12 @@ users = [
 channels = [
     {
         'channel_id': 1,
-        'name': 'channel1',
+        'name': channel1,
         'all_members': [
             {
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
-                'email':
-                'handle_str':
             },
         ], 
         'owner_members': [
@@ -36,8 +34,6 @@ channels = [
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
-                'email':
-                'handle_str':
             }
         ],
         'is_public': True
@@ -52,5 +48,5 @@ messages = [
         'message': 'Hello world',
         'time_created': 1582426789,
     }
-]
+    ]
 '''

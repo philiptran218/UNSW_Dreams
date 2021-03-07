@@ -3,6 +3,12 @@ from src.database import data
 def delete(aspect):
     ((data.get(aspect)).clear())
 
+
+
+
+#clear_v1 - a fucntion that resets the internal data of the application to it's initial state
+#erases all information about the users, erases all the channels and the messages
+
 def clear_v1():
     '''
 clear_v1 - a fucntion that resets the internal data of the application to it's initial state
@@ -32,3 +38,4 @@ def search_v1(auth_user_id, query_str):
             }
         ],
     }
+
