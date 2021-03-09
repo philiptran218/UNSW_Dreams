@@ -97,7 +97,6 @@ def expected_output_details():
     return John_Channel_Details
 
 def test_details_invalid_channel(clear_data, user_1):
-    channel = public_channel
     with pytest.raises(InputError):
         channel_details_v1(user_1, INVALID_VALUE)
 
