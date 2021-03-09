@@ -11,7 +11,7 @@ def test_clear_v1():
     email = "bob.b@gmail.com"
     password = "valpassword"
     user_id = auth_register_v1(email, password, "bobby", "flay")
-    channel = channels_create_v1(user_id['auth_user_id'],"bobschannel", True)
+    channels_create_v1(user_id['auth_user_id'],"bobschannel", True)
     clear_v1()
     # Should raise InputError as registered user has been deleted and thus
     # cannot login.
