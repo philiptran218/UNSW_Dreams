@@ -42,9 +42,9 @@ def test_message_remove_accesserror2(clear_database, user1, channel1, user2):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     channel_join_v1(user2, channel1)
     with pytest.raises(AccessError):
-        message_remove_v1(user2, msgid['message_id']
+        message_remove_v1(user2, msgid['message_id'])
         
-def test_message_remove_uid_doesnt_exist(clear_database, user1, channel1):
+def test_message_remove_uid_does_not_exist(clear_database, user1, channel1):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     with pytest.raises(AccessError):
         message_remove_v1(1000, msgid['message_id'])
