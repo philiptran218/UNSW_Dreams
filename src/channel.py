@@ -1,8 +1,8 @@
-from src.channels import channels_listall_v1, channels_list_v1, channels_create_v1
-from src.auth import auth_register_v1
-from src.error import InputError, AccessError
-import src.helper as helper
-from src.database import data
+from channels import channels_listall_v1, channels_list_v1, channels_create_v1
+from auth import auth_register_v1
+from error import InputError, AccessError
+import helper as helper
+from database import data
 
 OWNER = 1
 MEMBER = 2
@@ -100,7 +100,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     if start > helper.get_len_messages(channel_id):
         raise InputError("Start is greater than the number of messages in the channel")    
     # If start is equal to number of messages
-    if start == helper.get_len_messages(channel_id) :
+    if start == helper.get_len_messages(channel_id)   :
         return {'messages': [], 'start': start, 'end': -1}
     
     # Setting the message limits and 'end' values
@@ -167,4 +167,10 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
-    
+
+if __name__ == "__main__":
+    pp = auth_register_v1('philt@gmail.com', 'password', 'Phil', 'T')
+    cc = channels_create_v1(pp['auth_user_id'], 'newchannel', True) 
+    mess = channel_messages_v1(pp['auth_user_id'], cc['channel_id'], 0)
+        
+    print(mess)
