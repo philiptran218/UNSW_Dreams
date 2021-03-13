@@ -1,7 +1,10 @@
+import pytest
 from src.error import InputError, AccessError 
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
+from src.channel import channel_messages_v1
+from src.message import message_send_v1
 
 @pytest.fixture
 def user1():
@@ -43,6 +46,12 @@ def test_message_send_invalid_channel(clear_database, user1):
     with pytest.raises(InputError):
         message_send_v1(user1, 1000, 'Nice to meet you!')
         
+# Assuming that empty messages will not be valid/code will not add an empty message
+# which is either blank or only contains whitespace
+def test_message_send_empty_message(clear_database, user1, channel1):
+    with pytest.raises(InputError):
+        message_send_v1(user1, channel1, '')
+        
 def test_message_send_single_message(clear_database, user1, channel1):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     
@@ -51,7 +60,5 @@ def test_message_send_single_message(clear_database, user1, channel1):
     assert channel_messages[0]['message_id'] == msgid['message_id']
     assert channel_messages[0]['u_id'] == user1
     assert channel_messages[0]['message'] == 'Hello World'
-    
-    # Maybe do an assumption to not add a message if its blank (or just has spaces/whitespace)
-        
+
 
