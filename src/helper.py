@@ -1,20 +1,16 @@
 
-from src.database import data
-#from src.channels import channels_list_v1
-
+from database import data
 
 def is_valid_uid(u_id):
     for user in data['users']:
         if user['u_id'] == u_id:
-            return True
+            return True           
     return False
 
-
-'''def is_valid_channelid(channel_id):
+def is_valid_channelid(channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            return True
-            
+            return True       
     return False
 
 def find_permissions(u_id):
@@ -50,49 +46,80 @@ def is_already_in_channel(u_id, channel_id):
             return True
     return False
 
-def is_owner_in_channel(u_id, channel_id):
-    authorised_channels = channels_list_v1(u_id)
-    for channel in authorised_channels['channels']:
-        if channel['channel_id'] == channel_id:
-            return True
-    return False
+def get_first_name(auth_user_id):
+    first_name = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            first_name = user['name_first']
+    return first_name
 
+def get_last_name(auth_user_id):
+    last_name = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            last_name = user['name_last']
+    return last_name
+
+def get_email(auth_user_id):
+    email = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            email = user['email']
+    return email
+
+def get_handle(auth_user_id):
+    handle = None
+    for user in data['users']:
+        if user['u_id'] == auth_user_id:
+            handle = user['handle_str']
+    return handle
 
 def add_uid_to_channel(u_id, channel_id):
-    first_name = None
-    last_name = None
-    for user in data.users:
-        if user['u_id'] == u_id:
-            first_name = user['name_first']
-            last_name = user['name_last']
     new_member = {
                 'u_id': u_id,
-                'name_first': first_name,
-                'name_last': last_name,
+                'name_first': get_first_name(u_id),
+                'name_last': get_last_name(u_id),
+                'email': get_email(u_id),
+                'handle_str': get_handle(u_id),
                 }   
-    for channel in data.channels:
+    for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['all_members'].append(new_member)
 
+def add_owner_to_channel(u_id, channel_id):
+    '''
+    This function appends a user to a channel
+    '''
+    new_member = {
+                'u_id': u_id,
+                'name_first': get_first_name(u_id),
+                'name_last': get_last_name(u_id),
+                'email': get_email(u_id),
+                'handle_str': get_handle(u_id),
+                } 
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel['owner_members'].append(new_member)
+
 def channel_name(channel_id):
     name = None
-    for channel in data.channels:
+    for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             name = channel['name']
     return name
 
 def channel_members(channel_id):
     list_of_members = []
-    for channel in data.channels:
+    for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             list_of_members = channel['all_members']
     return list_of_members
 
 def channel_owners(channel_id):
     list_of_owners = []
-    for channel in data.channels:
+    for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            list_of_owners = channel['all_owners']
+            list_of_owners = channel['owner_members']
     return list_of_owners
 
 def get_len_messages(channel_id):
@@ -126,5 +153,5 @@ def list_of_messages(channel_id, start, message_limit):
         if message['channel_id'] == channel_id: 
             message_count += 1
    
-    return message
-'''
+    return messages
+
