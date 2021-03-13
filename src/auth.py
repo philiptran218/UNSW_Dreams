@@ -1,7 +1,7 @@
 import pytest
-from src.error import InputError
+from error import InputError
 import re
-from src.database import data
+from database import data
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -12,6 +12,8 @@ def generate_handle(name_first, name_last):
     handle = handle.lower()
     handle = handle.replace("@", "")
     handle = handle.replace(" ", "")
+    handle = handle.replace("\n", "")
+    handle = handle.replace("\t", "")
 
     if len(handle) > 20:
         handle = handle[:20]
@@ -113,3 +115,15 @@ def auth_register_v1(email, password, name_first, name_last):
     
     data['users'].append(user)
     return {'auth_user_id': number_users + 1}
+    
+if __name__ == "__main__":
+    i = 0
+    email = 'johnsmith@gmail.com'
+    
+    while i < 102:
+        auth_register_v1(email, 'password', 'JohnGHDBWJb', 'Smith')
+        email = str(i) + email
+        i += 1
+    
+    for user in data['users']:
+        print(user['handle_str'])
