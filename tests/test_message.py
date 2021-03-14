@@ -64,4 +64,17 @@ def test_message_edit_invalid_messageid(clear_database, user1, channel1):
 def test_message_edit_uid_does_not_exist(clear_database, user1, channel1, message1):
     with pytest.raises(AccessError):
         message_edit_v1(1000, message1, 'Another message edit')
+        
+def test_message_edit_valid_single(clear_database, user1, channel1, message1):
+    channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
+    assert channel_messages[0]['message'] == 'Hello World'
+    assert channel_messages[0]['u_id'] == user1
+    message_edit_v1(user1, message1, 'This message has been edited')
+    
+    channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
+    assert channel_messages[0]['message'] == 'This message has been edited'
+    assert channel_messages[0]['u_id'] == user1
+    
+# Also add more tests for complex cases and dealing with dms
+# Add a case where message is edited by different author (update u_id)
 
