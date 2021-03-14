@@ -13,7 +13,7 @@ def message_send_v1(auth_user_id, channel_id, message):
     # Check if user is not in the channel
     if helper.is_already_in_channel(auth_user_id, channel_id) == False:
         raise AccessError("User is not a member in the channel they are sending the message to")
-    # Check is message is empty
+    # Check if message is empty
     if message == '':
         raise InputError("Empty messages cannot be posted to channels")
     # Check if message surpasses accepted length
