@@ -30,7 +30,7 @@ def message1(user1, channel1):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     return msgid['message_id']
 
-def test_message_edit_removed_message(clear_database, user1, channe1, message1):
+def test_message_edit_removed_message(clear_database, user1, channel1, message1):
     message_remove_v1(user1, message1)
     with pytest.raises(InputError):
         message_edit_v1(user1, message1, 'Modifying this message')
