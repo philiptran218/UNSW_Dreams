@@ -60,5 +60,7 @@ def test_message_remove_valid_single(clear_database, user1, channel1, message1):
     message_remove_v1(user1, message1)
     assert channel_messages_v1(user1, channel1, 0) == {'messages': [], 'start': 0, 'end': -1}
 
-# Also write another test for removing from dm and channel simultaneously        
+# Also write another test for removing from dm and channel simultaneously
+# Write another valid test for authorised user who sent the message
+        
 
