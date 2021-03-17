@@ -35,18 +35,6 @@ def is_already_in_channel(u_id, channel_id):
             return True
     return False
 
-def add_uid_to_channel(u_id, channel_id):
-    new_member = {
-                'u_id': u_id,
-                'name_first': get_first_name(u_id),
-                'name_last': get_last_name(u_id),
-                'email': get_email(u_id),
-                'handle_str': get_handle(u_id),
-                }   
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            channel['all_members'].append(new_member)
-
 def channel_name(channel_id):
     name = None
     for channel in data['channels']:
