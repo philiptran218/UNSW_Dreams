@@ -1,7 +1,7 @@
 import pytest
-from error import InputError
+from src.error import InputError
 import re
-from database import data
+from src.database import data
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
