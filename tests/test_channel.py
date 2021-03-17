@@ -140,6 +140,12 @@ def test_channel_messages_invalid_authid(clear_data, user_1, public_channel):
     # Raises AccessError since u_id 123456 does not exist
     with pytest.raises(AccessError):
         channel_messages_v1(123456, public_channel, 0) 
+        
+def test_channel_messages_start_equal(clear_data, user_1, public_channel):
+    # Testing for when start = number of messages in channel
+    channels = channel_messages_v1(user_1, public_channel, 0) 
+    assert channels == {'messages': [], 'start': 0, 'end': -1}
+    
 
 # This tests requires message_send_v1 to be implemented.   
 '''        
@@ -202,7 +208,7 @@ def test_channel_join_private_channel(clear_data, user_2, private_channel, user_
     # channel
     with pytest.raises(AccessError):    
         channel_join_v1(user_1, private_channel) 
-        
+  
         
 def test_channel_join_valid(clear_data, user_1, public_channel, user_2):
     # Testing if a single member can join a public channel
@@ -212,6 +218,16 @@ def test_channel_join_valid(clear_data, user_1, public_channel, user_2):
     assert len(channels['all_members']) == 2
     assert channels['all_members'][0]['u_id'] == user_1
     assert channels['all_members'][1]['u_id'] == user_2    
+    
+def test_channel_join_already_joined(clear_data, user_1, public_channel, user_2):
+    # Testing when user_2, who is already a channel member, joins the channel again
+    channel_join_v1(user_2, public_channel)
+    assert channel_join_v1(user_2, public_channel) == {}
+    channels = channel_details_v1(user_1, public_channel)
+    
+    assert len(channels['all_members']) == 2
+    assert channels['all_members'][0]['u_id'] == user_1
+    assert channels['all_members'][1]['u_id'] == user_2  
     
     
 def test_channel_join_valid_multi(clear_data, user_1, user_2, public_channel):
