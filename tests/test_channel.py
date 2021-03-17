@@ -1,11 +1,10 @@
 import pytest
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
-from src.channels import channels_create_v1, channels_listall_v1, channels_list_v1
+from src.channels import channels_create_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_messages_v1, channel_join_v1
 from src.other import clear_v1
 from src.message import message_send_v1
-from src.helper import is_valid_channelid
 from src.database import data
 
 INVALID_VALUE = -1
@@ -118,9 +117,9 @@ def test_details_valid_inputs(clear_data, user_1, user_2, public_channel):
 ################################################################################
      
 def test_channel_messages_invalid_channel(clear_data, user_1, public_channel):
-    # Raises InputError since channel_id 123456 does not exist
+    # Raises InputError since channel_id INVALID_VALUE does not exist
     with pytest.raises(InputError):
-        channel_messages_v1(user_1, 123456, 0) 
+        channel_messages_v1(user_1, INVALID_VALUE, 0) 
         
         
 def test_channel_messages_invalid_start(clear_data, user_1, public_channel):
@@ -137,9 +136,9 @@ def test_channel_messages_authid_not_member(clear_data, user_1, public_channel, 
         
                
 def test_channel_messages_invalid_authid(clear_data, user_1, public_channel):
-    # Raises AccessError since u_id 123456 does not exist
+    # Raises AccessError since u_id INVALID_VALUE does not exist
     with pytest.raises(AccessError):
-        channel_messages_v1(123456, public_channel, 0) 
+        channel_messages_v1(INVALID_VALUE, public_channel, 0) 
         
 def test_channel_messages_start_equal(clear_data, user_1, public_channel):
     # Testing for when start = number of messages in channel
@@ -192,15 +191,15 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel):
 ################################################################################
     
 def test_channel_join_invalid_authid(clear_data, user_1, public_channel):
-    # Raises AccessError since auth_user_id 123456 does not exist
+    # Raises AccessError since auth_user_id INVALID_VALUE does not exist
     with pytest.raises(AccessError):
-        channel_join_v1(123456, public_channel) 
+        channel_join_v1(INVALID_VALUE, public_channel) 
                 
     
 def test_channel_join_invalid_channel(clear_data, user_1, public_channel):
-    # Raises InputError since channel_id 2 does not exist
+    # Raises InputError since channel_id INVALID_VALUE does not exist
     with pytest.raises(InputError):
-        channel_join_v1(user_1, 2) 
+        channel_join_v1(user_1, INVALID_VALUE) 
         
         
 def test_channel_join_private_channel(clear_data, user_2, private_channel, user_1):        
