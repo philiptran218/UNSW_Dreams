@@ -71,12 +71,9 @@ def auth_login_v1(email, password):
     return {'auth_user_id': user.get('u_id')}
 
 def auth_register_v1(email, password, name_first, name_last):
-    if len(data['users']) == 0:
-        pass
-    else:
-        for user in data['users']:
-            if user.get("email") == email:
-                raise InputError("Email is already taken")
+    for user in data['users']:
+        if user.get("email") == email:
+            raise InputError("Email is already taken")
     # check if email entered has the correct format
     if not re.search(REGEX, email):
         raise InputError("Invalid Email")
