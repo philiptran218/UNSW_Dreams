@@ -115,15 +115,3 @@ def auth_register_v1(email, password, name_first, name_last):
     
     data['users'].append(user)
     return {'auth_user_id': number_users + 1}
-    
-if __name__ == "__main__":
-    i = 0
-    email = 'johnsmith@gmail.com'
-    
-    while i < 102:
-        auth_register_v1(email, 'password', 'JohnGHDBWJb', 'Smith')
-        email = str(i) + email
-        i += 1
-    
-    for user in data['users']:
-        print(user['handle_str'])
