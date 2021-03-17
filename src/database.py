@@ -2,6 +2,7 @@ data = {
     'users': [],
     'channels': [],
     'messages': [],
+    'DM': [],
 }
 ''' initialise empty lists for data fields '''
 ''' what information each list should have '''
@@ -53,4 +54,28 @@ messages = [
         'time_created': 1582426789,
     }
     ]
+
+DM = [
+    {
+        'dm_id': 1,
+        'dm_name': DM 1,
+        'dm_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email':
+                'handle_str':
+            },
+        ], 
+        'dm_messages': [
+            {
+            	dm_message:
+           	    dm_time_created:
+	    	    dm_sender: u_id
+            	dm_index: ???
+            } 
+        ],
+    }
+]
 '''
