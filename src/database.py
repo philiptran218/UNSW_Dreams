@@ -27,6 +27,8 @@ channels = [
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
+                'email':
+                'handle_str':
             },
         ], 
         'owner_members': [
@@ -34,6 +36,8 @@ channels = [
                 'u_id': 1,
                 'name_first': 'John',
                 'name_last': 'Smith',
+                'email':
+                'handle_str':
             }
         ],
         'is_public': True

@@ -1,5 +1,4 @@
-
-from database import data
+from src.database import data
 
 def is_valid_uid(u_id):
     for user in data['users']:

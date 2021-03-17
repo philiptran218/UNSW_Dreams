@@ -1,6 +1,6 @@
-from error import InputError, AccessError
-from database import data
-from helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
+from src.error import InputError, AccessError
+from src.database import data
+from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
 
 def channels_listall_v1(auth_user_id):
     """ 
@@ -105,5 +105,4 @@ def channels_create_v1(auth_user_id, name, is_public):
     return {
         'channel_id': channel_id,
     }
-
 
