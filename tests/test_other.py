@@ -57,9 +57,6 @@ def create_invalid_string():
     chars = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
 
-
-"""
-
 def test_search_invalid_query_str(user_1):
     string = create_invalid_string()
     with pytest.raises(InputError):
@@ -88,4 +85,3 @@ def test_search_mixed_query_str():
 def test_search_empty_query_str():
 
 def test_search_empty_database():
-"""
