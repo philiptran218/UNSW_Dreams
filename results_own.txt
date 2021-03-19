@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.7.3, pytest-6.1.0, py-1.9.0, pluggy-0.13.1
+rootdir: /tmp_amd/ravel/export/ravel/1/hsmith/automark/tempstore, configfile: pytest.ini
+plugins: hypothesis-5.36.1
+collected 43 items
+
+tests/echo_test.py ..                                                    [  4%]
+tests/test_auth.py ...........                                           [ 30%]
+tests/test_channel.py ..................                                 [ 72%]
+tests/test_channels.py ...........                                       [ 97%]
+tests/test_other.py .                                                    [100%]
+
+============================== 43 passed in 0.15s ==============================
