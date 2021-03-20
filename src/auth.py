@@ -6,7 +6,7 @@ from src.database import data
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
-
+# Function 
 def generate_handle(name_first, name_last):
     handle = name_first + name_last
     handle = handle.lower()
@@ -65,10 +65,6 @@ def auth_login_v1(email, password):
 
     if incorrect_password:
         raise InputError("Invalid Password")
-
-    for user in data['users']:
-        if user.get('email') == email:
-            break
 
     return {'auth_user_id': user.get('u_id')}
 
