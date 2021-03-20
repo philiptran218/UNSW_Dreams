@@ -5,6 +5,7 @@ from src.channels import channels_create_v1, channels_listall_v1
 from src.user import user_profile_v1
 from src.database import data
 from src.error import InputError, AccessError
+from src.message import message_send_v1
 
 import pytest
 import random
@@ -48,7 +49,7 @@ def test_clear_channels(clear_data, user_1, public_channel):
     # all channels have been deleted.
     assert(channels_listall_v1(user_2['auth_user_id']) == {'channels': []})
 
-    # If both of the aboe tests are passed, then clear_v1() works as all of both
+    # If both of the above tests are passed, then clear_v1() works as all of both
     # users and channels were deleted
 
     # Cannot check if messages have been cleared yet (Iteration 1).
@@ -64,7 +65,18 @@ def test_search_invalid_query_str(user_1):
 
 def test_search_only_DMs():
 
-def test_search_only_channels():
+def test_search_only_channels(clear_data, user_1, public_channel):
+    message_send_v1(user_1['auth_user_id'], public_channel['channel_id'], MIXED_QUERY_STR)
+    assert search_v1(user_1['u_id'], MIXED_QUERY_STR) == {
+                                                        'messages': [
+                                                            {
+                                                                'message_id': 1,
+                                                                'u_id': 1,
+                                                                'message': "1. How's it going",
+                                                                'time_created': 1582426789,
+                                                            }
+                                                        ],
+                                                    }
 
 def test_search_DMs_and_channels():
 

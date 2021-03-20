@@ -25,6 +25,11 @@ def user_2():
     return user['auth_user_id']
 
 @pytest.fixture
+def user_3():
+    user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
+    return user['auth_user_id']
+
+@pytest.fixture
 def public_channel(user_1):
     channel = channels_create_v1(user_1, "John's Channel", True)
     return channel['channel_id']
@@ -54,10 +59,8 @@ def test_invite_valid_inputs(clear_data, user_1, user_2, public_channel):
     channel_members = channel_details_v1(user_1, public_channel)
     member_found = False
     for members in channel_members['all_members']:
-        print(members)
         if members['u_id'] == user_2:
             member_found = True
-            print(member_found)
     assert member_found == True
 
 ################################################################################
@@ -107,6 +110,83 @@ def test_details_invalid_auth_id(clear_data, user_2, public_channel):
 def test_details_valid_inputs(clear_data, user_1, user_2, public_channel):
     channel_invite_v1(user_1, public_channel, user_2)
     assert channel_details_v1(user_1, public_channel) == expected_output_details()
+
+################################################################################
+# channel_addowner_v1 tests                                                    #
+################################################################################
+
+def expected_output_addowner():
+    John_Channel_Details = {
+        'name': "John's Channel",
+        'owner_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            },
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            },
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            }
+        ]
+    }
+
+def test_addowner_invalid_channel(clear_data, user_1, user_2, public_channel):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1, INVALID_VALUE, user_2)
+
+def test_addowner_invalid_auth_id(clear_data, user_1, user_2, public_channel):
+    with pytest.raises(AccessError):
+        channel_addowner_v1(INVALID_VALUE, public_channel, user_2)
+
+def test_addowner_invalid_uid(clear_data, user_1, user_2, public_channel):
+    with pytest.raises(AccessError):
+        channel_addowner_v1(user_1, public_channel, INVALID_VALUE)
+
+def test_addowner_already_owner(clear_data, user_1, public_channel):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1, public_channel, user_1)
+
+def test_addowner_auth_user_not_owner(clear_data, user_2, public_channel):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_2, public_channel, user_2)
+
+def test_addowner_valid_inputs(clear_data, user_1, user_2, public_channel):
+    channel_addowner_v1(user_1, public_channel, user_2)
+    assert channel_details_v1(user_1, public_channel) == expected_output_addowner()
+
+################################################################################
+# channel_removeowner_v1 tests                                                 #
+################################################################################
+
+def test_removeowner_invalid_channel(clear_data, user_1, user_2, public_channel):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1, INVALID_VALUE, user_2)
+
+def test_removeowner_uid_not owner(clear_data, user_1, user_2, public_channel):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1, INVALID_VALUE, user_2)
 
 ################################################################################
 # channel_messages_v1 tests                                                    #
