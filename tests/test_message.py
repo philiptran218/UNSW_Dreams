@@ -59,10 +59,11 @@ def test_message_share_invalid_messageid(clear_database, user1, user2, channel1,
 def test_message_share_channel_accesserror(clear_database, user1, user2, channel1, channel2, message1):
     with pytest.raises(AccessError):
         message_share_v1(user1, message1, '', channel2, -1)
-        
+
+# Make a fixture to create a dm      
 def test_message_share_dm_accesserror(clear_database, user1, channel1, message1):
     with pytest.raises(AccessError):
-        message_share_v1(user1, message1, '', -1, 2 '''make a fixture for this''')
+        message_share_v1(user1, message1, '', -1, 2)
 
 # This test might not be needed (checks > 1000 for appended message)      
 def test_message_share_invalid_length(clear_database, user1, user2, channel1, channel2, message1):
