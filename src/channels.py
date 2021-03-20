@@ -3,16 +3,22 @@ from src.database import data
 from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
 
 def channels_listall_v1(auth_user_id):
-    """ 
-    Code takes input auth_user_id and sends it through helper function is_valid_id. If id is valid,  
-    then function loops through channel list inside data dictionary (inside database.py) and takes 
-    the channel_id and channel_name of all channels. It then appends them into a dictionary inside  
-    a new list, which is the data that is returned. 
+    """
 
-    Not all of data[channels] is returned as additional components have been added in for  
-    functionality. These are long and not needed in output (see assumptions.md for more info) 
+    Function:
+        Id is authenticated, then list of all channels is returned. Note that only channel id and 
+        name is returned. This is done by looping through entire list of channels and taking the 
+        name and id.
 
-    If id is false, AccessError exception is thrown as per specification. 
+    Arguments:
+        Code takes in input auth_user_id through the helper function is_valid_id.
+
+    Exceptions:
+        AccessError - If id is false or invalid, exception is thrown as per specification.
+
+    Return Type:
+        Channels datatype is returned. This is a dictionary with channel id and name.
+
     """ 
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
@@ -27,17 +33,23 @@ def channels_listall_v1(auth_user_id):
         raise AccessError("Please enter a valid user id")
 
 def channels_list_v1(auth_user_id): 
-    """ 
-    Code takes input auth_user_id and sends it through helper function is_valid_id. Very similar 
-    functionality to channels_listall, except for the looping through of all_members list.  
-    This checks to see if a user is actually inside the channel (assuming the id is valid. Once 
-    user is verified to be inside the channel, the channel_id and channel_name is taken and  
-    appended into dictionary inside a new list, which is the returned data type.    
+    """
+    
+    Function:
+        Id is authenticated, then list of channels the user is in is returned. Note that only channel 
+        id and name is returned. This is done by looping through entire list of channels and taking 
+        the name and id. To test if the user is in the channel, the code loops through the user list 
+        of the channel and checks if the user is inside the channel.
 
-    Not all of data[channels] is returned as additional components have been added in for  
-    functionality. These are long and not needed in output (see assumptions.md for more info) 
+    Arguments:
+        Code takes in input auth_user_id through the helper function is_valid_id.
 
-    If id is false, AccessError exception is thrown as per specification. 
+    Exceptions:
+        AccessError - If id is false or invalid, exception is thrown as per specification.
+
+    Return Type:
+        Channels datatype is returned. This is a dictionary with channel id and name.
+
     """ 
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
