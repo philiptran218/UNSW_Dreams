@@ -58,7 +58,8 @@ messages = [
 DM = [
     {
         'dm_id': 1,
-        'dm_name': DM 1,
+        'dm_owner': (u_id of owner),
+        'dm_name': name should be automatically generated based on the user(s) that is in this dm. The name should be an alphabetically-sorted,        comma-separated list of user handles, e.g. 'handle1, handle2, handle3'.
         'dm_members': [
             {
                 'u_id': 1,
