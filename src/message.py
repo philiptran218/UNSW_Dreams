@@ -28,6 +28,12 @@ def is_user_authorised(u_id, message_id):
     
     return False
 
+def is_message_empty(message):
+    message = message.replace(' ', '')
+    message = message.replace('\n', '')
+    message = message.replace('\t', '')
+    return len(message) == 0
+
 
 def message_send_v1(auth_user_id, channel_id, message):
     return {
@@ -56,12 +62,12 @@ def message_edit_v1(auth_user_id, message_id, message):
     if len(message) > 1000:
         raise InputError("Message is longer than 1000 characters long")
     # If edited message is empty, the current message is removed
-    if message == '':
+    if is_message_empty(message):
         edit_msg = message_details(message_id)
         edit_msg.update({'channel_id': -1})
         edit_msg.update({'dm_id': -1})
         edit_msg.update({'u_id': -1})
-        edit_msg.update({'message': message})
+        edit_msg.update({'message': ''})
        
     edit_msg = message_details(message_id)
     edit_msg.update({'u_id': auth_user_id})
