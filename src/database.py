@@ -49,11 +49,12 @@ messages = [
     {
         'message_id': 1,
         'channel_id': 1,
+        'dm_id': -1,
         'u_id': 1, 
         'message': 'Hello world',
         'time_created': 1582426789,
     }
-    ]
+]
 
 DM = [
     {
@@ -69,14 +70,6 @@ DM = [
                 'handle_str':
             },
         ], 
-        'dm_messages': [
-            {
-            	dm_message:
-           	    dm_time_created:
-	    	    dm_sender: u_id
-            	dm_index: ???
-            } 
-        ],
     }
 ]
 '''
