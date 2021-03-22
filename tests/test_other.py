@@ -53,7 +53,7 @@ def test_clear_channels(clear_data, user_1, public_channel):
     # users and channels were deleted
 
     # Cannot check if messages have been cleared yet (Iteration 1).
-
+'''
 def create_invalid_string():
     chars = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
@@ -67,16 +67,7 @@ def test_search_only_DMs():
 
 def test_search_only_channels(clear_data, user_1, public_channel):
     message_send_v1(user_1['auth_user_id'], public_channel['channel_id'], MIXED_QUERY_STR)
-    assert search_v1(user_1['u_id'], MIXED_QUERY_STR) == {
-                                                        'messages': [
-                                                            {
-                                                                'message_id': 1,
-                                                                'u_id': 1,
-                                                                'message': "1. How's it going",
-                                                                'time_created': 1582426789,
-                                                            }
-                                                        ],
-                                                    }
+    assert search_v1(user_1['u_id'], MIXED_QUERY_STR) == {???}
 
 def test_search_DMs_and_channels():
 
@@ -97,3 +88,4 @@ def test_search_mixed_query_str():
 def test_search_empty_query_str():
 
 def test_search_empty_database():
+'''
