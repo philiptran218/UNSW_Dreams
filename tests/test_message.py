@@ -25,7 +25,7 @@ def channel1(user1):
     
 @pytest.fixture
 def channel2(user2):
-    new_channel2 = channels_create_v1(user1, 'Channel2', True)
+    new_channel2 = channels_create_v1(user2, 'Channel2', True)
     return new_channel2['channel_id']
     
 @pytest.fixture
