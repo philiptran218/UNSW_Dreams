@@ -7,14 +7,14 @@ def is_valid_dm_id(dm_id):
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             return True
-        return False
+    return False
 
 def is_dm_creator(u_id,dm_id):
     for dm in data['DM']:
         if dm['dm_id'] ==dm_id:
             if dm['dm_owner'] == u_id:
                 return True
-        return False
+    return False
 
 def dm_remove_v1(token,dm_id):
     u_id = detoken(token)# yet to be completed
@@ -31,8 +31,10 @@ def dm_remove_v1(token,dm_id):
     
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
-            del(dm)
-
+            dm.update({'dm_id' : -1})
+            dm.update({'dm_name':''})
+            dm.update({'dm_members':[]})
+    return {}
     
 
 '''an input error is raaised when the dm id is invalid
