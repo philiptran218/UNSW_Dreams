@@ -35,6 +35,10 @@ def public_channel(user_1):
 def clear_data():
     clear_v1()
 
+################################################################################
+# clear_v1() tests                                                             #
+################################################################################
+
 def test_clear_users(clear_data, user_1, public_channel):
     clear_v1()
     # Should raise InputError as registered user has been deleted and thus
@@ -53,7 +57,11 @@ def test_clear_channels(clear_data, user_1, public_channel):
     # users and channels were deleted
 
     # Cannot check if messages have been cleared yet (Iteration 1).
-'''
+
+################################################################################
+# search_v1 tests                                                              #
+################################################################################
+
 def create_invalid_string():
     chars = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
@@ -66,8 +74,12 @@ def test_search_invalid_query_str(user_1):
 def test_search_only_DMs():
 
 def test_search_only_channels(clear_data, user_1, public_channel):
-    message_send_v1(user_1['auth_user_id'], public_channel['channel_id'], MIXED_QUERY_STR)
-    assert search_v1(user_1['u_id'], MIXED_QUERY_STR) == {???}
+    message_send_v1(user_1, public_channel['channel_id'], MIXED_QUERY_STR)
+    output = search_v1(user_1['u_id'], MIXED_QUERY_STR)
+    assert output['messages'][0]['message_id'] == 1
+    assert output['messages'][0]['u_id'] == 1
+    assert output['messages'][0]['message'] == 1
+
 
 def test_search_DMs_and_channels():
 
