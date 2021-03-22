@@ -4,7 +4,6 @@ from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, ge
 
 def channels_listall_v1(auth_user_id):
     """
-
     Function:
         Id is authenticated, then list of all channels is returned. Note that only channel id and 
         name is returned. This is done by looping through entire list of channels and taking the 
@@ -18,7 +17,6 @@ def channels_listall_v1(auth_user_id):
 
     Return Type:
         Channels datatype is returned. This is a dictionary with channel id and name.
-
     """ 
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
@@ -34,7 +32,6 @@ def channels_listall_v1(auth_user_id):
 
 def channels_list_v1(auth_user_id): 
     """
-    
     Function:
         Id is authenticated, then list of channels the user is in is returned. Note that only channel 
         id and name is returned. This is done by looping through entire list of channels and taking 
@@ -49,7 +46,6 @@ def channels_list_v1(auth_user_id):
 
     Return Type:
         Channels datatype is returned. This is a dictionary with channel id and name.
-
     """ 
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
@@ -89,7 +85,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     if not is_valid_uid(auth_user_id,):
         raise AccessError('user_id is invalid')
     
-    channel_id = len(data['channels'])+1
+    channel_id = len(data['channels']) + 1
     new_chan = {
         'channel_id': channel_id,
         'name':name,

@@ -4,6 +4,7 @@ from src.error import InputError, AccessError
 import src.helper as helper
 from src.database import data
 
+GLOBAL_OWNER = 1
 OWNER = 1
 MEMBER = 2
 
@@ -79,7 +80,10 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     ''' 
     if is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id")
-    if is_already_in_channel(auth_user_id, channel_id) == False:
+    if auth_user_id == GLOBAL_OWNER:
+        # If auth_user_id is the global owner, they can invite the u_id.
+        pass
+    elif is_already_in_channel(auth_user_id, channel_id) == False:
         raise AccessError("Authorised user is not a member of the channel")
     if helper.is_valid_uid(u_id) == False:
         raise InputError("Please enter a valid u_id")
@@ -112,8 +116,11 @@ def channel_details_v1(auth_user_id, channel_id):
     '''
     if is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id")
-    if is_already_in_channel(auth_user_id, channel_id) == False:
-        raise AccessError("Please enter a valid u_id")
+    if auth_user_id == GLOBAL_OWNER:
+     # If auth_user_id is the global owner, they can access channel details.
+        pass
+    elif is_already_in_channel(auth_user_id, channel_id) == False:
+        raise AccessError("User is not authorised")
     channel_details = {}
     channel_details['name'] = channel_name(channel_id)
     channel_details['owner_members'] = channel_owners(channel_id)
