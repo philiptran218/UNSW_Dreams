@@ -93,5 +93,3 @@ def test_message_send_multi_messages(clear_database, user1, channel1):
     assert message_detail['start'] == 2
     assert message_detail['end'] == 52
 
-# Add test with multiple senders
-
