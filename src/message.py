@@ -11,20 +11,20 @@ def is_message_empty(message):
 
 def message_send_v1(auth_user_id, channel_id, message):
     # Check for valid u_id
-    if helper.is_valid_uid(auth_user_id) == False:
+    if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")  
     # Check for valid channel_id
-    if helper.is_valid_channelid(channel_id) == False:
+    if not helper.is_valid_channelid(channel_id):
         raise InputError("Please enter a valid channel_id")       
     # Check if user is not in the channel
-    if helper.is_already_in_channel(auth_user_id, channel_id) == False:
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError("User is not a member in the channel they are sending the message to")
     # Check if message is empty
     if is_message_empty(message):
         raise InputError("Empty messages cannot be posted to channels")
     # Check if message surpasses accepted length
     if len(message) > 1000:
-        raise InputError("Message is longer than 1000 characters long")
+        raise InputError("Message is longer than 1000 characters")
     
     message_id = len(data['messages']) + 1   
     time = datetime.today()
