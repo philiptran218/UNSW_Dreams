@@ -6,16 +6,18 @@ def delete(aspect):
 
 def clear_v1():
     '''
-    clear_v1 - a fucntion that resets the internal data of the application to it's initial state
-    erases all information about the users, erases all the channels and the messages
+    Function:
+        Resets the internal data of the application to it's initial stateerases all information 
+        about the users, erases all the channels and the messages.
+
     Arguments:
-        </>  - <fucntion doesnt take any arguments>
+        This fucntion doesn't take any arguments.
 
     Exceptions:
-    function doesnt throw any excpetions
+        This function doesn't throw any excpetions.
 
     Return Value:
-    fucntion doesnt return any value
+        This function doesn't return any value.
     '''
     delete('users')
     delete('channels')
