@@ -51,7 +51,6 @@ def message_senddm_v1(auth_user_id, dm_id, message):
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError("Message is longer than 1000 characters")
-    
     message_id = len(data['messages']) + 1   
     time = datetime.today()
     time = time.replace(tzinfo=timezone.utc).timestamp()
