@@ -23,7 +23,7 @@ def test_user2_u_id():
 
 @pytest.fixture
 def test_user3_token():
-    user_info = auth_register_v2("dan@gmail.com", "password", "dan", "Smith")
+    user_info = auth_register_v2("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info['token']
 
 def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
