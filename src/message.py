@@ -40,6 +40,35 @@ def is_message_deleted(message):
         return False
     
 def message_share_v1(auth_user_id, og_message_id, message, channel_id, dm_id):
+    '''
+    Function:
+        Shares a message from a channel/DM to another channel/DM. An optional
+        message can be added in addition to the original message 
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        og_message_id (int) - this is the ID of the original message being
+                              shared
+        message (str) - is the optional message in addition to the shared 
+                        message
+        channel_id (int) - is the ID of the channel that the message is being
+                           shared to (is -1 if it is shared to a DM)
+        dm_id (int) - is the ID of the DM that the message is being shared to 
+                      (is -1 if it is shared to a channel)
+                      
+    Exceptions:
+        InputError - occurs when the channel/DM ID is not a valid ID, when the 
+                     og_message ID is not a valid ID, when the og_message has 
+                     already been deleted and when the shared message is longer
+                     than 1000 characters
+        AccessError - occurs when the user ID is not a valid ID and when the
+                      user is not a member of the channel/DM they are sharing
+                      the message to 
+                      
+    Return value:
+        Returns a dictionary containing the type {shared_message_id}
+    '''   
     # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")
