@@ -1,7 +1,7 @@
 import pytest
 from src.other import clear_v1
-from src.auth import auth_register_v2
-from src.dm import dm_remove_v1
+from src.auth import auth_register_v1
+from src.dm import dm_remove_v1, dm_create_v1, dm_list_v1
 from src.error import AccessError 
 INVALID_DM_ID = -1
 
@@ -12,18 +12,18 @@ def clear_data():
 
 @pytest.fixture
 def test_user1_token():
-    user_info = auth_register_v2("validemail@g.com", "validpass", "validname","validname")
+    user_info = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     return user_info["token"]
 
 
 @pytest.fixture
 def test_user2_u_id():
-    user_info = auth_register_v2("dan@gmail.com", "password", "dan", "Smith")
+    user_info = auth_register_v1("dan@gmail.com", "password", "dan", "Smith")
     return user_info['auth_user_id']
 
 @pytest.fixture
 def test_user3_token():
-    user_info = auth_register_v2("danimatt@gmail.com", "valpassword", "danny", "Smithy")
+    user_info = auth_register_v1("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info['token']
 
 def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
