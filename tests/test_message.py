@@ -29,6 +29,16 @@ def channel2(user2):
     return new_channel2['channel_id']
     
 @pytest.fixture
+def dm1(user1):
+    new_dm1 = dm_create_v1(user1, [user1])
+    return new_dm1['dm_id']
+    
+@pytest.fixture
+def dm2(user2):
+    new_dm2 = dm_create_v1(user2, [user2])
+    return new_dm2['dm_id']
+    
+@pytest.fixture
 def clear_database():
     clear_v1()
     
@@ -37,36 +47,48 @@ def message1(user1, channel1):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     return msgid['message_id']
 
-def test_message_share_uid_does_not_exist(clear_database, user1, user2, channel1, channel2, message1):
+################################################################################
+# message_share_v1 tests                                                       #
+################################################################################
+
+def test_message_share_invalid_uid(clear_database, user1, user2, channel1, channel2, message1):
+    # Raises AccessError since u_id INVALID_ID does not exist
     with pytest.raises(AccessError):
         message_share_v1(INVALID_ID, message1, '', channel2, -1)
-
-# Assuming AccessError if the channel does not exist        
+        
 def test_message_share_invalid_channel(clear_database, user1, user2, channel1, message1):
-    with pytest.raises(AccessError):
+    # Raises InputError since channel_id INVALID_ID does not exist
+    with pytest.raises(InputError):
         message_share_v1(user2, message1, '', INVALID_ID, -1)
         
-# Assuming AccessError if the DM does not exist
 def test_message_share_invalid_dm(clear_database, user1, user2, channel1, message1):
-    with pytest.raises(AccessError):
+    # Raises InputError since dm_id INVALID_ID does not exist
+    with pytest.raises(InputError):
         message_share_v1(user2, message1, '', -1, INVALID_ID)
-
-# Assuming InputError if the message does not exist        
+       
 def test_message_share_invalid_messageid(clear_database, user1, user2, channel1, channel2, message1):
+    # Raises InputError since og_message_id INVALID_ID does not exist
     with pytest.raises(InputError):
         message_share_v1(user2, INVALID_ID, '', channel2, -1)
         
+def test_message_share_removed_message(clear_database, user1, user2, channel1, channel2, message1):
+    # Raises InputError since message1 has been deleted
+    message_remove(user1, message1)
+    with pytest.raises(InputError):
+        message_share_v1(user2, message1, '', channel2, -1)
+
 def test_message_share_channel_accesserror(clear_database, user1, user2, channel1, channel2, message1):
+    # Raises AccessError since user1 is not in channel2
     with pytest.raises(AccessError):
         message_share_v1(user1, message1, '', channel2, -1)
-
-# Make a fixture to create a dm      
-def test_message_share_dm_accesserror(clear_database, user1, channel1, message1):
+     
+def test_message_share_dm_accesserror(clear_database, user1, user2, channel1, dm2, message1):
+    # Raises AccessError since user1 is not in dm2
     with pytest.raises(AccessError):
-        message_share_v1(user1, message1, '', -1, 2)
-
-# This test might not be needed (checks > 1000 for appended message)      
+        message_share_v1(user1, message1, '', -1, dm2)
+    
 def test_message_share_invalid_length(clear_database, user1, user2, channel1, channel2, message1):
+    # Raises InputError since og_message + message > 1000 characters
     i = 0
     message = ''
     while i < 500:
@@ -76,11 +98,30 @@ def test_message_share_invalid_length(clear_database, user1, user2, channel1, ch
         message_share_v1(user2, message1, message, channel2, -1)
      
 def test_message_share_to_channel_simple(clear_database, user1, user2, channel1, channel2, message1):
+    # Tests sharing a single message to a channel
+    assert channel_messages_v1(user2, channel2, 0) == {'messages': [], 'start': 0, 'end': -1}
     message_share_v1(user2, message1, '', channel2, -1)
     
+    channel_messages = channel_messages_v1(user2, channel2, 0)['messages']
+    assert channel_messages[0]['message'] == 'Hello World'
+    assert channel_messages[0]['u_id'] == user2
+       
 def test_message_share_to_dm_simple(clear_database, user1, channel1, dm1, message1):
+    # Tests sharing a single message to a DM
+    assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
     message_share_v1(user1, message1, '', -1, dm1)
 
-# Add more complex cases, sharing from dm to channel, sharing multiple messages...
-# Add test for sharing to both channel and dm (might not be needed)
+    dm_messages = dm_messages_v1(user1, dm1, 0)['messages']
+    assert dm_messages[0]['message'] == 'Hello World'
+    assert dm_messages[0]['u_id'] == user1
+    
+def test_message_share_optional_msg(clear_database, user1, channel1, dm1, message1):
+    # Tests adding an optional message to the original message, then sharing it
+    # to a DM
+    assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
+    message_share_v1(user1, message1, 'Hello Everyone', -1, dm1)
+
+    dm_messages = dm_messages_v1(user1, dm1, 0)['messages']
+    assert dm_messages[0]['message'] == 'Hello World Hello Everyone'
+    assert dm_messages[0]['u_id'] == user1
 
