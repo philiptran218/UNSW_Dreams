@@ -68,10 +68,9 @@ def message_edit_v1(auth_user_id, message_id, message):
         edit_msg.update({'dm_id': -1})
         edit_msg.update({'u_id': -1})
         edit_msg.update({'message': ''})
-       
-    edit_msg = message_details(message_id)
-    edit_msg.update({'u_id': auth_user_id})
-    edit_msg.update({'message': message})
-    
+    else:   
+        edit_msg = message_details(message_id)
+        edit_msg.update({'u_id': auth_user_id})
+        edit_msg.update({'message': message})
     return {}
     
