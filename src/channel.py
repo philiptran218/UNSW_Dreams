@@ -4,7 +4,7 @@ from src.error import InputError, AccessError
 import src.helper as helper
 from src.database import data
 
-GLOBAL_OWNER = 1
+DREAMS_OWNER = 1
 OWNER = 1
 MEMBER = 2
 
@@ -13,6 +13,12 @@ def is_valid_channelid(channel_id):
         if channel['channel_id'] == channel_id:
             return True       
     return False     
+
+def is_dreams_owner(auth_user_id):
+    for user in data['users']:
+        if user['u_id'] == auth_user_id and user['perm_id'] == DREAMS_OWNER
+            return True
+    return False
 
 def is_channel_public(channel_id):
     for channel in data['channels']:
@@ -85,16 +91,16 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     Return Type:
         This function doesn't return any value.
     ''' 
-    if is_valid_channelid(channel_id) == False:
-        raise InputError("Please enter a valid channel_id")
-    if auth_user_id == GLOBAL_OWNER:
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel")
+    if is_dreams_owner(auth_user_id):
         # If auth_user_id is the global owner, they can invite the u_id.
         pass
-    elif is_already_in_channel(auth_user_id, channel_id) == False:
-        raise AccessError("Authorised user is not a member of the channel")
-    if helper.is_valid_uid(u_id) == False:
-        raise InputError("Please enter a valid u_id")
-    if is_already_in_channel(u_id, channel_id) == True:
+    elif not is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not authorised")
+    if not helper.is_valid_uid(u_id):
+        raise InputError(description="Please enter a valid user")
+    if is_already_in_channel(u_id, channel_id):
         # If u_id is already in channel, u_id is not appended again.
         return {}
     else:
@@ -121,13 +127,13 @@ def channel_details_v1(auth_user_id, channel_id):
     Return Type:
         { name, owner_members, all_members }
     '''
-    if is_valid_channelid(channel_id) == False:
-        raise InputError("Please enter a valid channel_id")
-    if auth_user_id == GLOBAL_OWNER:
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel")
+    if is_dreams_owner(auth_user_id):
      # If auth_user_id is the global owner, they can access channel details.
         pass
-    elif is_already_in_channel(auth_user_id, channel_id) == False:
-        raise AccessError("User is not authorised")
+    elif not is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not authorised")
     channel_details = {}
     channel_details['name'] = channel_name(channel_id)
     channel_details['is_public'] = channel_is_public(channel_id)
