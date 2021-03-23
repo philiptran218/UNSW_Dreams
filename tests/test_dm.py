@@ -1,8 +1,9 @@
 import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v1
-from src.dm import dm_remove_v1, dm_create_v1, dm_list_v1, dm_messages_v1
+from src.dm import dm_remove_v1 , dm_create_v1, dm_list_v1, dm_messages_v1
 from src.error import AccessError, InputError 
+from src.message import message_senddm_v1
 INVALID_DM_ID = -1
 INVALID_TOKEN = -1
 
@@ -63,3 +64,40 @@ def test_dm_messages_start_equal(clear_data,test_create_dm,test_user1_token,test
     dms = dm_messages_v1(test_user1_token,test_create_dm,0)
     assert (dms == {'messages': [], 'start': 0, 'end': -1})
 
+
+#testing when one message is sent in the dm
+def test_channel_messages_valid_single(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
+    user_id = detoken(test_user1_token,)
+    # Tests for a single message in channel
+    message_senddm_v1(test_user1_token,test_create_dm,'A new message')
+    message_detail = dm_messages_v1(test_user1_token, test_create_dm, 0)
+    
+    # Checking the message dictionary to see if message has been appended
+    assert message_detail['messages'][0]['message_id'] == 1
+    assert message_detail['messages'][0]['u_id'] == user_id
+    assert message_detail['messages'][0]['message'] == 'A new message'
+    assert message_detail['start'] == 0
+    assert message_detail['end'] == -1
+
+def test_channel_messages_multiple(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
+    user_id = detoken(test_user1_token)
+    # Testing for multiple messages, and non-zero start value 
+    # Sends 55 messages to channel, the messages are just numbers as strings
+    i = 1
+    while i <= 55:
+        message_senddm_v1(test_user1_token, test_create_dm, f"{i}")
+        i += 1
+    
+    message_detail = dm_messages_v1(test_user1_token,test_create_dm, 2)
+   
+    # Checking that the messages have been appended correctly
+    i = 53
+    j = 0
+    while i >= 4:
+        assert message_detail['messages'][j]['message_id'] == i
+        assert message_detail['messages'][j]['u_id'] == user_id
+        assert message_detail['messages'][j]['message'] == str(i)
+        i -= 1
+        j += 1 
+    assert message_detail['start'] == 2
+    assert message_detail['end'] == 52
