@@ -37,13 +37,13 @@ def is_message_empty(message):
    
 def message_senddm_v1(auth_user_id, dm_id, message):
     # Check for valid u_id
-    if helper.is_valid_uid(auth_user_id) == False:
+    if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")  
     # Check for valid dm_id
-    if is_valid_dmid(dm_id) == False:
+    if not is_valid_dmid(dm_id):
         raise InputError("Please enter a valid dm_id")       
     # Check if user is not in the DM
-    if is_already_in_dm(auth_user_id, dm_id) == False:
+    if not is_already_in_dm(auth_user_id, dm_id):
         raise AccessError("User is not a member in the DM they are sending the message to")
     # Check if message is empty
     if is_message_empty(message):
