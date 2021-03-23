@@ -491,3 +491,53 @@ def test_channel_join_global_private(clear_data, user_1, user_2, private_channel
     assert channels['owner_members'][0]['u_id'] == user_2
     assert channels['owner_members'][1]['u_id'] == user_1
 
+################################################################################
+# channel_leave_v1 tests                                                       #
+################################################################################
+
+def test_channel_leave_invalid_channel(clear_data, user_1, public_channel_1):
+    with pytest.raises(InputError):
+        channel_leave_v1(user_1, INVALID_VALUE)
+
+def test_channel_leave_invalid_auth_id(clear_data, user_1):
+    with pytest.raises(AccessError):
+        channel_leave_v1(INVALID_VALUE, public_channel_1)
+
+def test_channel_leave_auth_id_not_in_channel(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_leave_v1(user_2, public_channel_1)
+
+def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1, public_channel_1, user_2)
+    channel_leave_v1(user_2, public_channel_1)
+    info = channel_details_v1(user_1, public_channel_1)
+    user_found = False
+    for member in info['all_members']
+        if member['u_id'] == user_2
+            user_found == True
+    assert user_found == False
+
+def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1, public_channel_1, user_2)
+    channel_addowner_v1(user_1, public_channel_1, user_2)
+    channel_leave_v1(user_2, public_channel_1)
+    list_of_channels = channels_listall_v1(user_1)
+    user_found = False
+    for member in info['owner_members']
+        if member['u_id'] == user_2
+            user_found == True
+    for member in info['all_members']
+        if member['u_id'] == user_2
+            user_found == True
+    assert user_found == False
+
+def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
+    channel_leave_v1(user_1, public_channel_1)
+    channel_found = False
+    list_of_channels = channels_listall_v1(user_1)
+    for channel in list_of_channels:
+        if channel['channel_id'] == public_channel_1:
+            channel_found = True
+    assert channel_found = False
+     
+    
