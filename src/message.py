@@ -45,6 +45,25 @@ def message_send_v1(auth_user_id, channel_id, message):
     }
 
 def message_remove_v1(auth_user_id, message_id):
+    '''
+    Function:
+        Given a message_id for a message, this message is removed from the 
+        channel/DM.
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        message_id (int) - this is the ID of an existing message 
+        
+    Exceptions:
+        InputError - occurs when the message ID is not a valid ID and when the
+                     message has already been deleted
+        AccessError - occurs when the user ID is not a valid ID and when the
+                      user is not authorised to remove the message
+                      
+    Return value:
+        Returns an empty dictionary {}
+    '''
     # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")
