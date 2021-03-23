@@ -26,6 +26,10 @@ def test_user3_token():
     user_info = auth_register_v1("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info['token']
 
+################################################################################
+# dm_remove_v1 tests                                                     #
+################################################################################
+
 def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
     dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
     dmsdict =  dm_list_v1(test_user1_token)
