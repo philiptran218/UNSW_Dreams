@@ -43,6 +43,13 @@ def channel_name(channel_id):
             name = channel['name']
     return name
 
+def channel_is_public(channel_id):
+    is_public = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            is_public = channel['is_public']
+    return is_public
+
 def channel_members(channel_id):
     list_of_members = []
     for channel in data['channels']:
@@ -123,6 +130,7 @@ def channel_details_v1(auth_user_id, channel_id):
         raise AccessError("User is not authorised")
     channel_details = {}
     channel_details['name'] = channel_name(channel_id)
+    channel_details['is_public'] = channel_is_public(channel_id)
     channel_details['owner_members'] = channel_owners(channel_id)
     channel_details['all_members'] = channel_members(channel_id)
     return channel_details
