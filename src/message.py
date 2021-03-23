@@ -28,20 +28,10 @@ def is_user_authorised(u_id, message_id):
         for owners in owners_list:
             if owners['u_id'] == u_id:
                 return True
-    elif msg['channel_id'] == -1 and msg['dm_id'] != -1:
+    else:
         dm = dm_details(msg['dm_id'])
         if dm['dm_owner'] == u_id:
             return True
-    else:
-        owners_list = helper.channel_owners(msg['channel_id'])
-        in_channel = False
-        for owners in owners_list:
-            if owners['u_id'] == u_id:
-                in_channel = True
-        if in_channel:
-            dm = dm_details(msg['dm_id'])
-            if dm['dm_owner'] == u_id:
-                return True
     
     if msg['u_id'] == u_id:
         return True
@@ -66,7 +56,7 @@ def message_remove_v1(auth_user_id, message_id):
     if msg['message'] == '' and msg['channel_id'] == -1 and msg['dm_id'] == -1:
         raise InputError("Message has already been deleted")
     # Check if user has permission to remove the message
-    if not is_user_authorised(auth_user_id, message_id) == False:
+    if not is_user_authorised(auth_user_id, message_id):
         raise AccessError("User is not authorised to remove the message")
     # Edit message details to show that it has been removed
     for message in data['messages']:
