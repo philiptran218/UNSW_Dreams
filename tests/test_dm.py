@@ -36,6 +36,9 @@ def test_create_dm(test_user1_token,test_user2_u_id):
     dm = dm_create_v1((test_user1_token,test_user2_u_id))
     return dm['dm_id']
 
+################################################################################
+# dm_messages_v1 tests                                                     #
+################################################################################
 
 
 #testing when dm_id is invalid -> InputError is raised
