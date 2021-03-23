@@ -30,6 +30,8 @@ def search_v1(auth_user_id, query_str):
             {
                 'message_id': 1,
                 'u_id': 1,
+                'channel_id': 1,
+                'dm_id': 0,
                 'message': 'Hello world',
                 'time_created': 1582426789,
             }
