@@ -20,6 +20,7 @@ SYMBOLS_QUERY_STR = "!#$%&()*+"
 MIXED_QUERY_STR = "1. How's it going?"
 EMPTY_QUERY_STR = ""
 SUB_STRING = "it"
+WHITE_SPACE_QUERY_STR = "     it      "
 
 @pytest.fixture
 def user_1():
@@ -309,4 +310,19 @@ def test_search_multiple_channels_and_dms(clear_data, user_1, user_2, user_1_dm,
     assert output['messages'][3]['channel_id'] == 0
     assert output['messages'][3]['dm_id'] == 2
     assert output['messages'][3]['message'] == MIXED_QUERY_STR
+
+def test_search_query_string_with_white_space(clear_data, user_1, public_channel_1, user_1_dm)
+    message_send_v1(user_1, public_channel_1, MIXED_QUERY_STR)
+    message_senddm_v1(user_1, user_1_dm, MIXED_QUERY_STR)
+    output = search_v1(user_1, WHITE_SPACE_QUERY_STR)
+    assert output['messages'][0]['message_id'] == 1
+    assert output['messages'][0]['u_id'] == 1
+    assert output['messages'][0]['channel_id'] == 1
+    assert output['messages'][0]['dm_id'] == 0
+    assert output['messages'][0]['message'] == MIXED_QUERY_STR
+    assert output['messages'][1]['message_id'] == 2
+    assert output['messages'][1]['u_id'] == 1
+    assert output['messages'][1]['channel_id'] == 0
+    assert output['messages'][1]['dm_id'] == 1
+    assert output['messages'][1]['message'] == MIXED_QUERY_STR
 

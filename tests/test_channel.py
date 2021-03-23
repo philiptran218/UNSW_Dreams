@@ -94,6 +94,7 @@ def test_invite_global_owner_allowed(clear_data, user_1, user_2, user_3, public_
 def expected_output_details_1():
     John_Channel_Details = {
         'name': "John's Channel",
+        'is_public': True
         'owner_members': [
             {
                 'u_id': 1,
@@ -125,6 +126,7 @@ def expected_output_details_1():
 def expected_output_details_2():
     Terry_Channel_Details = {
         'name': "Terry's Channel",
+        'is_public': True
         'owner_members': [
             {
                 'u_id': 2,
