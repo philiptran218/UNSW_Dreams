@@ -33,51 +33,51 @@ def is_valid_dm_id(dm_id):
             return True
     return False
     
+def is_message_deleted(message):
+    if message['channel_id'] == -1 and message['dm_id'] == -1:
+        return True
+    else:
+        return False
+    
 def message_share_v1(auth_user_id, og_message_id, message, channel_id, dm_id):
     # Check for valid u_id
-    if helper.is_valid_uid(auth_user_id) == False:
+    if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")
     if channel_id != -1 and dm_id == -1:
         # Check for valid channel_id
-        if helper.is_valid_channelid(channel_id) == False:
+        if not helper.is_valid_channelid(channel_id):
             raise InputError("Please enter a valid channel_id")
-        if is_already_in_channel(auth_user_id, channel_id) == False:
-            raise AccessError("User is not a member in the channel they are sharing the message to") 
-             
-    elif channel_id == -1 and dm_id != -1:
-        if is_valid_dm_id(dm_id) == False:
-            raise InputError("Please enter a valid dm_id")
-        if is_already_in_dm(auth_user_id, dm_id) == False:
-            raise AccessError("User is not a member in the DM they are sharing the message to")
+        # Check if user has joined the channel
+        if not is_already_in_channel(auth_user_id, channel_id):
+            raise AccessError("User is not a member in the channel they are sharing the message to")        
     else:
-        # Check for valid channel_id
-        if helper.is_valid_channelid(channel_id) == False:
-            raise InputError("Please enter a valid channel_id")
-        if is_valid_dm_id(dm_id) == False:
-            raise InputError("Please enter a valid dm_id")  
-        if is_already_in_channel(auth_user_id, channel_id) == False:
-            raise AccessError("User is not a member in the channel they are sharing the message to") 
-        if is_already_in_dm(auth_user_id, dm_id) == False:
+        # Check for valid dm_id
+        if not is_valid_dm_id(dm_id):
+            raise InputError("Please enter a valid dm_id")
+        # Check if user has joined the DM
+        if not is_already_in_dm(auth_user_id, dm_id):
             raise AccessError("User is not a member in the DM they are sharing the message to")
-    
-    if message_exists(og_message_id) == False:
+    # Check if og_message_id is valid
+    if not message_exists(og_message_id):
         raise InputError("og_message_id does not exist")
     og_msg = message_details(og_message_id)
-    if og_msg['message'] == '' and og_msg['channel_id'] == -1 and og_msg['dm_id'] == -1:
+    # Check if og_message_id has been removed
+    if is_message_deleted(og_msg):
         raise InputError("Message has already been deleted")
-    if is_message_empty(message) == False:
+    # Check if og_message + optional message > 1000 characters
+    if not is_message_empty(message):
         if len(og_msg['message']) + len(message) + 1 > 1000:
             raise InputError("Message is longer than 1000 characters")
-    # Might have to check if DM was deleted
+
     message_id = len(data['messages']) + 1
     time = datetime.today()
     time = time.replace(tzinfo=timezone.utc).timestamp()
-
+    # If the optional message is empty or just whitespace, it will not be
+    # appended to the og_message 
     if is_message_empty(message):
         app_message = ''
     else:
         app_message = ' ' + message
-        
     msg = {
         'message_id': message_id,
         'channel_id': channel_id,
