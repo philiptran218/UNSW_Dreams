@@ -25,6 +25,10 @@ def dm1(user1):
 @pytest.fixture
 def clear_database():
     clear_v1()
+    
+################################################################################
+# message_senddm_v1 tests                                                      #
+################################################################################
 
 def test_message_senddm_invalid_uid(clear_database, user1, dm1):
     # Raises AccessError since u_id INVALID_ID does not exist
