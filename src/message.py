@@ -10,6 +10,30 @@ def is_message_empty(message):
     return len(message) == 0
 
 def message_send_v1(auth_user_id, channel_id, message):
+    '''
+    Function:
+        Send a message from authorised_user to the channel specified by 
+        channel_id. Note: Each message has its own unique ID, whether it is in
+        a channel or a DM.
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their 
+                      session
+        channel_id (int) - this is the ID of an existing channel
+        message (str) - the message that will be sent to the channel with ID
+                        channel_id
+                        
+    Exceptions:
+        InputError - occurs when the channel ID is not a valid ID, when the
+                     message being sent is empty and when the message has more
+                     than 1000 characters
+        AccessError - occurs when the user ID is not a valid ID and when the
+                      user is not a member of the channel they are sending the
+                      message to 
+        
+    Return value:
+        Returns a dictionary containing the type {message_id}
+    '''
     # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError("Please enter a valid u_id")  
@@ -29,7 +53,6 @@ def message_send_v1(auth_user_id, channel_id, message):
     message_id = len(data['messages']) + 1   
     time = datetime.today()
     time = time.replace(tzinfo=timezone.utc).timestamp()
-    
     message_info = {
         'message_id': message_id,
         'channel_id': channel_id,
