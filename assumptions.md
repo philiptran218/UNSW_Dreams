@@ -11,3 +11,6 @@ We are assuming:
 - For channel_messages_v1, if the start value is equal to the number of messages in the channel, 
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
+- In testing for admin_userpermissions_change, there is only one created test user. Because of this,
+  their id is the only valid id that can be tested. This makes testing easier as it reduced the amount
+  of fixtures that need to be created. 
