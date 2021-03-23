@@ -31,7 +31,7 @@ INVALID_ID = -1
 # message_send_v1 tests                                                        #
 ################################################################################
 
-def test_message_send_invalid_uid(clear_database, channel1):
+def test_message_send_invalid_uid(clear_database, user1, channel1):
     # Raises AccessError since u_id INVALID_ID does not exist
     with pytest.raises(AccessError):
         message_send_v1(INVALID_ID, channel1, 'Hello World')
@@ -41,7 +41,7 @@ def test_message_send_invalid_channel(clear_database, user1):
     with pytest.raises(InputError):
         message_send_v1(user1, INVALID_ID, 'Nice to meet you!')
         
-def test_message_send_uid_not_in_channel(clear_database, channel1, user2):
+def test_message_send_uid_not_in_channel(clear_database, user1, channel1, user2):
     # Raises AccessError since user2 is not in channel1
     with pytest.raises(AccessError):
         message_send_v1(user2, channel1, 'Hello World')
@@ -55,10 +55,10 @@ def test_message_send_invalid_messages(clear_database, user1, channel1):
         i += 1
     with pytest.raises(InputError):
         message_send_v1(user1, channel1, message)
-        
-# Assuming that function will not add empty messages (or messages with just
-# whitespace) and instead raises InputError 
+         
 def test_message_send_empty_message(clear_database, user1, channel1):
+    # Assuming that function will not add empty messages (or messages with just
+    # whitespace) and instead raises InputError
     with pytest.raises(InputError):
         message_send_v1(user1, channel1, '')
         
