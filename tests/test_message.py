@@ -82,16 +82,16 @@ def test_message_remove_accesserror3(clear_database, user1, user2, dm1, message2
     with pytest.raises(AccessError):
         message_remove_v1(user2, message2)
             
-def test_message_remove_valid_single(clear_database, user1, channel1, message1):
-    # Checking is message1 has been successfully removed from channel1
+def test_message_remove_from_dm(clear_database, user1, channel1, message1):
+    # Checking if message1 has been successfully removed from channel1
     message_remove_v1(user1, message1)
     assert channel_messages_v1(user1, channel1, 0) == {'messages': [], 'start': 0, 'end': -1}
 
 def test_message_remove_from_dm(clear_database, user1, dm1, message2):
-    # Checking if message1 has been successfully removed from dm1
-    message_remove_v1(user1, dm_msg['message_id'])
-    assert dm_messages_v1(user1, dm1['dm_id'], 0) == {'messages': [], 'start': 0, 'end': -1}
-    
+    # Checking if message2 has been successfully removed from dm1
+    message_remove_v1(user1, message2)
+    assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
+'''
 def test_message_remove_from_channel_and_dm(clear_database, user1, channel1, dm1, message1):
     # Testing if a message in both a channel and DM is successfully removed
     new_channel2 = channels_create_v1(user1, 'Channel2', True)
@@ -102,5 +102,5 @@ def test_message_remove_from_channel_and_dm(clear_database, user1, channel1, dm1
     message_remove_v1(user1, share_msg['shared_message_id'])
     assert channel_messages_v1(user1, new_channel2['channel_id'], 0) == {'messages': [], 'start': 0, 'end': -1}
     assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
-        
+'''        
 
