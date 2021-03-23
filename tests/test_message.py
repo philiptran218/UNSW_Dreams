@@ -6,6 +6,8 @@ from src.other import clear_v1
 from src.channel import channel_messages_v1, channel_join_v1
 from src.message import message_send_v1, message_remove_v1, message_edit_v1
 
+INVALID_ID = -1
+
 @pytest.fixture
 def user1():
     new_user1 = auth_register_v1('johnsmith@gmail.com', 'password', 'John', 'Smith')
@@ -22,6 +24,11 @@ def channel1(user1):
     return new_channel1['channel_id']
 
 @pytest.fixture
+def dm1(user1):
+    new_dm1 = dm_create_v1(user1, [user1])
+    return new_dm1['dm_id']
+
+@pytest.fixture
 def clear_database():
     clear_v1()
     
@@ -29,13 +36,34 @@ def clear_database():
 def message1(user1, channel1):
     msgid = message_send_v1(user1, channel1, 'Hello World')
     return msgid['message_id']
+    
+@pytest.fixture
+def message2(user1, dm1):
+    msgid = message_senddm_v1(user1, dm1, 'Hello There')
+    return msgid['message_id']
+
+################################################################################
+# message_edit_v1 tests                                                        #
+################################################################################
+
+def test_message_edit_uid_does_not_exist(clear_database, user1, channel1, message1):
+    # Raises AccessError since u_id INVALID_ID does not exist
+    with pytest.raises(AccessError):
+        message_edit_v1(INVALID_ID, message1, 'Another message edit')
+        
+def test_message_edit_invalid_messageid(clear_database, user1, channel1):
+    # Raises InputError since message_id INVALID_ID does not exist
+    with pytest.raises(InputError):
+        message_edit_v1(user1, INVALID_ID, 'An even better message')
 
 def test_message_edit_removed_message(clear_database, user1, channel1, message1):
+    # Raises InputError since message1 has been removed
     message_remove_v1(user1, message1)
     with pytest.raises(InputError):
         message_edit_v1(user1, message1, 'Modifying this message')
 
 def test_message_edit_invalid_length(clear_database, user1, channel1, message1):
+    # Raises InputError since edited message > 1000 characters
     i = 0
     message = ''
     while i < 500:
@@ -44,28 +72,20 @@ def test_message_edit_invalid_length(clear_database, user1, channel1, message1):
     with pytest.raises(InputError):
         message_edit_v1(user1, message1, message)
 
-def test_message_edit_accesserror(clear_database, user1, channel1, user2, message1):
+def test_message_edit_accesserror_channel(clear_database, user1, channel1, user2, message1):
+    # Raises AccessError since user2 is not an owner of channel1, is not an 
+    # owner of Dreams and is not the author of message1
     with pytest.raises(AccessError):
         message_edit_v1(user2, message1, 'A new message')
         
-def test_message_edit_accesserror2(clear_database, user1, channel1, user2, message1):
-    # This test is similar to previous test, but user2 is now a member of 
-    # channel1
-    channel_join_v1(user2, channel1)
+def test_message_edit_accesserror_dm(clear_database, user1, user2, dm1, message2):
+    # Raises AccessError since user2 is not an owner of dm1, is not an 
+    # owner of Dreams and is not the author of message2
     with pytest.raises(AccessError):
-        message_edit_v1(user2, message1, 'A new message')
-        
-# Assuming InputError raised when message_id does not exist (will report a 
-# different error message compared to editing a deleted message_id)
-def test_message_edit_invalid_messageid(clear_database, user1, channel1):
-    with pytest.raises(InputError):
-        message_edit_v1(user1, 1000, 'An even better message')
-        
-def test_message_edit_uid_does_not_exist(clear_database, user1, channel1, message1):
-    with pytest.raises(AccessError):
-        message_edit_v1(1000, message1, 'Another message edit')
-        
+        message_edit_v1(user2, message2, 'A new message')
+                    
 def test_message_edit_empty_message(clear_database, user1, channel1, message1):
+    # Tests if an empty edited message will remove the current message
     channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
     assert channel_messages[0]['message'] == 'Hello World'
     assert channel_messages[0]['u_id'] == user1
@@ -75,6 +95,7 @@ def test_message_edit_empty_message(clear_database, user1, channel1, message1):
     assert channel_messages == {'messages': [], 'start': 0, 'end': -1}
 
 def test_message_edit_valid_single(clear_database, user1, channel1, message1):
+    # Tests if message1 is successfully edited 
     channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
     assert channel_messages[0]['message'] == 'Hello World'
     assert channel_messages[0]['u_id'] == user1
@@ -83,7 +104,4 @@ def test_message_edit_valid_single(clear_database, user1, channel1, message1):
     channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
     assert channel_messages[0]['message'] == 'This message has been edited'
     assert channel_messages[0]['u_id'] == user1
-    
-# Also add more tests for complex cases and dealing with dms
-# Add a case where message is edited by different author (update u_id)
 
