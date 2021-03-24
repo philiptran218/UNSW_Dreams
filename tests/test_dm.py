@@ -28,8 +28,27 @@ def test_user3_token():
     user_info = auth_register_v1("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info['token']
 
+################################################################################
+# dm_remove_v1 tests                                                     #
+################################################################################
+
+def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
+    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+    dmsdict =  dm_list_v1(test_user1_token)
+    assert(dm_remove_v1(test_user1_token,dm_id) ==( bool (not dmsdict['dms'])) )
 
 
+def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,):
+    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+    with pytest.raises(AccessError):
+        dm_remove_v1(test_user1_token,INVALID_DM_ID)
+
+
+
+def test_dm_remove_v1_unoriginal(clear_data,test_user1_token,test_user2_u_id,test_user3_token):
+    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+    with pytest.raises(AccessError):
+        dm_remove_v1(test_user3_token,dm_id)
 
 @pytest.fixture
 def test_create_dm(test_user1_token,test_user2_u_id):
@@ -37,9 +56,8 @@ def test_create_dm(test_user1_token,test_user2_u_id):
     return dm['dm_id']
 
 ################################################################################
-# dm_messages_v1 tests                                                     #
+# dm_messages_v1 tests                                                         #
 ################################################################################
-
 
 #testing when dm_id is invalid -> InputError is raised
 def test_dm_messages_invalid_dm_id(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
