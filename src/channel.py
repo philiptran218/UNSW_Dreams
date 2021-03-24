@@ -4,7 +4,6 @@ from src.error import InputError, AccessError
 import src.helper as helper
 from src.database import data
 
-DREAMS_OWNER = 1
 OWNER = 1
 MEMBER = 2
 
@@ -13,12 +12,6 @@ def is_valid_channelid(channel_id):
         if channel['channel_id'] == channel_id:
             return True       
     return False     
-
-def is_dreams_owner(auth_user_id):
-    for user in data['users']:
-        if user['u_id'] == auth_user_id and user['perm_id'] == DREAMS_OWNER
-            return True
-    return False
 
 def is_channel_public(channel_id):
     for channel in data['channels']:
@@ -29,6 +22,18 @@ def is_channel_public(channel_id):
         return True
     else:
         return False
+
+def is_already_channel_owner(u_id, channel_id):
+    selected_channel = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            break
+            
+    for members in selected_channel['owner_members']:
+        if members['u_id'] == u_id:
+            return True
+    return False
 
 def is_already_in_channel(u_id, channel_id):
     selected_channel = None
@@ -70,6 +75,16 @@ def channel_owners(channel_id):
             list_of_owners = channel['owner_members']
     return list_of_owners
 
+def find_permissions(u_id):
+    for user in data['users']:
+        if user['u_id'] == u_id:
+            break
+            
+    if user['perm_id'] == 1:
+        return 1
+    else:
+        return 2
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
     Function:
@@ -93,7 +108,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     ''' 
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if is_dreams_owner(auth_user_id):
+    if find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can invite the u_id.
         pass
     elif not is_already_in_channel(auth_user_id, channel_id):
@@ -106,6 +121,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     else:
         # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
+    if find_permissions(u_id) == OWNER:
+        helper.add_owner_to_channel(auth_user_id, channel_id)
     return {}
 
 def channel_details_v1(auth_user_id, channel_id):
@@ -129,7 +146,7 @@ def channel_details_v1(auth_user_id, channel_id):
     '''
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if is_dreams_owner(auth_user_id):
+    if find_permissions(auth_user_id) == OWNER:
      # If auth_user_id is the global owner, they can access channel details.
         pass
     elif not is_already_in_channel(auth_user_id, channel_id):
@@ -233,16 +250,6 @@ def channel_leave_v1(auth_user_id, channel_id):
     return {
     }
 
-def find_permissions(u_id):
-    for user in data['users']:
-        if user['u_id'] == u_id:
-            break
-            
-    if user['perm_id'] == 1:
-        return 1
-    else:
-        return 2
-
 def channel_join_v1(auth_user_id, channel_id):
     '''
     Function:
@@ -284,6 +291,39 @@ def channel_join_v1(auth_user_id, channel_id):
     return {}
     
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
+    '''
+    Function:
+        Given a Channel with ID channel_id that the authorised user is an owner 
+        of, make user with id "u_id" an owner of the channel.
+
+    Arguments:
+        auth_user_id (int) - this is the ID of a registered user
+        channel_id (int) - this is the ID of a created channel
+        u_id (int) - this is the ID of the member of the channel becoming an owner.
+
+    Exceptions:
+        InputError when any of:
+            - Channel ID is not a valid channel.
+            - User with user id u_id is already an owner of the channel
+        AccessError when any of:
+            - Authorised user is not an owner of the **Dreams**, or an owner of 
+              this channel
+
+    Return Type:
+        {}
+    '''
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel")
+    if is_already_channel_owner(u_id, channel_id):
+        raise InputError(description="User is already an owner of the channel")
+    if find_permissions(auth_user_id) == OWNER:
+        # If auth_user_id is the global owner, they can add owner.
+        pass
+    elif not is_already_channel_owner(auth_user_id, channel_id):
+        raise AccessError(description="User is not authorised")
+    if not is_already_in_channel(u_id):
+        raise AccessError(description="Please enter a valid user")
+    helper.add_owner_to_channel(u_id, channel_id)
     return {
     }
 
