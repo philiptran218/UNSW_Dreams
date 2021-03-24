@@ -9,7 +9,7 @@ import pytest
 INVALID_USER = -1
 
 ################################################################################
-# channel_list_v1 and channel_listall_v1 tests                                 #
+# channels_list_v1 and channels_listall_v1 tests                               #
 ################################################################################
 
 # Fixture that clears and resets all the internal data of the application
