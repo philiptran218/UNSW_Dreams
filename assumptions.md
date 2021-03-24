@@ -11,3 +11,4 @@ We are assuming:
 - For channel_messages_v1, if the start value is equal to the number of messages in the channel, 
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
+- removing a dm will not delete it from the database
