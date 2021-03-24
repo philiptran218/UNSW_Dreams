@@ -5,10 +5,12 @@ testing in this iteration.
 
 We are assuming:
 - Users can create a channel only after they log in.
-- One user can create multiple channels, and they're members and owners of that channel.
+- ### One user can create multiple channels, and they're members and owners of that channel.
 - If a user is already in the channel, channel_invite and channel_join will not add the user
   again into the channel.
 - For channel_messages_v1, if the start value is equal to the number of messages in the channel, 
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
-- removing a dm will not delete it from the database
+- ### Removing a dm will not delete it from the database
+- Empty channels (When the last member leaves) will not be deleted.
+- When owners of dreams are invited to or join a channel, they will automatically be made an owner of the channel.
