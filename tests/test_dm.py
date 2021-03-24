@@ -183,6 +183,16 @@ def test_dm_leave_user_not_a_member(clear_data,test_user1_token,test_user2_u_id,
     with pytest.raises(AccessError):
         dm_leave_v1(test_user3_token,test_create_dm)
 
-
+#testing if a  member of the dm left it and after calling dm_leave.
 def test_dm_leave(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    dm_leave_v1(test_user1_token,test_create_dm)
+    member_left = True
+    dlist = dm_list_v1(test_user1_token)
+    for dm in dlist:
+        for memeber in dm['dm_members']:
+            if memeber['u_id'] == detoken(test_user1_token):
+                member_left = False
+    assert(member_left)
+                
+
     
