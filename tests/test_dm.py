@@ -1,7 +1,7 @@
 import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v1
-from src.dm import dm_remove_v1 , dm_create_v1, dm_list_v1, dm_messages_v1, dm_invite_v1, dm_details_v1
+from src.dm import dm_remove_v1 , dm_create_v1, dm_list_v1, dm_messages_v1, dm_invite_v1, dm_details_v1, dm_leave_v1
 from src.error import AccessError, InputError 
 from src.message import message_senddm_v1
 INVALID_DM_ID = -1
@@ -82,23 +82,20 @@ def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_
 # dm_remove_v1 tests                                                           #
 ################################################################################
 
-def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
-    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
     dmsdict =  dm_list_v1(test_user1_token)
-    assert(dm_remove_v1(test_user1_token,dm_id) ==( bool (not dmsdict['dms'])) )
+    assert(dm_remove_v1(test_user1_token,test_create_dm) ==( bool (not dmsdict['dms'])) )
 
-
-def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,):
-    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+#testing when dm_id is invalid -> InputError is raised
+def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,test_create_dm):
     with pytest.raises(InputError):
         dm_remove_v1(test_user1_token,INVALID_DM_ID)
 
 
-
-def test_dm_remove_v1_unoriginal(clear_data,test_user1_token,test_user2_u_id,test_user3_token):
-    dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
+#testing when user trying to remove is not the original dm creator
+def test_dm_remove_v1_unoriginal(clear_data,test_user1_token,test_user2_u_id,test_user3_token,test_create_dm):
     with pytest.raises(AccessError):
-        dm_remove_v1(test_user3_token,dm_id)
+        dm_remove_v1(test_user3_token,test_create_dm)
 
 
 
@@ -170,3 +167,22 @@ def test_dm_messages_multiple(clear_data,test_create_dm,test_user1_token,test_us
         j += 1 
     assert message_detail['start'] == 2
     assert message_detail['end'] == 52
+
+
+################################################################################
+# dm_leave_v1 tests                                                           #
+################################################################################
+
+#testing when dm_id is invalid -> InputError is raised
+def test_dm_leave_invalid_dm_id(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    with pytest.raises(InputError):
+        dm_leave_v1(test_user1_token,INVALID_DM_ID)
+
+#testing when user who is calling the fucntion is not part of the dm -> AccessError is raised
+def test_dm_leave_user_not_a_member(clear_data,test_user1_token,test_user2_u_id,test_user3_token,test_create_dm):
+    with pytest.raises(AccessError):
+        dm_leave_v1(test_user3_token,test_create_dm)
+
+
+def test_dm_leave(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    
