@@ -21,7 +21,7 @@ def test_user1_token():
 @pytest.fixture
 def test_user1_u_id():
     user_info = auth_register_v2("validemail@g.com", "validpass", "validname","validname")
-    return user_info["u_id"]
+    return user_info["auth_u_id"]
 
 @pytest.fixture
 def test_user2_token():
@@ -31,7 +31,7 @@ def test_user2_token():
 @pytest.fixture
 def test_user2_u_id():
     user_info = auth_register_v2("dan@gmail.com", "password", "dan", "Smith")
-    return user_info["u_id"]
+    return user_info["auth_u_id"]
 
 #Fixture that create a dm to test functions. 
 @pytest.fixture
