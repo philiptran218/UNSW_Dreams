@@ -3,8 +3,12 @@ from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
-from src.channel import channel_messages_v1
+from src.channel import channel_messages_v1, channel_join_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_senddm_v1
+from src.dm import dm_create_v1, dm_messages_v1
+from src.database import data
+
+INVALID_ID = 0
 
 @pytest.fixture
 def user1():
@@ -22,9 +26,19 @@ def channel1(user1):
     return new_channel1['channel_id']
     
 @pytest.fixture
+def channel2(user2):
+    new_channel2 = channels_create_v1(user2, 'Channel2', True)
+    return new_channel2['channel_id']
+
+@pytest.fixture
 def dm1(user1):
     new_dm1 = dm_create_v1(user1, [user1])
     return new_dm1['dm_id']
+    
+@pytest.fixture
+def dm2(user2):
+    new_dm2 = dm_create_v1(user2, [user2])
+    return new_dm2['dm_id']
 
 @pytest.fixture
 def message1(user1, channel1):
@@ -39,8 +53,6 @@ def message2(user1, dm1):
 @pytest.fixture
 def clear_database():
     clear_v1()
-
-INVALID_ID = -1
 
 ################################################################################
 # message_send_v1 tests                                                        #
@@ -150,14 +162,16 @@ def test_message_edit_accesserror_dm(clear_database, user1, user2, dm1, message2
     with pytest.raises(AccessError):
         message_edit_v1(user2, message2, 'A new message')
                     
-def test_message_edit_empty_message(clear_database, user1, channel1, message1):
-    # Tests if an empty edited message will remove the current message
-    channel_messages = channel_messages_v1(user1, channel1, 0)['messages']
-    assert channel_messages[0]['message'] == 'Hello World'
-    assert channel_messages[0]['u_id'] == user1
+def test_message_edit_empty_message(clear_database, user1, user2, channel1, channel2, message1):
+    # Tests if an empty edited message will remove the current message (being
+    # removed by the owner of channel2)
+    msgid = message_send_v1(user2, channel2, 'Hi Everyone')
+    channel_messages = channel_messages_v1(user2, channel2, 0)['messages']
+    assert channel_messages[0]['message'] == 'Hi Everyone'
+    assert channel_messages[0]['u_id'] == user2
     
-    message_edit_v1(user1, message1, '')
-    channel_messages = channel_messages_v1(user1, channel1, 0)
+    message_edit_v1(user2, msgid['message_id'], '')
+    channel_messages = channel_messages_v1(user2, channel2, 0)
     assert channel_messages == {'messages': [], 'start': 0, 'end': -1}
 
 def test_message_edit_valid_single(clear_database, user1, channel1, message1):
@@ -211,27 +225,20 @@ def test_message_remove_accesserror3(clear_database, user1, user2, dm1, message2
     with pytest.raises(AccessError):
         message_remove_v1(user2, message2)
             
-def test_message_remove_from_dm(clear_database, user1, channel1, message1):
-    # Checking if message1 has been successfully removed from channel1
-    message_remove_v1(user1, message1)
-    assert channel_messages_v1(user1, channel1, 0) == {'messages': [], 'start': 0, 'end': -1}
+def test_message_remove_from_channel(clear_database, user1, user2, channel1):
+    # Checking if msgid has been successfully removed from channel1 (being
+    # removed by the message author)
+    channel_join_v1(user2, channel1)
+    msgid = message_send_v1(user2, channel1, 'This is a test')
+    message_remove_v1(user2, msgid['message_id'])
+    assert channel_messages_v1(user2, channel1, 0) == {'messages': [], 'start': 0, 'end': -1}
 
-def test_message_remove_from_dm(clear_database, user1, dm1, message2):
-    # Checking if message2 has been successfully removed from dm1
-    message_remove_v1(user1, message2)
-    assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
-'''
-def test_message_remove_from_channel_and_dm(clear_database, user1, channel1, dm1, message1):
-    # Testing if a message in both a channel and DM is successfully removed
-    new_channel2 = channels_create_v1(user1, 'Channel2', True)
-    share_msg = message_share_v1(user1, message1, '', new_channel2['channel_id'], dm1)
-    assert len(channel_messages_v1(user1, new_channel2['channel_id'], 0)['messages']) == 1
-    assert len(dm_messages_v1(user1, dm1, 0)['messages']) == 1
-    
-    message_remove_v1(user1, share_msg['shared_message_id'])
-    assert channel_messages_v1(user1, new_channel2['channel_id'], 0) == {'messages': [], 'start': 0, 'end': -1}
-    assert dm_messages_v1(user1, dm1, 0) == {'messages': [], 'start': 0, 'end': -1}
-'''
+def test_message_remove_from_dm(clear_database, user1, user2, dm1, dm2):
+    # Checking if msgid has been successfully removed from dm2 (being removed
+    # by the owner of dm2)
+    msgid = message_senddm_v1(user2, dm2, 'Sending to DM')
+    message_remove_v1(user2, msgid['message_id'])
+    assert dm_messages_v1(user2, dm2, 0) == {'messages': [], 'start': 0, 'end': -1}
 
 ################################################################################
 # message_share_v1 tests                                                       #
@@ -247,10 +254,10 @@ def test_message_share_invalid_channel(clear_database, user1, user2, channel1, m
     with pytest.raises(InputError):
         message_share_v1(user2, message1, '', INVALID_ID, -1)
         
-def test_message_share_invalid_dm(clear_database, user1, user2, channel1, message1):
+def test_message_share_invalid_dm(clear_database, user1, user2, dm1, message2):
     # Raises InputError since dm_id INVALID_ID does not exist
     with pytest.raises(InputError):
-        message_share_v1(user2, message1, '', -1, INVALID_ID)
+        message_share_v1(user2, message2, '', -1, INVALID_ID)
        
 def test_message_share_invalid_messageid(clear_database, user1, user2, channel1, channel2, message1):
     # Raises InputError since og_message_id INVALID_ID does not exist
@@ -259,7 +266,7 @@ def test_message_share_invalid_messageid(clear_database, user1, user2, channel1,
         
 def test_message_share_removed_message(clear_database, user1, user2, channel1, channel2, message1):
     # Raises InputError since message1 has been deleted
-    message_remove(user1, message1)
+    message_remove_v1(user1, message1)
     with pytest.raises(InputError):
         message_share_v1(user2, message1, '', channel2, -1)
 
@@ -268,10 +275,10 @@ def test_message_share_channel_accesserror(clear_database, user1, user2, channel
     with pytest.raises(AccessError):
         message_share_v1(user1, message1, '', channel2, -1)
      
-def test_message_share_dm_accesserror(clear_database, user1, user2, channel1, dm2, message1):
+def test_message_share_dm_accesserror(clear_database, user1, user2, channel1, dm1, message1):
     # Raises AccessError since user1 is not in dm2
     with pytest.raises(AccessError):
-        message_share_v1(user1, message1, '', -1, dm2)
+        message_share_v1(user2, message1, '', -1, dm1)
     
 def test_message_share_invalid_length(clear_database, user1, user2, channel1, channel2, message1):
     # Raises InputError since og_message + message > 1000 characters
