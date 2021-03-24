@@ -8,38 +8,49 @@ INVALID_DM_ID = -1
 INVALID_TOKEN = -1
 INVALID_U_ID = -1
 
+
+
+################################################################################
+# pytest_fixtures                                                              #
+################################################################################
+
 # Fixture that clears and resets all the internal data of the application
 @pytest.fixture
 def clear_data():
     clear_v1()
 
+# Fixture that creates a user and returns their token
 @pytest.fixture
 def test_user1_token():
     user_info = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
     return user_info["token"]
 
+#fixture that creates a user and returns their auth_user_id
 @pytest.fixture
 def test_user2_u_id():
     user_info = auth_register_v1("dan@gmail.com", "password", "dan", "Smith")
     return user_info['auth_user_id']
 
+# Fixture that creates a user and returns their token
 @pytest.fixture
 def test_user3_token():
     user_info = auth_register_v1("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info['token']
 
+#fixture that creates a user and returns their auth_user_id
 @pytest.fixture
 def test_user4_u_id():
     user_info = auth_register_v1("danny@gmail.com", "password123", "danny", "james")
     return user_info['auth_user_id']
 
+#fixture that creates a dm by user1
 @pytest.fixture
 def test_create_dm(test_user1_token,test_user2_u_id):
     dm = dm_create_v1((test_user1_token,test_user2_u_id))
     return dm['dm_id']
 
 ################################################################################
-# dm_invite_v1 tests                                                     #
+# dm_invite_v1 tests                                                           #
 ################################################################################
 
 #testing when dm_id is invalid -> Input Error is raised
@@ -67,29 +78,8 @@ def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_
     assert(member_check)
 
 
-# Fixture that clears and resets all the internal data of the application
-@pytest.fixture
-def clear_data():
-    clear_v1()
-
-@pytest.fixture
-def test_user1_token():
-    user_info = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
-    return user_info["token"]
-
-
-@pytest.fixture
-def test_user2_u_id():
-    user_info = auth_register_v1("dan@gmail.com", "password", "dan", "Smith")
-    return user_info['auth_user_id']
-
-@pytest.fixture
-def test_user3_token():
-    user_info = auth_register_v1("danimatt@gmail.com", "valpassword", "danny", "Smithy")
-    return user_info['token']
-
 ################################################################################
-# dm_remove_v1 tests                                                     #
+# dm_remove_v1 tests                                                           #
 ################################################################################
 
 def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
@@ -100,7 +90,7 @@ def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id):
 
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,):
     dm_id = dm_create_v1(test_user1_token,test_user2_u_id)['dm_id']
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         dm_remove_v1(test_user1_token,INVALID_DM_ID)
 
 
@@ -110,10 +100,7 @@ def test_dm_remove_v1_unoriginal(clear_data,test_user1_token,test_user2_u_id,tes
     with pytest.raises(AccessError):
         dm_remove_v1(test_user3_token,dm_id)
 
-@pytest.fixture
-def test_create_dm(test_user1_token,test_user2_u_id):
-    dm = dm_create_v1((test_user1_token,test_user2_u_id))
-    return dm['dm_id']
+
 
 ################################################################################
 # dm_messages_v1 tests                                                         #
@@ -147,9 +134,9 @@ def test_dm_messages_start_equal(clear_data,test_create_dm,test_user1_token,test
 
 
 #testing when one message is sent in the dm
-def test_channel_messages_valid_single(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
+def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
     user_id = detoken(test_user1_token,)
-    # Tests for a single message in channel
+    # Tests for a single message in dm
     message_senddm_v1(test_user1_token,test_create_dm,'A new message')
     message_detail = dm_messages_v1(test_user1_token, test_create_dm, 0)
     
@@ -160,10 +147,11 @@ def test_channel_messages_valid_single(clear_data,test_create_dm,test_user1_toke
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
 
-def test_channel_messages_multiple(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
+#testing when more than one message is sent in the dm
+def test_dm_messages_multiple(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
     user_id = detoken(test_user1_token)
     # Testing for multiple messages, and non-zero start value 
-    # Sends 55 messages to channel, the messages are just numbers as strings
+    # Sends 55 messages to dm, the messages are just numbers as strings
     i = 1
     while i <= 55:
         message_senddm_v1(test_user1_token, test_create_dm, f"{i}")
