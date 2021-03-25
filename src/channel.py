@@ -142,7 +142,7 @@ def channel_details_v1(auth_user_id, channel_id):
             - Authorised user is not a member of channel with channel_id.
 
     Return Type:
-        { name, owner_members, all_members }
+        { name, is_public, owner_members, all_members }
     '''
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
