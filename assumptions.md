@@ -14,6 +14,7 @@ We are assuming:
 - In testing for admin_userpermissions_change, there is only one created test user. Because of this,
   their id is the only valid id that can be tested. This makes testing easier as it reduced the amount
   of fixtures that need to be created. 
-- When admin_user_remove is called. The profile is not deleted from the databse. It is instead renamed 
-  to "removed_user." The email and handle_str remain as they need to be accessible when user_profile is 
-  called.
+- When admin_user_remove is called. The profile is not actually deleted from the database. It is instead 
+  renamed to "removed user." The email and handle_str remain as they need to be accessible when user_profile 
+  is called. This funciton will also replace any messages sent by the deleted user to "removed user." Again
+  it will not actually delete the messages, as per the specification.

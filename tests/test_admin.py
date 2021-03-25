@@ -61,28 +61,36 @@ def expected_output_admin_user_remove():
     }
 
 ################################################################################
-#  admin_user_remove_v1 and admin_userpermission_change_v1 testing             #
+#  admin_user_remove_v1 testing                                                #
 ################################################################################
 
-def test_admin_user_remove_v1_valid(clear_data, test_dm, test_user1_token, test_user2_u_id):
+def test_admin_user_remove_v1_valid(clear_data, test_user1_token, test_user2_u_id):
     admin_user_remove_v1(test_user1_token, test_user2_u_id)
     # admin functions have no output. In order to test if the function has worked. Other functions
     # need to be used in the assert. In this case, user_profile_v1 is used.
     assert(user_profile_v1(test_user1_token, test_user2_u_id) == expected_output_admin_user_remove())
 
-def test_admin_user_remove_v1_invalid_u_id(clear_data, test_dm, test_user1_token):
+def test_admin_user_remove_v1_invalid_u_id(clear_data, test_user1_token):
     with pytest.raises(InputError):
         admin_user_remove_v1(test_user1_token, INVALID_U_ID)
 
-def test_admin_user_remove_v1_invalid_only_owner(clear_data, test_dm, test_user1_token, test_user1_u_id):
+def test_admin_user_remove_v1_invalid_only_owner(clear_data, test_user1_token, test_user1_u_id):
     with pytest.raises(InputError):
         admin_user_remove_v1(test_user1_token, test_user1_u_id)
 
-def test_admin_user_remove_v1_invalid_not_owner(clear_data, test_dm, test_user2_token, test_user1_u_id):
+def test_admin_user_remove_v1_invalid_not_owner(clear_data, test_user2_token, test_user1_u_id):
     with pytest.raises(AccessError):
         admin_user_remove_v1(test_user2_token, test_user1_u_id)
 
-def test_admin_userpermission_change_v1_valid(clear_data, test_dm, test_user1_token, test_user2_token, test_user2_u_id, test_channel):
+def test_admin_user_remove_v1_invalid_token(clear_data, test_user1_u_id):
+    with pytest.raises(AccessError):
+        admin_user_remove_v1(INVALID_TOKEN, test_user1_u_id)
+
+################################################################################
+#  test_admin_userpermission_change_v1 testing                                 #
+################################################################################      
+
+def test_admin_userpermission_change_v1_valid(clear_data, test_user1_token, test_user2_token, test_user2_u_id, test_channel):
     admin_userpermission_change_v1(test_user1_token, test_user2_u_id, OWNER)
     
     # admin functions have no output. In order to test if the function has worked. Other functions
@@ -94,14 +102,18 @@ def test_admin_userpermission_change_v1_valid(clear_data, test_dm, test_user1_to
     channels = channel_details_v2(test_user2_token ,test_channel)
     assert(channels['all_members'][1]['u_id'] == test_user2_u_id)
 
-def test_admin_userpermission_change_v1_invalid_u_id(clear_data, test_dm, test_user1_token):
+def test_admin_userpermission_change_v1_invalid_u_id(clear_data, test_user1_token):
     with pytest.raises(InputError):
         admin_userpermission_change_v1(test_user1_token, INVALID_U_ID, OWNER)
 
-def test_admin_userpermission_change_v1_invalid_perm_id(clear_data, test_dm, test_user1_token, test_user1_u_id):
+def test_admin_userpermission_change_v1_invalid_perm_id(clear_data, test_user1_token, test_user1_u_id):
     with pytest.raises(InputError):
         admin_userpermission_change_v1(test_user1_token, test_user2_u_id, INVALID_PERMISSION_ID)
 
-def test_admin_userpermission_change_v1_invalid_not_owner(clear_data, test_dm, test_user2_token, test_user1_u_id):
+def test_admin_userpermission_change_v1_invalid_not_owner(clear_data, test_user2_token, test_user1_u_id):
     with pytest.raises(AccessError):
         admin_userpermission_change_v1(test_user1_token, test_user2_u_id, MEMBER)
+
+def test_admin_userpermission_change_v1_invalid_token(clear_data, test_user1_u_id):
+    with pytest.raises(AccessError):
+        admin_userpermission_change_v1(INVALID_TOKEN, test_user2_u_id, OWNER)
