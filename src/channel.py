@@ -30,8 +30,8 @@ def is_already_channel_owner(u_id, channel_id):
             selected_channel = channel
             break
             
-    for members in selected_channel['owner_members']:
-        if members['u_id'] == u_id:
+    for member in selected_channel['owner_members']:
+        if member['u_id'] == u_id:
             return True
     return False
 
@@ -42,10 +42,35 @@ def is_already_in_channel(u_id, channel_id):
             selected_channel = channel
             break
             
-    for members in selected_channel['all_members']:
-        if members['u_id'] == u_id:
+    for member in selected_channel['all_members']:
+        if member['u_id'] == u_id:
             return True
     return False
+
+def is_only_owner_in_channel(u_id, channel_id):
+    selected_channel = None
+    owner_found = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            break
+            
+    for member in selected_channel['owner_members']:
+        if member['u_id'] == u_id:
+            owner_found = True
+    if owner_found == True and len(selected_channel['owner_members']) == 1:
+        return True
+    return False
+
+def remove_channel_owner(u_id, channel_id):
+    selected_channel = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            break
+    for member in selected_channel['owner_members']:
+        if member['u_id'] == u_id:
+            selected_channel['owner_members'].remove(member)
 
 def channel_name(channel_id):
     name = None
@@ -321,12 +346,50 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
         pass
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise AccessError(description="User is not authorised")
-    if not is_already_in_channel(u_id):
+    if not is_already_in_channel(u_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     helper.add_owner_to_channel(u_id, channel_id)
     return {
     }
 
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+    '''
+    Function:
+        Given a Channel with ID channel_id that the authorised user is an owner 
+        of, remove owner status of user with id "u_id" in the channel.
+
+    Arguments:
+        auth_user_id (int) - this is the ID of a registered user
+        channel_id (int) - this is the ID of a created channel
+        u_id (int) - this is the ID of the member of the channel becoming an owner.
+
+    Exceptions:
+        InputError when any of:
+            - Channel ID is not a valid channel.
+            - User with user id u_id is not an owner of the channel
+            - User with user id auth_user_id is the only owner in the channel
+        AccessError when any of:
+            - Authorised user is not an owner of the **Dreams**, or an owner of 
+              this channel
+
+    Return Type:
+        {}
+    '''
+    if not helper.is_valid_uid(auth_user_id):
+        raise AccessError(description="Please enter a valid user")  
+    if not helper.is_valid_uid(u_id):
+        raise AccessError(description="Please enter a valid user") 
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel")
+    if not is_already_channel_owner(u_id, channel_id):
+        raise InputError(description="User is not an owner of the channel")
+    if is_only_owner_in_channel(auth_user_id, channel_id):
+        raise InputError(description="User is currently the only owner")
+    if find_permissions(auth_user_id) == OWNER:
+        # If auth_user_id is the global owner, they can add owner.
+        pass
+    elif not is_already_channel_owner(auth_user_id, channel_id):
+        raise InputError(description="User is not authorised")
+    remove_channel_owner(u_id, channel_id)
     return {
     }
