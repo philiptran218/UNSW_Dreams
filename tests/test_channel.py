@@ -505,7 +505,7 @@ def test_channel_leave_invalid_channel(clear_data, user_1, public_channel_1):
     with pytest.raises(InputError):
         channel_leave_v1(user_1, INVALID_VALUE)
 
-def test_channel_leave_invalid_auth_id(clear_data, user_1):
+def test_channel_leave_invalid_auth_id(clear_data, user_1, public_channel_1):
     with pytest.raises(AccessError):
         channel_leave_v1(INVALID_VALUE, public_channel_1)
 
@@ -539,11 +539,10 @@ def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1
 
 def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
     channel_leave_v1(user_1, public_channel_1)
-    channel_found = False
-    list_of_channels = channels_listall_v1(user_1)
-    for channel in list_of_channels:
-        if channel['channel_id'] == public_channel_1:
-            channel_found = True
-    assert channel_found = False
+    info = channel_details_v1(user_1, public_channel_1)
+    assert info['name'] = "John's Channel"
+    assert info['is_public'] == True
+    assert info['owner_members'] == []
+    assert info['all_members'] == []
+
 """
-    
