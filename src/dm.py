@@ -64,6 +64,99 @@ def list_of_messages(dm_id, start, message_limit):
    
     return messages
 
+# Helper funciton to get the name of the dm.
+def dm_name_generator():
+    pass
+
+def dm_details(token, dm_id):
+    '''
+    Function:
+        Displays basic information about the dm.
+
+    Arguments:
+        token (str) - token of a registered user during their session
+        dm_id (int) - this is the ID of the dm that the user is in
+
+    Exceptions:
+        InputError  - dm_id does not refer to a existing / valid dm.
+        
+        AccessError - when the user who calls the fucntion is not a valid user.
+                    - the user who calls the fucntion is not a member of the dm
+
+    Return Type:
+        A dictionary is returned with the name and list of members inside dm.
+    ''' 
+    pass
+
+def dm_list(token):
+    '''
+    Function:
+       returns a list of DM's the user is a part of. 
+
+    Arguments:
+        token (str) - token of a registered user during their session
+
+    Exceptions:     
+        AccessError - the user who calls the fucntion is not a valid user.
+
+    Return Type:
+        This function returns the dms data type; a dictionary with dm_id and dm_name.
+    ''' 
+    pass
+
+def dm_create(token, u_id):
+    '''
+    Function:
+        creates a dm. Geenrates name based on handle strings of members.
+
+    Arguments:
+        token (str) - token of a registered user during their session
+        u_id (list) - this is the ID of the user the dm is directed to. 
+
+    Exceptions:
+        InputError  - u_id does not refer to a existing / valid.
+
+    Return Type:
+        A dictionary is returned with the name and list of members inside dm.
+    ''' 
+    token_u_id = detoken(token)
+
+    for id in [u_id]:
+        if not is_valid_uid(u_id):
+            raise AccessError('user_id is invalid')
+    
+
+    dm_name = dm_name_generator()
+
+    dm_id = len(data['DM'])+1
+    new_dm = {
+        'channel_id': channel_id,
+        'name':name,
+        'all_members':[
+            {
+                'u_id':auth_user_id,
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
+            },
+        ],
+        'owner_members':[
+            {
+                'u_id':auth_user_id,
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
+            },
+        ],
+        'is_public': is_public,
+    }
+    data['channels'].append(new_chan)
+    return {
+        'channel_id': channel_id,
+    }
+
 
 def dm_invite_v1(token, dm_id, u_id):
     '''
