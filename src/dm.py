@@ -87,7 +87,24 @@ def dm_details(token, dm_id):
     Return Type:
         A dictionary is returned with the name and list of members inside dm.
     ''' 
-    pass
+    token_u_id = detoken(token)
+    dm_list = []
+    valid_dm_id = is_valid_dm_id(dm_id)
+
+    if valid_dm_id == True:
+        for dm in data["DM"]:
+            for member in dm["members"]:
+                if member["u_id"]== token_u_id:
+                    output = {
+                        "dm_name":dm["dm_name"]
+                        "dm_members": dm["dm_members"]
+                    }
+                    dm_list.append(output)
+                else:
+                    raise AccessError("Cannot access details as user is not in dm!")
+        return {'dm': dm_list}
+    else:
+        raise InputError("Please enter a valid dm id")
 
 def dm_list(token):
     '''
@@ -115,7 +132,7 @@ def dm_list(token):
                     "dm_name":dm["dm_name"]
                 }
                 dm_list.append(output)
-    return {'channels': dm_list}
+    return {'dm': dm_list}
 
 def dm_create(token, u_id):
     '''
