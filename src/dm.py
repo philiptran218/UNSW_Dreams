@@ -1,7 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
-from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid
+from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid 
 
 
 #helper fucntion that checks if given dm_id is valid
@@ -67,7 +67,19 @@ def list_of_messages(dm_id, start, message_limit):
 
 # Helper funciton to get the name of the dm.
 def dm_name_generator([u_id]):
-    pass
+    handles = []
+    dm_name = ''
+
+    for id in u_id:
+        for user in data['users']:
+            if user['u_id'] = id:
+                handles.append(user['handle_str']
+    
+    sorted_handles = sorted(handles)
+    for handle in sorted_handles:
+        dm_name = dm_name + handle + ", "
+
+    return dm_name
 
 def dm_details(token, dm_id):
     '''
@@ -105,7 +117,7 @@ def dm_list(token):
     ''' 
     pass
 
-def dm_create(token, u_id):
+def dm_create(token, [u_id]):
     '''
     Function:
         creates a dm. Geenrates name based on handle strings of members.
