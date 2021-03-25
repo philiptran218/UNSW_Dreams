@@ -12,4 +12,6 @@ We are assuming:
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
 - removing a dm will not delete it from the database.
--owner of a dm dont necessarily have to be a member of that dm.
+- Owner of a dm dont necessarily have to be a member of that dm.
+- Members of DM are stored in the order they are entered, not alphabetical order.
+- The name of the DM does not change when people are invited / removed / leave. 

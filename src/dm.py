@@ -1,6 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
+from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid
 
 
 #helper fucntion that checks if given dm_id is valid
@@ -65,7 +66,7 @@ def list_of_messages(dm_id, start, message_limit):
     return messages
 
 # Helper funciton to get the name of the dm.
-def dm_name_generator():
+def dm_name_generator([u_id]):
     pass
 
 def dm_details(token, dm_id):
@@ -124,37 +125,41 @@ def dm_create(token, u_id):
     for id in [u_id]:
         if not is_valid_uid(u_id):
             raise AccessError('user_id is invalid')
-    
 
-    dm_name = dm_name_generator()
+    #This section grabs the handle of the person and appends it to the inputted list of u_id's
+    #It assumes token works, as testing occurs after this point. Code places owners u_id first
+    #in the list. This makes it easier when creating the dm later in the function.
+
+    for member in data['users']:
+        if member['u_id'] == token_u_id:
+            [u_id].insert(0,token_u_id)
+   
+    dm_name = dm_name_generator([u_id])
 
     dm_id = len(data['DM'])+1
     new_dm = {
-        'channel_id': channel_id,
-        'name':name,
-        'all_members':[
-            {
-                'u_id':auth_user_id,
-                'name_first':get_first_name(auth_user_id),
-                'name_last' :get_last_name(auth_user_id),
-                'email': get_email(auth_user_id),
-                'handle_str': get_handle(auth_user_id),
-            },
-        ],
-        'owner_members':[
-            {
-                'u_id':auth_user_id,
-                'name_first':get_first_name(auth_user_id),
-                'name_last' :get_last_name(auth_user_id),
-                'email': get_email(auth_user_id),
-                'handle_str': get_handle(auth_user_id),
-            },
-        ],
-        'is_public': is_public,
+        'dm_id': dm_id,
+        'dm_owner': token_u_id,
+        'name':dm_name,
+        'dm_members':[],
     }
-    data['channels'].append(new_chan)
+
+    for id in [u_id]:
+        new_dm['dm_members'].append(
+            {
+                'u_id':id,
+                'name_first':get_first_name(id),
+                'name_last' :get_last_name(id),
+                'email': get_email(id),
+                'handle_str': get_handle(id),
+            }
+        )
+
+    data['DM'].append(new_dm)
+
     return {
-        'channel_id': channel_id,
+        'dm_id': dm_id,
+        'dm_name': dm_name
     }
 
 
