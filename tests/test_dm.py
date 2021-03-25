@@ -35,9 +35,14 @@ def test_user2_u_id():
 
 #Fixture that create a dm to test functions. 
 @pytest.fixture
-def test_dm(test_user1_token, test_user1_u_id):
+def test_dm_id(test_user1_token, test_user1_u_id):
     dm = dm_create_v1(test_user1_token, test_user1_u_id)
-    return dm["dm_id"], dm["dm_name"] 
+    return dm["dm_id"]
+
+@pytest.fixture
+def test_dm_name(test_user1_token, test_user1_u_id):
+    dm = dm_create_v1(test_user1_token, test_user1_u_id)
+    return dm["dm_name"]
 
 #Function that shows expected output for dm_details.
 def expected_output_details_v1():
@@ -65,7 +70,8 @@ def expected_output_list_v1():
         ]
     }
 
-#Function that shows expected output for dm_create.
+# Function that shows expected output for dm_create. Note it is different from the 
+# output for list, despite looking similar.
 def expected_output_create_v1():
     return {
         {
@@ -75,30 +81,42 @@ def expected_output_create_v1():
     }
 
 ################################################################################
-#  dm_details_v1, dm_list_v1 and dm_create_v1 testing                          #
+#  dm_details_v1 testing                                                       #
 ################################################################################
 
-def test_dm_details_v1_valid(clear_data, test_dm, test_user1_token, test_user1_u_id):
-    assert(dm_details_v1(test_user1_token, test_user1_u_id) == expected_output_details_v1())
+def test_dm_details_v1_valid(clear_data, test_dm_id, test_user1_token, test_user1_u_id):
+    assert(dm_details_v1(test_user1_token, test_dm_id) == expected_output_details_v1())
 
-def test_dm_details_v1_invalid_InputError(clear_data, test_dm, test_user1_token):
+def test_dm_details_v1_invalid_InputError(clear_data, test_dm_id, test_user1_token):
     with pytest.raises(InputError):
         dm_details_v1(test_user1_token, INVALID_DM_ID)
 
-def test_dm_details_v1_invalid_AccessError(clear_data, test_dm, test_user2_token, test_user2_u_id):
+def test_dm_details_v1_invalid_AccessError(clear_data, test_dm_id, test_user2_token, test_user2_u_id):
     with pytest.raises(AccessError):
-        dm_details_v1(test_user2_token, test_user2_u_id)
+        dm_details_v1(test_user2_token, test_dm_id)
 
-def test_dm_details_v1_invalid_token(clear_data, test_dm, test_user1_u_id):
+def test_dm_details_v1_invalid_token(clear_data, test_dm_id, test_user1_u_id):
     with pytest.raises(AccessError):
-        dm_details_v1(INVALID_TOKEN, test_user1_u_id)
+        dm_details_v1(INVALID_TOKEN, test_dm_id)
 
-def test_dm_list_v1_valid():
+################################################################################
+#  dm_list_v1 testing                                                          #
+################################################################################
+
+def test_dm_list_v1_valid_empty(clear_data, test_user1_token):
+    assert(dm_list_v1(test_user1_token) == {'dms': []})
+
+def test_dm_list_v1_valid(clear_data, test_user1_token, test_user1_u_id):
+    dm = dm_create_v1(test_user1_token, test_user1_u_id)
     assert(dm_list_v1(test_user1_token) == expected_output_list_v1())
 
-def test_dm_list_v1_invalid(clear_data, test_dm):
+def test_dm_list_v1_invalid(clear_data):
     with pytest.raises(AccessError):
         dm_list_v1(INVALID_TOKEN)
+
+################################################################################
+#  dm_create_v1 testing                                                        #
+################################################################################
 
 def test_dm_create_v1_valid(clear_data, test_dm, test_user1_token, test_user1_u_id):
     assert(dm_create_v1(test_user1_token, test_user1_u_id) == expected_output_create_v1())
