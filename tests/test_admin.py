@@ -1,8 +1,9 @@
 import pytest
 from src.other import clear_v1
 from src.auth import auth_register_v2
-from src.user import user_profile_v1
-from src.channel import channel_join_v2, channel_details_v2
+from src.user import user_profile_v2
+from src.message import message_send_v2
+from src.channel import channel_join_v2, channel_details_v2, channel_messages_v2
 from src.channels import channels_create_v2
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.error import AccessError, InputError
@@ -45,6 +46,12 @@ def test_channel(test_user1_token):
     test_channel = channels_create_v2(test_user1_token, "test_channel", False)
     return test_channel
 
+#Fixture that sends message into the test channel.
+@pytest.fixture
+def test_message(test_user1_token, test_channel):
+    message_id = message_send_v2(test_user1_token, test_channel, 'Hello World' )
+    return message_id
+
 # Expected output for the admin_user_remove function.
 @pytest.fixture
 def expected_output_admin_user_remove():
@@ -60,15 +67,22 @@ def expected_output_admin_user_remove():
         ]
     }
 
+# Expected output for the channel_messages function.
+@pytest.fixture
+def expected_output_message_check():
+    return {'Removed User', 0, -1}
+
 ################################################################################
 #  admin_user_remove_v1 testing                                                #
 ################################################################################
 
-def test_admin_user_remove_v1_valid(clear_data, test_user1_token, test_user2_u_id):
+def test_admin_user_remove_v1_valid(clear_data, test_user1_token, test_user2_u_id, test_message, test_channel):
     admin_user_remove_v1(test_user1_token, test_user2_u_id)
     # admin functions have no output. In order to test if the function has worked. Other functions
-    # need to be used in the assert. In this case, user_profile_v1 is used.
-    assert(user_profile_v1(test_user1_token, test_user2_u_id) == expected_output_admin_user_remove())
+    # need to be used in the assert. In this case, user_profile_v2 and channel_messages_v2 is used
+
+    assert(user_profile_v2(test_user1_token, test_user2_u_id) == expected_output_admin_user_remove())
+    assert(channel_messages_v2(test_user1_token, test_channel, 0) == expected_output_message_check())
 
 def test_admin_user_remove_v1_invalid_u_id(clear_data, test_user1_token):
     with pytest.raises(InputError):

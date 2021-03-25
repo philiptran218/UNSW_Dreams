@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.database import data
-from src.user import user_profile_setname_v1
-from src.message import message_edit_v1
+from src.user import user_profile_setname_v2
+from src.message import message_edit_v2
 
 OWNER = 1
 MEMBER = 2
@@ -55,6 +55,12 @@ def admin_user_remove_v1(token, u_id):
         raise InputError('Cannot delete as you are only user in Dreams')
     elif validator == False:
         raise InputError('entered u_id is invalid')
+
+    for message in data['messages']:
+        if message['u_id'] == token_u_id:
+            message_edit_v2(token, message['message_id'], 'Removed User')
+
+    user_profile_setname_v2(token, 'Removed', 'User')
     
     
 
@@ -78,6 +84,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
         Function produces no output
 
     """ 
+    
     token_u_id = detoken(token)
     changer_perm = check_permissions(token)
 
@@ -86,9 +93,12 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     elif changer_perm != OWNER:
         raise AccessError('Only owners can change permissions in Dreams')
 
+    validator = False
     for user in data['users']:
         if user['u_id'] == u_id:
+            validator = True
             user['perm_id'] = permission_id
-        else:
-            raise InputError ('Inputted u_id is invalid')
+
+    if validator == False:
+        raise InputError ('Inputted u_id is invalid')
 
