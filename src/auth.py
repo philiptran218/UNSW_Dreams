@@ -44,7 +44,8 @@ def is_handle_taken(handle):
 
 def generate_session_id():
     global SESSION_ID
-    return SESSION_ID + 1
+    SESSION_ID += 1
+    return SESSION_ID
 
 def auth_login_v1(email, password):
     # invalid email entered
