@@ -78,7 +78,7 @@ def test_clear_channels(clear_data, user_1, public_channel_1):
     # users and channels were deleted
 
     # Cannot check if messages have been cleared yet (Iteration 1).
-
+"""
 ################################################################################
 # search_v1 tests                                                              #
 ################################################################################
@@ -326,3 +326,4 @@ def test_search_query_string_with_white_space(clear_data, user_1, public_channel
     assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
+"""

@@ -2,7 +2,8 @@ import pytest
 from src.error import InputError, AccessError
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
-from src.channel import channel_invite_v1, channel_details_v1, channel_messages_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
+from src.channel import channel_invite_v1, channel_details_v1, channel_messages_v1
+from src.channel import channel_join_v1, channel_addowner_v1, channel_removeowner_v1, channel_leave_v1
 from src.other import clear_v1
 from src.message import message_send_v1
 from src.database import data
@@ -499,7 +500,7 @@ def test_channel_join_global_private(clear_data, user_1, user_2, private_channel
     assert channels['all_members'][1]['u_id'] == user_1
     assert channels['owner_members'][0]['u_id'] == user_2
     assert channels['owner_members'][1]['u_id'] == user_1
-"""
+
 ################################################################################
 # channel_leave_v1 tests                                                       #
 ################################################################################
@@ -521,8 +522,8 @@ def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1
     channel_leave_v1(user_2, public_channel_1)
     info = channel_details_v1(user_1, public_channel_1)
     user_found = False
-    for member in info['all_members']
-        if member['u_id'] == user_2
+    for member in info['all_members']:
+        if member['u_id'] == user_2:
             user_found == True
     assert user_found == False
 
@@ -530,22 +531,20 @@ def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1
     channel_invite_v1(user_1, public_channel_1, user_2)
     channel_addowner_v1(user_1, public_channel_1, user_2)
     channel_leave_v1(user_2, public_channel_1)
-    list_of_channels = channels_listall_v1(user_1)
+    info = channel_details_v1(user_1, public_channel_1)
     user_found = False
-    for member in info['owner_members']
-        if member['u_id'] == user_2
+    for member in info['owner_members']:
+        if member['u_id'] == user_2:
             user_found == True
-    for member in info['all_members']
-        if member['u_id'] == user_2
+    for member in info['all_members']:
+        if member['u_id'] == user_2:
             user_found == True
     assert user_found == False
 
 def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
     channel_leave_v1(user_1, public_channel_1)
     info = channel_details_v1(user_1, public_channel_1)
-    assert info['name'] = "John's Channel"
+    assert info['name'] == "John's Channel"
     assert info['is_public'] == True
     assert info['owner_members'] == []
     assert info['all_members'] == []
-
-"""
