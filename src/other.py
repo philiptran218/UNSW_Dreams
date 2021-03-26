@@ -1,5 +1,5 @@
 from src.database import data
-
+from src.error import InputError, AccessError
 MAX_STRING_LENGTH = 1000
 
 # Helper fucntion that when given a key mapping to a list in a dicionary, empties that list. 
@@ -63,11 +63,10 @@ def search_v1(auth_user_id, query_str):
     if len(query_str) > MAX_STRING_LENGTH:
         raise InputError(description="Query String is beyond 1000 characters")
     # Error check
-    if string.isspace():
+    if query_str.isspace():
         return search_matches
     for message in data['messages']:
         user_found = False
-        message_found = False
         if message['channel_id'] != 0:
             user_found = is_already_in_channel(auth_user_id, message['channel_id'])
         else:
