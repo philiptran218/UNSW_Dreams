@@ -100,6 +100,20 @@ def channel_owners(channel_id):
             list_of_owners = channel['owner_members']
     return list_of_owners
 
+def remove_user(u_id, channel_id):
+    selected_channel = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            break
+    for member in selected_channel['owner_members']:
+        if member['u_id'] == u_id:
+            selected_channel['owner_members'].remove(member)
+            
+    for member in selected_channel['all_members']:
+        if member['u_id'] == u_id:
+            selected_channel['all_members'].remove(member)
+
 def find_permissions(u_id):
     for user in data['users']:
         if user['u_id'] == u_id:
@@ -109,6 +123,39 @@ def find_permissions(u_id):
         return 1
     else:
         return 2
+
+def get_len_messages(channel_id):
+    total = 0
+    for message in data['messages']:
+        if message['channel_id'] == channel_id:
+            total += 1
+            
+    return total  
+
+def list_of_messages(channel_id, start, message_limit):
+    # Reverse messages so most recent are at the beginning 
+    ordered_messages = list(reversed(data['messages']))
+    messages = []
+    message_count = 0
+    
+    # Appending messages from the given channel_id
+    for message in ordered_messages:
+        if message_count >= message_limit:
+            break
+            
+        if message['channel_id'] == channel_id and message_count >= start:
+            message_details = {
+                'message_id': message['message_id'],
+                'u_id': message['u_id'],
+                'message': message['message'],
+                'time_created': message['time_created'],  
+            }     
+            messages.append(message_details)
+        
+        if message['channel_id'] == channel_id: 
+            message_count += 1
+   
+    return messages
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
@@ -183,39 +230,6 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_details['all_members'] = channel_members(channel_id)
     return channel_details
 
-def get_len_messages(channel_id):
-    total = 0
-    for message in data['messages']:
-        if message['channel_id'] == channel_id:
-            total += 1
-            
-    return total  
-
-def list_of_messages(channel_id, start, message_limit):
-    # Reverse messages so most recent are at the beginning 
-    ordered_messages = list(reversed(data['messages']))
-    messages = []
-    message_count = 0
-    
-    # Appending messages from the given channel_id
-    for message in ordered_messages:
-        if message_count >= message_limit:
-            break
-            
-        if message['channel_id'] == channel_id and message_count >= start:
-            message_details = {
-                'message_id': message['message_id'],
-                'u_id': message['u_id'],
-                'message': message['message'],
-                'time_created': message['time_created'],  
-            }     
-            messages.append(message_details)
-        
-        if message['channel_id'] == channel_id: 
-            message_count += 1
-   
-    return messages
-
 def channel_messages_v1(auth_user_id, channel_id, start):
     '''
     Function:
@@ -243,16 +257,16 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     
      # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
-        raise AccessError("Please enter a valid u_id")  
+        raise AccessError(description="Please enter a valid u_id")  
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
-        raise InputError("Please enter a valid channel_id")
+        raise InputError(description="Please enter a valid channel_id")
     # Check if user is not in the channel
     if not is_already_in_channel(auth_user_id, channel_id):
-        raise AccessError("User is not a member of the channel")
+        raise AccessError(description="User is not a member of the channel")
     # Check if start is greater than number of messages
     if start > get_len_messages(channel_id):
-        raise InputError("Start is greater than the number of messages in the channel")    
+        raise InputError(description="Start is greater than the number of messages in the channel")    
     # If start is equal to number of messages
     if start == get_len_messages(channel_id) :
         return {'messages': [], 'start': start, 'end': -1}
@@ -272,6 +286,29 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }        
 
 def channel_leave_v1(auth_user_id, channel_id):
+    '''
+    Function:
+        Given a channel ID, the user removed as a member of this channel. Their 
+        messages should remain in the channel.
+        
+    Arguments:
+        auth_user_id (int) - this is the ID of a registered user
+        channel_id (int) - this is the ID of a created channel
+    
+    Exceptions:
+        InputError when any of:
+            - Channel_id does not refer to a valid channel.
+        AccessError when any of:
+            - Authorised user is not a member of channel with channel_id.
+        
+    Return Value:
+        Returns {} if successful
+    '''
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel")
+    if not is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="Please enter a valid user")
+    remove_user(auth_user_id, channel_id)
     return {
     }
 
@@ -297,13 +334,13 @@ def channel_join_v1(auth_user_id, channel_id):
     
     # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
-        raise AccessError("Please enter a valid u_id")
+        raise AccessError(description="Please enter a valid u_id")
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
-        raise InputError("Please enter a valid channel_id") 
+        raise InputError(description="Please enter a valid channel_id") 
     # Check if auth_user_id cannot join a private channel
     if find_permissions(auth_user_id) == MEMBER and not is_channel_public(channel_id):
-        raise AccessError("Members cannot join a private channel")
+        raise AccessError(description="Members cannot join a private channel")
     # If auth_user_id is already in the channel     
     if is_already_in_channel(auth_user_id, channel_id):
         return {}
