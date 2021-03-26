@@ -20,3 +20,7 @@ We are assuming:
   automatically be made an owner of the channel.
 - channel_owner_v1 will make a user an owner of the channel only if the user is 
   currently a member of the channel.
+- search_v1() will remove any leading/trailing whitespace in the query_string
+- For search_v1(), if the query_string is empty or contains only whitespaces,
+  search_v1() will return a dictionary containing an empty list under the key
+  'messages'
