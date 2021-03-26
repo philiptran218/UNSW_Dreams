@@ -25,6 +25,13 @@ def clear_v1():
 
 
 def search_v1(auth_user_id, query_str):
+    # Remove leading and trailing
+    # Get len of string
+    # Error check
+    # Go thorugh data['messages']
+    # Check if user is apart of dm/channel
+    # Append to message list
+    # Return message list
     return {
         'messages': [
             {
