@@ -63,7 +63,7 @@ def search_v1(auth_user_id, query_str):
     if len(query_str) > MAX_STRING_LENGTH:
         raise InputError(description="Query String is beyond 1000 characters")
     # Error check
-    if query_str.isspace():
+    if query_str.isspace() or query_str == "":
         return search_matches
     for message in data['messages']:
         user_found = False
