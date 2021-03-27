@@ -7,7 +7,6 @@ import jwt
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-SESSION_ID = 0
 SECRET = 'COMP1531PROJECT'
 
 
@@ -43,9 +42,9 @@ def is_handle_taken(handle):
     return False
 
 def generate_session_id():
-    global SESSION_ID
-    SESSION_ID += 1
-    return SESSION_ID
+    new_session_id = data['sessions_info']['session_num'] + 1
+    data['sessions_info'].update({'session_num': new_session_id})
+    return new_session_id
 
 def auth_login_v1(email, password):
     # invalid email entered
@@ -85,7 +84,7 @@ def auth_login_v1(email, password):
         'token': token,
     }
     # Append the session information to sessions list in data
-    data['sessions'].append(session)    
+    data['sessions_info']['sessions'].append(session)    
     return {
         'token': token,
         'auth_user_id': user['u_id']
