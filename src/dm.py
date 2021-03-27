@@ -66,18 +66,22 @@ def list_of_messages(dm_id, start, message_limit):
     return messages
 
 # Helper funciton to get the name of the dm.
-def dm_name_generator([u_id]):
+def dm_name_generator(u_id):
     handles = []
     dm_name = ''
 
-    for id in u_id:
+    for u in u_id:
         for user in data['users']:
-            if user['u_id'] = id:
-                handles.append(user['handle_str']
-    
-    sorted_handles = sorted(handles)
-    for handle in sorted_handles:
-        dm_name = dm_name + handle + ", "
+            if user['u_id'] == u:
+                handles.append(user['handle_str'])
+
+    handles.sort()
+
+    for handle in handles:
+        if i == len(handles):
+            dm_name = dm_name + handle
+        else:
+            dm_name = dm_name + handle + ", "
 
     return dm_name
 
@@ -117,7 +121,7 @@ def dm_list(token):
     ''' 
     pass
 
-def dm_create(token, [u_id]):
+def dm_create(token, u_id):
     '''
     Function:
         creates a dm. Geenrates name based on handle strings of members.
@@ -134,7 +138,7 @@ def dm_create(token, [u_id]):
     ''' 
     token_u_id = detoken(token)
 
-    for id in [u_id]:
+    for id in u_id:
         if not is_valid_uid(u_id):
             raise AccessError('user_id is invalid')
 
