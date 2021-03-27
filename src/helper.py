@@ -5,7 +5,7 @@ SECRET = 'COMP1531PROJECT'
 
 def detoken(token):
     payload = jwt.decode(token, SECRET, algorithms=['HS256'])
-    return payload['auth_user_id']
+    return payload['u_id']
     
 def is_valid_token(token):
     for session in data['sessions_info']['sessions']:
