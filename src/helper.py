@@ -8,7 +8,7 @@ def detoken(token):
     return payload['auth_user_id']
     
 def is_valid_token(token):
-    for session in data['sessions']:
+    for session in data['sessions_info']['sessions']:
         if session['token'] == token:
             return True
     return False
