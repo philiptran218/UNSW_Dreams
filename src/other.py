@@ -67,7 +67,7 @@ def search_v1(auth_user_id, query_str):
         return search_matches
     for message in data['messages']:
         user_found = False
-        if message['channel_id'] != 0:
+        if message['channel_id'] != -1:
             user_found = is_already_in_channel(auth_user_id, message['channel_id'])
         else:
             user_found = is_already_in_dm(auth_user_id, message['dm_id'])

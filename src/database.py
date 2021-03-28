@@ -73,4 +73,19 @@ DM = [
         ], 
     }
 ]
+
+notifications = [
+    {
+        'auth_user_id': Id of person sending the invite/creating the dm
+        'u_id': Id of person being invited
+        'channel_id': Id of channel, if in dm set channel_id to -1
+        'dm_id': Id of dm, if in channel set dm_id to -1
+        'time_created': round(time)
+        
+        Note: To get time
+            time = datetime.today()
+            time = time.replace(tzinfo=timezone.utc).timestamp()
+
+    }
+]
 '''
