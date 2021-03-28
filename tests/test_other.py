@@ -384,7 +384,7 @@ def test_notifications_get_channel_and_dm(clear_data, user_1, user_2, public_cha
     assert len(notif) == 4
     assert notif[0]['channel_id'] == -1
     assert notif[0]['dm_id'] == user_1_dm
-    assert notif[0]['notification_message'] == "johnsmith tagged you in johnsmith, terrynguyen: Hey @terrynguyen, wel"
+    assert notif[0]['notification_message'] == "johnsmith tagged you in johnsmith, terrynguyen: Hey @terrynguyen, we"
     assert notif[1]['channel_id'] == public_channel_1
     assert notif[1]['dm_id'] == -1
     assert notif[1]['notification_message'] == "johnsmith tagged you in John's Channel: You joined the chann"
