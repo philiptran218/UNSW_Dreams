@@ -42,8 +42,8 @@ def is_handle_taken(handle):
     return False
 
 def generate_session_id():
-    new_session_id = data['sessions_info']['session_num'] + 1
-    data['sessions_info'].update({'session_num': new_session_id})
+    new_session_id = len(data['session_ids']) + 1
+    data['session_ids'].append(new_session_id)
     return new_session_id
 
 def auth_login_v1(email, password):
@@ -84,7 +84,7 @@ def auth_login_v1(email, password):
         'token': token,
     }
     # Append the session information to sessions list in data
-    data['sessions_info']['sessions'].append(session)    
+    data['sessions'].append(session)    
     return {
         'token': token,
         'auth_user_id': user['u_id']
