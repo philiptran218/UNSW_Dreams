@@ -362,7 +362,7 @@ def test_notifications_get_channel_tag(clear_data, user_1, user_2, public_channe
     assert notif[0]['dm_id'] == -1
     assert notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: Hello @terrynguyen"
     assert notif[1]['channel_id'] == public_channel_1
-    assert notif[1]['dm_id'] == 
+    assert notif[1]['dm_id'] == -1 
     assert notif[1]['notification_message'] == "johnsmith added you to John's Channel"
     
 def test_notifications_get_dm_tag(clear_data, user_1, user_2, user_1_dm):
