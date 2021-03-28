@@ -132,7 +132,7 @@ def test_dm_messages_start_equal(clear_data,test_create_dm,test_user1_token,test
 
 #testing when one message is sent in the dm
 def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1_token,test_user2_u_id):
-    user_id = detoken(test_user1_token,)
+    user_id = detoken(test_user1_token)
     # Tests for a single message in dm
     message_senddm_v1(test_user1_token,test_create_dm,'A new message')
     message_detail = dm_messages_v1(test_user1_token, test_create_dm, 0)
