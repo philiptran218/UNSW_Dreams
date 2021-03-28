@@ -65,7 +65,7 @@ def channels_list_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
-def channels_create_v1(auth_user_id, name, is_public):
+def channels_create_v1(token, name, is_public):
     '''
     channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
 
@@ -82,7 +82,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     Return Value:
         Returns <{channel_id}
     '''
-
+    auth_user_id = detoken(token)
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
 
