@@ -207,3 +207,19 @@ def dm_messages_v1(token, dm_id, start):
         'start': start,
         'end': end,
     }      
+def dm_leave_v1(token,dm_id):
+    u_id = detoken(token)
+    if not is_valid_dm_id(dm_id) :
+        raise InputError("dm_id does not refer to an existing dm")
+    if not is_already_in_dm(u_id, dm_id):
+        raise AccessError("Authorised user is not a member of the dm")
+    if not helper.is_valid_uid(u_id) :
+        raise InputError("Please enter a valid u_id")
+    
+    
+    for dm in data['dm']:
+        if dm['dm_id'] == dm_id:
+            for member in dm['all_memebers']:
+                if member['u_id'] == u_id:
+                    dm['all_members'].remove(member)
+    return
