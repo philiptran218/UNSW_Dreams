@@ -1,8 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
-from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid
-
+from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid, is_valid_token, detoken
 
 #helper fucntion that checks if given dm_id is valid
 def is_valid_dm_id(dm_id):
@@ -87,24 +86,29 @@ def dm_details(token, dm_id):
     Return Type:
         A dictionary is returned with the name and list of members inside dm.
     ''' 
-    token_u_id = detoken(token)
-    dm_list = []
-    valid_dm_id = is_valid_dm_id(dm_id)
+    validator = is_valid_token(token)
 
-    if valid_dm_id == True:
-        for dm in data["DM"]:
-            for member in dm["members"]:
-                if member["u_id"]== token_u_id:
-                    output = {
-                        "dm_name":dm["dm_name"]
-                        "dm_members": dm["dm_members"]
-                    }
-                    dm_list.append(output)
-                else:
-                    raise AccessError("Cannot access details as user is not in dm!")
-        return {'dm': dm_list}
+    if validator == True:
+        token_u_id = detoken(token)
+        dm_list = []
+        valid_dm_id = is_valid_dm_id(dm_id)
+
+        if valid_dm_id == True:
+            for dm in data["DM"]:
+                for member in dm["members"]:
+                    if member["u_id"]== token_u_id:
+                        output = {
+                            "dm_name":dm["dm_name"]
+                            "dm_members": dm["dm_members"]
+                        }
+                        dm_list.append(output)
+                    else:
+                        raise AccessError("Cannot access details as user is not in dm!")
+            return {'dm': dm_list}
+        else:
+            raise InputError("Please enter a valid dm id")
     else:
-        raise InputError("Please enter a valid dm id")
+        raise AccessError('Invalid Token')
 
 def dm_list(token):
     '''
