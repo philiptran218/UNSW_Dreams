@@ -8,6 +8,21 @@ REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 
 def generate_handle(name_first, name_last):
+    '''
+    Function:
+        Generates a handle for new users using the user's first and last name
+
+    Arguments:
+        name_first - user's first name
+        name_last - user's last name
+    
+    Exceptions:
+        NIL
+    
+    Return Values:
+        Returns a new handle for the user
+    '''
+
     handle = name_first + name_last
     handle = handle.lower()
     handle = handle.replace("@", "")
@@ -33,12 +48,45 @@ def generate_handle(name_first, name_last):
     return handle
 
 def is_handle_taken(handle):
+    '''
+    Function:
+        Check whether the generated handle has been taken by an existing user
+
+    Arguments:
+        handle - the generated handle for the user
+    
+    Exceptions:
+        NIL
+    
+    Return Values:
+        True - if the generated handle has been taken
+        False - if the generate handle had not been taken
+    '''
     for user in data['users']:
         if user['handle_str'] == handle:
             return True
     return False
 
 def auth_login_v1(email, password):
+    '''
+    Function:
+        Allows existing users to login using their registered email and password.
+        
+    Arguments:
+        email(char) - The email used to sign in
+        password(char) - The password used to sign in
+    
+    Exceptions:
+        InputError when any of:
+            - The email used is not in the form of a real email
+            - The email used has not yet been registered
+            - The password entered is incorrect
+
+    
+    Return Values:
+        This function returns u_id of the user    
+    '''
+
     # invalid email entered
     if not re.search(REGEX, email):
         raise InputError("Invalid Email")
@@ -71,6 +119,28 @@ def auth_login_v1(email, password):
     return {'auth_user_id': user.get('u_id')}
 
 def auth_register_v1(email, password, name_first, name_last):
+    '''
+    Function:
+        Allows new users to register
+        
+    Arguments:
+        email(char) - The email used to sign up
+        password(char) - The password used to sign up
+        name_first - The user's first name
+        name_last - The user's last name
+    
+    Exceptions:
+        InputError when any of:
+            - The email entered is not in the form of a real email
+            - The email entered has been taken
+            - The password entered is invalid
+            - The first name is zero characters or more than 50 characters
+            - The last name is zero characters or more than 50 characters
+
+    Return Values:
+        This function returns u_id of the user    
+    '''
+
     for user in data['users']:
         if user.get("email") == email:
             raise InputError("Email is already taken")
