@@ -1,8 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
-from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid 
-
+from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid, is_valid_token, detoken 
 
 #helper fucntion that checks if given dm_id is valid
 def is_valid_dm_id(dm_id):
@@ -136,47 +135,53 @@ def dm_create(token, u_id):
     Return Type:
         A dictionary is returned with the name and list of members inside dm.
     ''' 
-    token_u_id = detoken(token)
+    validator = is_valid_token(token)
 
-    for id in u_id:
-        if not is_valid_uid(u_id):
-            raise AccessError('user_id is invalid')
+    if validator == True:
+    
+        token_u_id = detoken(token)
 
-    #This section grabs the handle of the person and appends it to the inputted list of u_id's
-    #It assumes token works, as testing occurs after this point. Code places owners u_id first
-    #in the list. This makes it easier when creating the dm later in the function.
+        for id in u_id:
+            if not is_valid_uid(u_id):
+                raise AccessError('user_id is invalid')
 
-    for member in data['users']:
-        if member['u_id'] == token_u_id:
-            [u_id].insert(0,token_u_id)
-   
-    dm_name = dm_name_generator([u_id])
+        #This section grabs the handle of the person and appends it to the inputted list of u_id's
+        #It assumes token works, as testing occurs after this point. Code places owners u_id first
+        #in the list. This makes it easier when creating the dm later in the function.
 
-    dm_id = len(data['DM'])+1
-    new_dm = {
-        'dm_id': dm_id,
-        'dm_owner': token_u_id,
-        'name':dm_name,
-        'dm_members':[],
-    }
+        for member in data['users']:
+            if member['u_id'] == token_u_id:
+                [u_id].insert(0,token_u_id)
+    
+        dm_name = dm_name_generator([u_id])
 
-    for id in [u_id]:
-        new_dm['dm_members'].append(
-            {
-                'u_id':id,
-                'name_first':get_first_name(id),
-                'name_last' :get_last_name(id),
-                'email': get_email(id),
-                'handle_str': get_handle(id),
-            }
-        )
+        dm_id = len(data['DM'])+1
+        new_dm = {
+            'dm_id': dm_id,
+            'dm_owner': token_u_id,
+            'name':dm_name,
+            'dm_members':[],
+        }
 
-    data['DM'].append(new_dm)
+        for id in [u_id]:
+            new_dm['dm_members'].append(
+                {
+                    'u_id':id,
+                    'name_first':get_first_name(id),
+                    'name_last' :get_last_name(id),
+                    'email': get_email(id),
+                    'handle_str': get_handle(id),
+                }
+            )
 
-    return {
-        'dm_id': dm_id,
-        'dm_name': dm_name
-    }
+        data['DM'].append(new_dm)
+
+        return {
+            'dm_id': dm_id,
+            'dm_name': dm_name
+        }
+    else:
+        raise AccessError('Invalid Token')
 
 
 def dm_invite_v1(token, dm_id, u_id):
