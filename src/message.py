@@ -64,12 +64,16 @@ def channel_owners(channel_id):
     return list_of_owners
         
 def is_valid_channelid(channel_id): 
+    if channel_id < 1:
+        return False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             return True       
     return False
   
 def is_valid_dm_id(dm_id):
+    if dm_id < 1:
+        return False
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             return True
