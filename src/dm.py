@@ -1,8 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
-from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid
-
+from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid, is_valid_token, detoken.
 
 #helper fucntion that checks if given dm_id is valid
 def is_valid_dm_id(dm_id):
@@ -103,19 +102,23 @@ def dm_list(token):
     Return Type:
         This function returns the dms data type; a dictionary with dm_id and dm_name.
     ''' 
-    
-    token_u_id = detoken(token)
-    dm_list = []
+    validator = is_valid_token(token)
 
-    for dm in data["DM"]:
-        for member in dm["members"]:
-            if member["u_id"]== token_u_id:
-                output = {
-                    "dm_id": dm["dm_id"],
-                    "dm_name":dm["dm_name"]
-                }
-                dm_list.append(output)
-    return {'channels': dm_list}
+    if validator == True:
+        token_u_id = detoken(token)
+        dm_list = []
+
+        for dm in data["DM"]:
+            for member in dm["members"]:
+                if member["u_id"]== token_u_id:
+                    output = {
+                        "dm_id": dm["dm_id"],
+                        "dm_name":dm["dm_name"]
+                    }
+                    dm_list.append(output)
+        return {'channels': dm_list}
+    else:
+        raise AccessError('Invalid Token')
 
 def dm_create(token, u_id):
     '''
