@@ -103,6 +103,22 @@ def get_invite_notifications(u_id):
     return notifs
                   
 def notifications_get_v1(auth_user_id):
+    '''
+    Function:
+        Returns the user's most recent 20 notifications. A notification is
+        raised when the user is added to a channel/DM or is tagged in a message.
+    
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+    
+    Exceptions:
+        AccessError - occurs when the user's token is not a valid token
+    
+    Return value:
+        Returns a list of dictionaries containing types {channel_id, dm_id,
+        notification_message}
+    '''
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError(description="Please enter a valid uid")
         
