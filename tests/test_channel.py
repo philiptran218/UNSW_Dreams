@@ -16,12 +16,12 @@ INVALID_VALUE = -1
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def public_channel(user_1):
@@ -119,30 +119,30 @@ def test_details_valid_inputs(clear_data, user_1, user_2, public_channel):
 def test_channel_messages_invalid_channel(clear_data, user_1, public_channel):
     # Raises InputError since channel_id INVALID_VALUE does not exist
     with pytest.raises(InputError):
-        channel_messages_v1(user_1, INVALID_VALUE, 0) 
+        channel_messages_v1(user_1['token'], INVALID_VALUE, 0) 
         
         
 def test_channel_messages_invalid_start(clear_data, user_1, public_channel):
     # Raises InputError since start is greater than num messages in channel
     # (there are no messages in channel)
     with pytest.raises(InputError):
-        channel_messages_v1(user_1, public_channel, 10) 
+        channel_messages_v1(user_1['token'], public_channel, 10) 
     
 
 def test_channel_messages_authid_not_member(clear_data, user_1, public_channel, user_2):
     # Raises AccessError since user_2 is not a member of channel
     with pytest.raises(AccessError):
-        channel_messages_v1(user_2, public_channel, 0) 
+        channel_messages_v1(user_2['token'], public_channel, 0) 
         
                
-def test_channel_messages_invalid_authid(clear_data, user_1, public_channel):
-    # Raises AccessError since u_id INVALID_VALUE does not exist
+def test_channel_messages_invalid_token(clear_data, user_1, public_channel):
+    # Raises AccessError since token INVALID_VALUE does not exist
     with pytest.raises(AccessError):
         channel_messages_v1(INVALID_VALUE, public_channel, 0) 
         
 def test_channel_messages_start_equal(clear_data, user_1, public_channel):
     # Testing for when start = number of messages in channel
-    channels = channel_messages_v1(user_1, public_channel, 0) 
+    channels = channel_messages_v1(user_1['token'], public_channel, 0) 
     assert channels == {'messages': [], 'start': 0, 'end': -1}
     
 
@@ -150,12 +150,12 @@ def test_channel_messages_start_equal(clear_data, user_1, public_channel):
 '''        
 def test_channel_messages_valid_single(clear_data, user_1, public_channel):
     # Tests for a single message in channel
-    message_send_v1(user_1, public_channel, 'A new message')
-    message_detail = channel_messages_v1(user_1, public_channel, 0)
+    message_send_v1(user_1['token'], public_channel, 'A new message')
+    message_detail = channel_messages_v1(user_1['token'], public_channel, 0)
     
     # Checking the message dictionary to see if message has been appended
     assert message_detail['messages'][0]['message_id'] == 1
-    assert message_detail['messages'][0]['u_id'] == user_1
+    assert message_detail['messages'][0]['u_id'] == user_1['auth_user_id']
     assert message_detail['messages'][0]['message'] == 'A new message'
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
@@ -168,17 +168,17 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel):
     # Sends 55 messages to channel, the messages are just numbers as strings
     i = 1
     while i <= 55:
-        message_send_v1(user_1, public_channel, f"{i}")
+        message_send_v1(user_1['token'], public_channel, f"{i}")
         i += 1
     
-    message_detail = channel_messages_v1(user_1, public_channel, 2)
+    message_detail = channel_messages_v1(user_1['token'], public_channel, 2)
    
     # Checking that the messages have been appended correctly
     i = 53
     j = 0
     while i >= 4:
         assert message_detail['messages'][j]['message_id'] == i
-        assert message_detail['messages'][j]['u_id'] == user_1
+        assert message_detail['messages'][j]['u_id'] == user_1['auth_user_id']
         assert message_detail['messages'][j]['message'] == str(i)
         i -= 1
         j += 1 
@@ -191,7 +191,7 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel):
 ################################################################################
     
 def test_channel_join_invalid_authid(clear_data, user_1, public_channel):
-    # Raises AccessError since auth_user_id INVALID_VALUE does not exist
+    # Raises AccessError since token INVALID_VALUE does not exist
     with pytest.raises(AccessError):
         channel_join_v1(INVALID_VALUE, public_channel) 
                 
@@ -199,60 +199,60 @@ def test_channel_join_invalid_authid(clear_data, user_1, public_channel):
 def test_channel_join_invalid_channel(clear_data, user_1, public_channel):
     # Raises InputError since channel_id INVALID_VALUE does not exist
     with pytest.raises(InputError):
-        channel_join_v1(user_1, INVALID_VALUE) 
+        channel_join_v1(user_1['token'], INVALID_VALUE) 
         
         
 def test_channel_join_private_channel(clear_data, user_2, private_channel, user_1):        
     # Raises AccessError since user_1 is a member attempting to enter a private
     # channel
     with pytest.raises(AccessError):    
-        channel_join_v1(user_1, private_channel) 
+        channel_join_v1(user_1['token'], private_channel) 
   
         
 def test_channel_join_valid(clear_data, user_1, public_channel, user_2):
     # Testing if a single member can join a public channel
-    channel_join_v1(user_2, public_channel)
+    channel_join_v1(user_2['token'], public_channel)
     
-    channels = channel_details_v1(user_1, public_channel)
+    channels = channel_details_v1(user_1['token'], public_channel)
     assert len(channels['all_members']) == 2
-    assert channels['all_members'][0]['u_id'] == user_1
-    assert channels['all_members'][1]['u_id'] == user_2    
+    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']    
     
 def test_channel_join_already_joined(clear_data, user_1, public_channel, user_2):
     # Testing when user_2, who is already a channel member, joins the channel again
-    channel_join_v1(user_2, public_channel)
-    assert channel_join_v1(user_2, public_channel) == {}
-    channels = channel_details_v1(user_1, public_channel)
+    channel_join_v1(user_2['token'], public_channel)
+    assert channel_join_v1(user_2['token'], public_channel) == {}
+    channels = channel_details_v1(user_1['token'], public_channel)
     
     assert len(channels['all_members']) == 2
-    assert channels['all_members'][0]['u_id'] == user_1
-    assert channels['all_members'][1]['u_id'] == user_2  
+    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
     
     
 def test_channel_join_valid_multi(clear_data, user_1, user_2, public_channel):
     user_3 = auth_register_v1("philiptran@gmail.com", "password", "Philip", "Tran")
     # Testing if multiple members can join a public channel
-    channel_join_v1(user_2, public_channel)
-    channel_join_v1(user_3['auth_user_id'], public_channel)
+    channel_join_v1(user_2['token'], public_channel)
+    channel_join_v1(user_3['token'], public_channel)
 
-    channels = channel_details_v1(user_1, public_channel)
+    channels = channel_details_v1(user_1['token'], public_channel)
     assert len(channels['all_members']) == 3
-    assert channels['all_members'][0]['u_id'] == user_1
-    assert channels['all_members'][1]['u_id'] == user_2
+    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
     assert channels['all_members'][2]['u_id'] == user_3['auth_user_id']
     
 
 def test_channel_join_global_private(clear_data, user_1, user_2, private_channel):
     # Test to see if a global member (user_1), gets added as a member and owner
     # of private_channel
-    channel_join_v1(user_1, private_channel)
+    channel_join_v1(user_1['token'], private_channel)
     
-    channels = channel_details_v1(user_2, private_channel)
+    channels = channel_details_v1(user_2['token'], private_channel)
     # Checking if user_1 has been added into the members and owners list 
     assert len(channels['all_members']) == 2
     assert len(channels['owner_members']) == 2
-    assert channels['all_members'][0]['u_id'] == user_2
-    assert channels['all_members'][1]['u_id'] == user_1
-    assert channels['owner_members'][0]['u_id'] == user_2
-    assert channels['owner_members'][1]['u_id'] == user_1
+    assert channels['all_members'][0]['u_id'] == user_2['auth_user_id']
+    assert channels['all_members'][1]['u_id'] == user_1['auth_user_id']
+    assert channels['owner_members'][0]['u_id'] == user_2['auth_user_id']
+    assert channels['owner_members'][1]['u_id'] == user_1['auth_user_id']
 
