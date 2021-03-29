@@ -7,12 +7,18 @@ from src.other import clear_v1
 def clear_data():
     clear_v1()
 
+#################################################################################
+#                                                                               #
+#                      auth_login testing functions                             #
+#                                                                               #
+#################################################################################
+
 def test_pass(clear_data):
     # Testing if a single user can register and login
     assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest') == {'auth_user_id': 1}
     assert auth_login_v1('validemail@gmail.com', '123abc!@#') == {'auth_user_id': 1}
 
-def test_valid_users(clear_data):
+def test_multiple_valid_users(clear_data):
     # Testing if multiple users can register and login
     assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith') == {'auth_user_id': 1}
     assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve') == {'auth_user_id': 2}
@@ -33,9 +39,21 @@ def test_incorrect_pw(clear_data):
     with pytest.raises(InputError):
         auth_login_v1('validemail@gmail.com', 'abc123!')
 
+def test_login_invalid_email(clear_data):
+    # Testing login with invalid email
+    with pytest.raises(InputError):
+        auth_login_v1("wrong_format.com", "password")
+
+#################################################################################
+#                                                                               #
+#                      auth_register testing functions                          #
+#                                                                               #
+#################################################################################
+
+
 def test_duplicate_email(clear_data):
     # Testing registering with a used email
-    auth_register_v1('validemail@gmail.com', 'abcd1234!', 'James', 'Nguyen')
+    user = auth_register_v1('validemail@gmail.com', 'abcd1234!', 'James', 'Nguyen')
     with pytest.raises(InputError):
         auth_register_v1('validemail@gmail.com', 'abc123!', 'Jack', 'Tran')
 
@@ -68,3 +86,22 @@ def test_long_last_name(clear_data):
     # Testing last name with > 50 characters
     with pytest.raises(InputError):
         auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense')  
+
+
+#################################################################################
+#                                                                               #
+#                      auth_logout testing functions                            #
+#                                                                               #
+#################################################################################
+
+def test_valid_logout_token(clear_data):
+    # Testing the logout function when a valid toke is used
+    user = auth_register("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    assert auth_logout(user.get('token')).get('is_success') == True
+
+def test_invalid_logout(clear_data):
+    # Testing the logout function when an invalid token is used
+     user = auth_register("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    assert auth_logout(user.get('invalid_token')).get('is_success') == False
+
+
