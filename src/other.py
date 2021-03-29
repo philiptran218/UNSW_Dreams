@@ -22,6 +22,9 @@ def clear_v1():
     delete('users')
     delete('channels')
     delete('messages')
+    delete('DM')
+    delete('sessions')
+    delete('session_ids')
 
 
 def search_v1(auth_user_id, query_str):
