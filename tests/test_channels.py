@@ -2,7 +2,7 @@ from src.auth import auth_register_v1
 from src.error import AccessError, InputError
 from src.channels import channels_list_v1, channels_listall_v1,channels_create_v1
 from src.other import clear_v1
-from src.helper import is_valid_uid
+from src.helper import is_valid_uid, detoken
 from src.database import data
 import pytest
 
