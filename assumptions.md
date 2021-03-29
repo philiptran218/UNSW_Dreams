@@ -14,6 +14,7 @@ We are assuming:
   in the channel, 
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
+<<<<<<< HEAD
 - ### Removing a dm will not delete it from the database
 - Empty channels (When the last member leaves) will not be deleted.
 - When owners of dreams are invited to or join a channel, they will 
@@ -24,3 +25,9 @@ We are assuming:
 - For search_v1(), if the query_string is empty or contains only whitespaces,
   search_v1() will return a dictionary containing an empty list under the key
   'messages'
+
+- removing a dm will not delete it from the database.
+- Owner of a dm dont necessarily have to be a member of that dm.
+- Members of DM are stored in the order they are entered, not alphabetical order.
+- The name of the DM does not change when people are invited / removed / leave. 
+

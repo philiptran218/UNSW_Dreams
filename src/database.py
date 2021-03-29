@@ -83,6 +83,7 @@ notifications = [
         'u_id': Id of person being invited
         'channel_id': Id of channel, if in dm set channel_id to -1
         'dm_id': Id of dm, if in channel set dm_id to -1
+        'notification_type': 1-tag, 2-channel/dm invite, 3-react
         'time_created': round(time)
         
         Note: To get time
