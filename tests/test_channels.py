@@ -20,12 +20,12 @@ def clear_data():
 @pytest.fixture
 def test_user():
     userid = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
-    return userid["auth_user_id"]
+    return userid["token"]
 
 @pytest.fixture
 def test_user2():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    return user['auth_user_id']
+    return user['token']
 
 @pytest.fixture
 def test_channel(test_user):

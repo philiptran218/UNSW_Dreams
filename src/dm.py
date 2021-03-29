@@ -106,7 +106,6 @@ def dm_details_v1(token, dm_id):
 
     if validator == True:
         token_u_id = detoken(token)
-        dm_list = []
         valid_dm_id = is_valid_dm_id(dm_id)
 
         if valid_dm_id == True:
@@ -117,9 +116,8 @@ def dm_details_v1(token, dm_id):
                             "dm_name":dm["dm_name"],
                             "dm_members": dm["dm_members"],
                         }
-                        dm_list.append(output)
             if is_already_in_dm(token_u_id, dm_id) == True:
-                return {'dm': dm_list}
+                return output
             else:
                 raise AccessError("Not in DM")
         else:

@@ -37,25 +37,23 @@ def test_dm(test_user1, test_user2):
 #Function that shows expected output for dm_details.
 def expected_output_details_v1():
     return {
-        'dm': [{
-            "dm_name": 'dansmith, validnamevalidname',
-            "dm_members": [
-                {
-                    'u_id': 1,
-                    'name_first': 'validname',
-                    'name_last': 'validname',
-                    'email': 'validemail@g.com',
-                    'handle_str': 'validnamevalidname'
-                },
-                {
-                    'u_id': 2,
-                    'name_first': 'dan',
-                    'name_last': 'Smith',
-                    'email': 'dan@gmail.com',
-                    'handle_str': 'dansmith'
-                }
-            ]
-        }]
+        "dm_name": 'dansmith, validnamevalidname',
+        "dm_members": [
+            {
+                'u_id': 1,
+                'name_first': 'validname',
+                'name_last': 'validname',
+                'email': 'validemail@g.com',
+                'handle_str': 'validnamevalidname'
+            },
+            {
+                'u_id': 2,
+                'name_first': 'dan',
+                'name_last': 'Smith',
+                'email': 'dan@gmail.com',
+                'handle_str': 'dansmith'
+            }
+        ]
     }
 
 #Function that shows expected output for dm_list.
