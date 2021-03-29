@@ -123,9 +123,9 @@ def message_send_v1(token, channel_id, message):
         InputError - occurs when the channel ID is not a valid ID, when the
                      message being sent is empty and when the message has more
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not a member of the channel they are sending the
-                      message to 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the channel they are sending 
+                      the message to 
         
     Return value:
         Returns a dictionary containing the type {message_id}
@@ -177,8 +177,8 @@ def message_remove_v1(token, message_id):
     Exceptions:
         InputError - occurs when the message ID is not a valid ID and when the
                      message has already been deleted
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not authorised to remove the message
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not authorised to remove the message
                       
     Return value:
         Returns an empty dictionary {}
@@ -221,8 +221,8 @@ def message_edit_v1(token, message_id, message):
         InputError - occurs when the message ID is not a valid ID, when the 
                      message has already been deleted and when the edited 
                      message is longer than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not authorised to edit the message 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not authorised to edit the message 
                       
     Return value:
         Returns an empty dictionary {}
@@ -280,9 +280,9 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
                      og_message ID is not a valid ID, when the og_message has 
                      already been deleted and when the shared message is longer
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not a member of the channel/DM they are sharing
-                      the message to 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the channel/DM they are 
+                      sharing the message to 
                       
     Return value:
         Returns a dictionary containing the type {shared_message_id}
@@ -354,8 +354,8 @@ def message_senddm_v1(token, dm_id, message):
         InputError - occurs when the dm ID is not a valid ID, when the
                      message being sent is empty and when the message has more
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the 
-                      user is not a member of the DM they are sending the 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the DM they are sending the 
                       message to 
                       
     Return value:
