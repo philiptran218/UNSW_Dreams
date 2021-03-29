@@ -5,7 +5,7 @@ from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.channel import channel_messages_v1, channel_join_v1
 from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_senddm_v1
-from src.dm import dm_create_v1, dm_messages_v1
+from src.dm import dm_create, dm_messages_v1
 from src.database import data
 
 INVALID_ID = 0
@@ -32,12 +32,12 @@ def channel2(user2):
 
 @pytest.fixture
 def dm1(user1):
-    new_dm1 = dm_create_v1(user1['token'], [])
+    new_dm1 = dm_create(user1['token'], [])
     return new_dm1['dm_id']
     
 @pytest.fixture
 def dm2(user2):
-    new_dm2 = dm_create_v1(user2['token'], [])
+    new_dm2 = dm_create(user2['token'], [])
     return new_dm2['dm_id']
 
 @pytest.fixture
