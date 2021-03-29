@@ -105,22 +105,23 @@ def dm_details_v1(token, dm_id):
     validator = is_valid_token(token)
 
     if validator == True:
-        token_u_id = int(detoken(token))
+        token_u_id = detoken(token)
         dm_list = []
         valid_dm_id = is_valid_dm_id(dm_id)
 
         if valid_dm_id == True:
             for dm in data["DM"]:
                 for member in dm["dm_members"]:
-                    if member["u_id"]== token_u_id:
+                    if member["u_id"] == token_u_id:
                         output = {
                             "dm_name":dm["dm_name"],
                             "dm_members": dm["dm_members"],
                         }
                         dm_list.append(output)
-                    else:
-                        raise AccessError("Cannot access details as user is not in dm!")
-            return {'dm': dm_list}
+            if is_already_in_dm(token_u_id, dm_id) == True:
+                return {'dm': dm_list}
+            else:
+                raise AccessError("Not in DM")
         else:
             raise InputError("Please enter a valid dm id")
     else:
@@ -159,38 +160,39 @@ def dm_list_v1(token):
     else:
         raise AccessError('Invalid Token')
 
-def dm_create_v1(token, u_id):
+def dm_create_v1(token, u_ids):
     '''
     Function:
         creates a dm. Geenrates name based on handle strings of members.
 
     Arguments:
         token (str) - token of a registered user during their session
-        u_id (list) - this is the ID of the user the dm is directed to. 
+        u_ids (list) - this is the ID(s) of the user the dm is directed to. 
 
     Exceptions:
-        InputError  - u_id does not refer to a existing / valid.
+        InputError  - u_ids does not refer to a existing / valid.
         AccessError - when token is invalid
 
     Return Type:
         A dictionary is returned with the name and list of members inside dm.
     ''' 
+    u_ids = [u_ids]
     validator = is_valid_token(token)
     if validator == True:
-
-        token_u_id = int(detoken(token))
-
-        for user_id in [u_id]:
+        
+        token_u_id = detoken(token)
+        
+        for user_id in u_ids:
             if not is_valid_uid(user_id):
                 raise AccessError('user_id is invalid')
 
         #This section grabs the handle of the person and appends it to the inputted list of u_id's
         #It assumes token works, as testing occurs after this point. Code places owners u_id first
-        #in the list. This makes it easier when creating the dm later in the function.
+        #in the list. This makes it easier when creating the dm later in the function
 
-        [u_id].append(token_u_id)
+        u_ids.insert(0, token_u_id)
     
-        dm_name = dm_name_generator([u_id])
+        dm_name = dm_name_generator(u_ids)
 
         dm_id = len(data['DM'])+1
         new_dm = {
@@ -199,8 +201,8 @@ def dm_create_v1(token, u_id):
             'dm_name':dm_name,
             'dm_members':[],
         }
-
-        for user_id in [u_id]:
+        user_id = int(user_id)
+        for user_id in u_ids:
             new_dm['dm_members'].append(
                 {
                     'u_id': user_id,

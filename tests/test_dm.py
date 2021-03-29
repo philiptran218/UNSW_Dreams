@@ -41,6 +41,13 @@ def expected_output_details_v1():
             "dm_name": 'dansmith, validnamevalidname',
             "dm_members": [
                 {
+                    'u_id': 1,
+                    'name_first': 'validname',
+                    'name_last': 'validname',
+                    'email': 'validemail@g.com',
+                    'handle_str': 'validnamevalidname'
+                },
+                {
                     'u_id': 2,
                     'name_first': 'dan',
                     'name_last': 'Smith',
@@ -67,15 +74,15 @@ def expected_output_list_v1():
 def expected_output_create_v1():
     return {
         "dm_id": 1,
-        "dm_name": "danSmith, validnamevalidname"
+        "dm_name": "dansmith, validnamevalidname"
     }
 
 ################################################################################
 #  dm_details_v1 testing                                                       #
 ################################################################################
 
-def test_dm_details_v1_valid(clear_data, test_dm, test_user2):
-    assert(dm_details_v1(test_user2['token'], test_dm['dm_id']) == expected_output_details_v1())
+def test_dm_details_v1_valid(clear_data, test_dm, test_user1, test_user2):
+    assert(dm_details_v1(test_user1['token'], test_dm['dm_id']) == expected_output_details_v1())
 
 def test_dm_details_v1_invalid_InputError(clear_data, test_user1, test_dm):
     with pytest.raises(InputError):
@@ -96,7 +103,7 @@ def test_dm_details_v1_invalid_token(clear_data, test_dm):
 def test_dm_list_v1_valid_empty(clear_data, test_user1):
     assert(dm_list_v1(test_user1['token']) == {'dm': []})
 
-def test_dm_list_v1_valid(clear_data, test_user1, test_user2):
+def test_dm_list_v1_valid(clear_data, test_user1, test_user2, test_dm):
     assert(dm_list_v1(test_user1['token']) == expected_output_list_v1())
 
 def test_dm_list_v1_invalid(clear_data):
