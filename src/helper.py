@@ -1,4 +1,17 @@
 from src.database import data
+import jwt
+
+SECRET = 'COMP1531PROJECT'
+
+def detoken(token):
+    payload = jwt.decode(token, SECRET, algorithms=['HS256'])
+    return payload['u_id']
+    
+def is_valid_token(token):
+    for session in data['sessions_info']['sessions']:
+        if session['token'] == token:
+            return True
+    return False
 
 def is_valid_uid(u_id): 
     for user in data['users']:
