@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.database import data
 from src.user import user_profile_setname_v2
 from src.message import message_edit_v2
+from src.helper import is_valid_token, detoken
 
 OWNER = 1
 MEMBER = 2
@@ -36,33 +37,36 @@ def admin_user_remove_v1(token, u_id):
     Return Type:
         Function produces no output
     """
+    token_validator = is_valid_token(token)
 
-    token_u_id = detoken(token)
-    changer_perm = check_permissions(token)
+    if token_validator == True:
 
-    if changer_perm != OWNER:
-        raise AccessError('Only owners can change permissions in Dreams')
+        token_u_id = detoken(token)
+        changer_perm = check_permissions(token)
 
-    user_count = 0
-    validator = False
+        if changer_perm != OWNER:
+            raise AccessError('Only owners can change permissions in Dreams')
 
-    for user in data['users']:
-        if user['u_id'] == u_id:
-            validator = True
-        user_count += 1
+        user_count = 0
+        user_validator = False
 
-    if user_count < 2:
-        raise InputError('Cannot delete as you are only user in Dreams')
-    elif validator == False:
-        raise InputError('entered u_id is invalid')
+        for user in data['users']:
+            if user['u_id'] == u_id:
+                user_validator = True
+            user_count += 1
 
-    for message in data['messages']:
-        if message['u_id'] == token_u_id:
-            message_edit_v2(token, message['message_id'], 'Removed User')
+        if user_count < 2:
+            raise InputError('Cannot delete as you are only user in Dreams')
+        elif user_validator == False:
+            raise InputError('entered u_id is invalid')
 
-    user_profile_setname_v2(token, 'Removed', 'User')
-    
-    
+        for message in data['messages']:
+            if message['u_id'] == token_u_id:
+                message_edit_v2(token, message['message_id'], 'Removed User')
+
+        user_profile_setname_v2(token, 'Removed', 'User')
+    else:
+        raise AccessError('Invalid Token')
 
 def admin_userpermission_change_v1(token, u_id, permission_id):
     """
@@ -84,21 +88,25 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
         Function produces no output
 
     """ 
-    
-    token_u_id = detoken(token)
-    changer_perm = check_permissions(token)
+    token_validator = is_valid_token(token)
 
-    if permission_id != OWNER or permission_id != MEMBER:
-        raise InputError('Permission id is invalid.')
-    elif changer_perm != OWNER:
-        raise AccessError('Only owners can change permissions in Dreams')
+    if token_validator == True:
 
-    validator = False
-    for user in data['users']:
-        if user['u_id'] == u_id:
-            validator = True
-            user['perm_id'] = permission_id
+        token_u_id = detoken(token)
+        changer_perm = check_permissions(token)
 
-    if validator == False:
-        raise InputError ('Inputted u_id is invalid')
+        if permission_id != OWNER or permission_id != MEMBER:
+            raise InputError('Permission id is invalid.')
+        elif changer_perm != OWNER:
+            raise AccessError('Only owners can change permissions in Dreams')
 
+        validator = False
+        for user in data['users']:
+            if user['u_id'] == token_u_id:
+                validator = True
+                user['perm_id'] = permission_id
+
+        if validator == False:
+            raise InputError ('Inputted u_id is invalid')
+    else:
+        raise AccessError('Invalid Token')
