@@ -13,17 +13,17 @@ INVALID_VALUE = -1
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def user_3():
     user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def public_channel_1(user_1):
@@ -50,7 +50,7 @@ def clear_data():
 
 def test_invite_invalid_channel(clear_data, user_1, user_2):
     with pytest.raises(InputError):
-        channel_invite_v1(user_1, INVALID_VALUE, user_2)
+        channel_invite_v1(user_1['token'], INVALID_VALUE, user_2['auth_user_id'])
 
 def test_invite_invalid_uid(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(InputError):

@@ -170,7 +170,7 @@ def list_of_messages(channel_id, start, message_limit):
    
     return messages
 
-def channel_invite_v1(auth_user_id, channel_id, u_id):
+def channel_invite_v1(token, channel_id, u_id):
     '''
     Function:
         Invites a user (with user id u_id) to join a channel with ID channel_id. 
@@ -191,6 +191,9 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     Return Type:
         This function doesn't return any value.
     ''' 
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if find_permissions(auth_user_id) == OWNER:
@@ -211,7 +214,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
-def channel_details_v1(auth_user_id, channel_id):
+def channel_details_v1(token, channel_id):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is part of, 
@@ -230,6 +233,9 @@ def channel_details_v1(auth_user_id, channel_id):
     Return Type:
         { name, is_public, owner_members, all_members }
     '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if find_permissions(auth_user_id) == OWNER:
@@ -244,7 +250,7 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_details['all_members'] = channel_members(channel_id)
     return channel_details
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is part of, 
@@ -268,7 +274,9 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         Returns a dictionary, where each dictionary contains types {message_id,
         u_id, message, time_created, start, end}
     '''
-    
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
      # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError(description="Please enter a valid u_id")  
@@ -299,7 +307,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': end,
     }        
 
-def channel_leave_v1(auth_user_id, channel_id):
+def channel_leave_v1(token, channel_id):
     '''
     Function:
         Given a channel ID, the user removed as a member of this channel. Their 
@@ -318,6 +326,9 @@ def channel_leave_v1(auth_user_id, channel_id):
     Return Value:
         Returns {} if successful
     '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if not is_already_in_channel(auth_user_id, channel_id):
@@ -326,7 +337,7 @@ def channel_leave_v1(auth_user_id, channel_id):
     return {
     }
 
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
     '''
     Function:
         Given a channel_id of a channel that the authorised user can join, adds 
@@ -345,7 +356,9 @@ def channel_join_v1(auth_user_id, channel_id):
     Return Value:
         Returns {} if successful or if the user is already in the channel
     '''
-    
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     # Check for valid u_id
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError(description="Please enter a valid u_id")
@@ -366,7 +379,7 @@ def channel_join_v1(auth_user_id, channel_id):
   
     return {}
     
-def channel_addowner_v1(auth_user_id, channel_id, u_id):
+def channel_addowner_v1(token, channel_id, u_id):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is an owner 
@@ -388,6 +401,9 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     Return Type:
         {}
     '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if is_already_channel_owner(u_id, channel_id):
@@ -403,7 +419,7 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {
     }
 
-def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+def channel_removeowner_v1(token, channel_id, u_id):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is an owner 
@@ -426,6 +442,9 @@ def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     Return Type:
         {}
     '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if not helper.is_valid_uid(auth_user_id):
         raise AccessError(description="Please enter a valid user")  
     if not helper.is_valid_uid(u_id):

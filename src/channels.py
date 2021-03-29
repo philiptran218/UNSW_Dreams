@@ -1,8 +1,9 @@
 from src.error import InputError, AccessError
 from src.database import data
 from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
+import src.helper as helper
 
-def channels_listall_v1(auth_user_id):
+def channels_listall_v1(token):
     """
     Function:
         Id is authenticated, then list of all channels is returned. Note that only channel id and 
@@ -18,6 +19,9 @@ def channels_listall_v1(auth_user_id):
     Return Type:
         Channels datatype is returned. This is a dictionary with channel id and name.
     """ 
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
         for channel in data["channels"]:
@@ -30,7 +34,7 @@ def channels_listall_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
-def channels_list_v1(auth_user_id): 
+def channels_list_v1(token): 
     """
     Function:
         Id is authenticated, then list of channels the user is in is returned. Note that only channel 
@@ -47,6 +51,9 @@ def channels_list_v1(auth_user_id):
     Return Type:
         Channels datatype is returned. This is a dictionary with channel id and name.
     """ 
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     channel_list = []
     if is_valid_uid(auth_user_id) == True:
         for channel in data["channels"]:
@@ -61,7 +68,7 @@ def channels_list_v1(auth_user_id):
     else:
         raise AccessError("Please enter a valid user id")
 
-def channels_create_v1(auth_user_id, name, is_public):
+def channels_create_v1(token, name, is_public):
     '''
     channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
 
@@ -78,7 +85,9 @@ def channels_create_v1(auth_user_id, name, is_public):
     Return Value:
         Returns <{channel_id}
     '''
-
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
 
