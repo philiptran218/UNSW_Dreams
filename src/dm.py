@@ -85,10 +85,10 @@ def dm_invite_v1(token, dm_id, u_id):
         This function doesn't return any data.
     ''' 
     
-    token_u_id = detoken(token)
-    
+    token_u_id = helper.detoken(token)
+    #checking if user who called fucntion has a valid token    
     if not helper.is_valid_token(token) :
-        raise InputError("Please enter a valid u_id")
+        raise InputError("token is invalid")
     #checking if the dm  has a valid dm_id
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
@@ -131,11 +131,11 @@ def dm_remove_v1(token,dm_id):
     Return Type:
         This function doesn't return any data.
     ''' 
-    u_id = detoken(token)
+    u_id = helper.detoken(token)
 
-    #checking if user who called fucntion has a valid u_id
+    #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise AccessError('user_id is invalid')
+        raise InputError("token is invalid")
     #checking if the dm to be removed has a valid dm_id
     if not is_valid_dm_id(dm_id):
         raise InputError('dm_id is invalid')
@@ -177,11 +177,11 @@ def dm_messages_v1(token, dm_id, start):
         Returns a dictionary, where each dictionary contains types {message_id,
         u_id, message, time_created, start, end}
     '''
-    u_id = detoken(token)
+    u_id = helper.detoken(token)
     
-    # Check for valid u_id
+    #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise AccessError("invalid user_id")  
+        raise InputError("token is invalid")  
     # Check for valid dm id 
     if not is_valid_dm_id(dm_id): 
         raise InputError("Please enter a valid channel_id")
@@ -228,12 +228,14 @@ def dm_leave_v1(token,dm_id):
     this function has no return value 
     '''
 
-    u_id = detoken(token)
-    
+    u_id = helper.detoken(token)
+    #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token) :
-        raise InputError("Please enter a valid u_id")
+        raise InputError("token is invalid")
+    # Check for valid dm id 
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
+    #checking if user wanting to leave is part of the dm 
     if not is_already_in_dm(u_id, dm_id):
         raise AccessError("Authorised user is not a member of the dm")
 
