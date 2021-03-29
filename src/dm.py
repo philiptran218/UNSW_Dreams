@@ -77,7 +77,7 @@ def dm_name_generator(u_id):
     handles.sort()
 
     for handle in handles:
-        if i == len(handles):
+        if handle == handles[len(handles) - 1]:
             dm_name = dm_name + handle
         else:
             dm_name = dm_name + handle + ", "
@@ -141,8 +141,8 @@ def dm_create_v1(token, u_id):
     
         token_u_id = detoken(token)
 
-        for id in u_id:
-            if not is_valid_uid(u_id):
+        for user_id in u_id:
+            if not is_valid_uid(user_id):
                 raise AccessError('user_id is invalid')
 
         #This section grabs the handle of the person and appends it to the inputted list of u_id's
@@ -151,9 +151,9 @@ def dm_create_v1(token, u_id):
 
         for member in data['users']:
             if member['u_id'] == token_u_id:
-                [u_id].insert(0,token_u_id)
+                u_id.insert(0,token_u_id)
     
-        dm_name = dm_name_generator([u_id])
+        dm_name = dm_name_generator(u_id)
 
         dm_id = len(data['DM'])+1
         new_dm = {
@@ -163,14 +163,14 @@ def dm_create_v1(token, u_id):
             'dm_members':[],
         }
 
-        for id in [u_id]:
+        for user_id in u_id:
             new_dm['dm_members'].append(
                 {
-                    'u_id':id,
-                    'name_first':get_first_name(id),
-                    'name_last' :get_last_name(id),
-                    'email': get_email(id),
-                    'handle_str': get_handle(id),
+                    'u_id':user_id,
+                    'name_first':get_first_name(user_id),
+                    'name_last' :get_last_name(user_id),
+                    'email': get_email(user_id),
+                    'handle_str': get_handle(user_id),
                 }
             )
 
@@ -182,7 +182,6 @@ def dm_create_v1(token, u_id):
         }
     else:
         raise AccessError('Invalid Token')
-
 
 def dm_invite_v1(token, dm_id, u_id):
     '''
@@ -203,7 +202,11 @@ def dm_invite_v1(token, dm_id, u_id):
     Return Type:
         This function doesn't return any data.
     ''' 
+    
     token_u_id = detoken(token)
+    
+    if not is_valid_token(token) :
+        raise InputError("Please enter a valid u_id")
     #checking if the dm  has a valid dm_id
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
@@ -326,3 +329,41 @@ def dm_messages_v1(token, dm_id, start):
         'start': start,
         'end': end,
     }      
+def dm_leave_v1(token,dm_id):
+    '''
+    Function:
+    Given a DM ID, the user is removed as a member of this DM
+    
+    Arguments:
+        token (str) - this is the token of a registered user during their session
+        dm_id (int) - this is the ID of a created dm
+
+        
+    Exceptions:
+        InputError - occurs when the dm ID is not for valid dm and when
+                     
+        AccessError - occurs when the token is not a valid token and when the
+                      user is not a member in the given dm
+        
+    Return Value:
+    this function has no return value 
+    '''
+
+    u_id = detoken(token)
+    
+    if not is_valid_token(token) :
+        raise InputError("Please enter a valid u_id")
+    if not is_valid_dm_id(dm_id) :
+        raise InputError("dm_id does not refer to an existing dm")
+    if not is_already_in_dm(u_id, dm_id):
+        raise AccessError("Authorised user is not a member of the dm")
+
+    
+    
+    for dm in data['dm']:
+        if dm['dm_id'] == dm_id:
+            for member in dm['all_memebers']:
+                if member['u_id'] == u_id:
+                    dm['all_members'].remove(member)
+    return{}
+

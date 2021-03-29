@@ -43,6 +43,10 @@ def private_channel(user_2):
 @pytest.fixture
 def clear_data():
     clear_v1()
+    
+################################################################################
+# channel_invite_v1 tests                                                      #
+################################################################################
 
 ################################################################################
 # channel_invite_v1 tests                                                      #
@@ -56,7 +60,7 @@ def test_invite_invalid_uid(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(InputError):
         channel_invite_v1(user_1['token'], public_channel_1, INVALID_VALUE)
 
-def test_invite_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
+def test_invite_invalid_token(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(AccessError):
         channel_invite_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
 
@@ -376,8 +380,8 @@ def test_channel_messages_authid_not_member(clear_data, user_1, public_channel_1
         channel_messages_v1(user_2['token'], public_channel_1, 0) 
         
                
-def test_channel_messages_invalid_authid(clear_data, user_1, public_channel_1):
-    # Raises AccessError since u_id INVALID_VALUE does not exist
+def test_channel_messages_invalid_token(clear_data, user_1, public_channel_1):
+    # Raises AccessError since token INVALID_VALUE does not exist
     with pytest.raises(AccessError):
         channel_messages_v1(INVALID_VALUE, public_channel_1, 0) 
         
@@ -391,12 +395,12 @@ def test_channel_messages_start_equal(clear_data, user_1, public_channel_1):
 '''        
 def test_channel_messages_valid_single(clear_data, user_1, public_channel_1):
     # Tests for a single message in channel
-    message_send_v1(user_1, public_channel_1, 'A new message')
-    message_detail = channel_messages_v1(user_1, public_channel_1, 0)
+    message_send_v1(user_1['token'], public_channel_1, 'A new message')
+    message_detail = channel_messages_v1(user_1['token'], public_channel_1, 0)
     
     # Checking the message dictionary to see if message has been appended
     assert message_detail['messages'][0]['message_id'] == 1
-    assert message_detail['messages'][0]['u_id'] == user_1
+    assert message_detail['messages'][0]['u_id'] == user_1['auth_user_id']
     assert message_detail['messages'][0]['message'] == 'A new message'
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
@@ -409,17 +413,17 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
     # Sends 55 messages to channel, the messages are just numbers as strings
     i = 1
     while i <= 55:
-        message_send_v1(user_1, public_channel_1, f"{i}")
+        message_send_v1(user_1['token'], public_channel_1, f"{i}")
         i += 1
     
-    message_detail = channel_messages_v1(user_1, public_channel_1, 2)
+    message_detail = channel_messages_v1(user_1['token'], public_channel_1, 2)
    
     # Checking that the messages have been appended correctly
     i = 53
     j = 0
     while i >= 4:
         assert message_detail['messages'][j]['message_id'] == i
-        assert message_detail['messages'][j]['u_id'] == user_1
+        assert message_detail['messages'][j]['u_id'] == user_1['auth_user_id']
         assert message_detail['messages'][j]['message'] == str(i)
         i -= 1
         j += 1 
@@ -431,8 +435,8 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
 # channel_join_v1 tests                                                        #
 ################################################################################
     
-def test_channel_join_invalid_authid(clear_data, user_1, public_channel_1):
-    # Raises AccessError since auth_user_id INVALID_VALUE does not exist
+def test_channel_join_invalid_token(clear_data, user_1, public_channel_1):
+    # Raises AccessError since token INVALID_VALUE does not exist
     with pytest.raises(AccessError):
         channel_join_v1(INVALID_VALUE, public_channel_1) 
                 

@@ -262,7 +262,8 @@ def channel_messages_v1(token, channel_id, start):
         there are no more messages in the channel to load.
        
     Arguments:
-        auth_user_id (int) - this is the ID of a registered user
+        token (str) - this is the token of a registered user during their 
+                      session
         channel_id (int) - this is the ID of a created channel
         start (int) - the beginning index for messages in a given channel
         
@@ -346,7 +347,8 @@ def channel_join_v1(token, channel_id):
         them to that channel.
         
     Arguments:
-        auth_user_id (int) - this is the ID of a registered user
+        token (str) - this is the token of a registered user during their 
+                      session
         channel_id (int) - this is the ID of a created channel
     
     Exceptions:

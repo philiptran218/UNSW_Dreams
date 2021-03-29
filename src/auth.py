@@ -40,6 +40,11 @@ def is_handle_taken(handle):
         if user['handle_str'] == handle:
             return True
     return False
+    
+def generate_session_id():
+    new_session_id = len(data['session_ids']) + 1
+    data['session_ids'].append(new_session_id)
+    return new_session_id
 
 def generate_session_id():
     new_session_id = len(data['session_ids']) + 1
@@ -65,13 +70,12 @@ def auth_login_v1(email, password):
     enc_password = hashlib.sha256(password.encode()).hexdigest()
     # Check if enter password matches the password used to register
     for user in data['users']:
-        if user.get('email') == email and user.get('password') == enc_password: 
+        if user.get('email') == email and user.get('password') == enc_password:
             incorrect_password = False
             break
-    
+
     if incorrect_password:
         raise InputError("Invalid Password")
-    
     # Payload for token generation
     payload = {
         'u_id': user['u_id'],
