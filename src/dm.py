@@ -1,4 +1,5 @@
 from src.helper import get_email, get_first_name, get_last_name, get_handle, is_valid_uid, is_valid_token, detoken
+from src.helper import add_to_notifications
 from src.error import AccessError, InputError
 from src.database import data
 
@@ -141,8 +142,8 @@ def dm_create(token, u_id):
     
         token_u_id = detoken(token)
 
-        for id in u_id:
-            if not is_valid_uid(u_id):
+        for user_id in u_id:
+            if not is_valid_uid(user_id):
                 raise AccessError('user_id is invalid')
 
         #This section grabs the handle of the person and appends it to the inputted list of u_id's
@@ -173,9 +174,10 @@ def dm_create(token, u_id):
                     'handle_str': get_handle(user_id),
                 }
             )
-
+            if user_id != token_u_id:
+                add_to_notifications(token_u_id, user_id, -1, dm_id)
         data['DM'].append(new_dm)
-
+        
         return {
             'dm_id': dm_id,
             'dm_name': dm_name
@@ -227,6 +229,7 @@ def dm_invite_v1(token, dm_id, u_id):
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             dm['dm_members'].append(invited_member)
+            add_to_notifications(token_u_id, u_id, -1, dm_id)
             return{}
 
 
