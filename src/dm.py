@@ -84,16 +84,17 @@ def dm_invite_v1(token, dm_id, u_id):
     Return Type:
         This function doesn't return any data.
     ''' 
+    
     token_u_id = detoken(token)
+    
+    if not helper.is_valid_token(token) :
+        raise InputError("Please enter a valid u_id")
     #checking if the dm  has a valid dm_id
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
     #checking if the user is a member of the dm
     if not is_already_in_dm(token_u_id, dm_id):
         raise AccessError("Authorised user is not a member of the dm")
-    #checking if user who called fucntion has a valid u_id
-    if not helper.is_valid_uid(u_id) :
-        raise InputError("Please enter a valid u_id")
     #checking if the user is in the dm, if they are , nothing is done.
     if is_already_in_dm(u_id, dm_id):
         return {}
@@ -130,10 +131,10 @@ def dm_remove_v1(token,dm_id):
     Return Type:
         This function doesn't return any data.
     ''' 
-    u_id = detoken(token)# yet to be completed
+    u_id = detoken(token)
 
     #checking if user who called fucntion has a valid u_id
-    if not helper.is_valid_uid(u_id):
+    if not helper.is_valid_token(token):
         raise AccessError('user_id is invalid')
     #checking if the dm to be removed has a valid dm_id
     if not is_valid_dm_id(dm_id):
@@ -179,7 +180,7 @@ def dm_messages_v1(token, dm_id, start):
     u_id = detoken(token)
     
     # Check for valid u_id
-    if not helper.is_valid_uid(u_id):
+    if not helper.is_valid_token(token):
         raise AccessError("invalid user_id")  
     # Check for valid dm id 
     if not is_valid_dm_id(dm_id): 
@@ -208,13 +209,34 @@ def dm_messages_v1(token, dm_id, start):
         'end': end,
     }      
 def dm_leave_v1(token,dm_id):
+    '''
+    Function:
+    Given a DM ID, the user is removed as a member of this DM
+    
+    Arguments:
+        token (str) - this is the token of a registered user during their session
+        dm_id (int) - this is the ID of a created dm
+
+        
+    Exceptions:
+        InputError - occurs when the dm ID is not for valid dm and when
+                     
+        AccessError - occurs when the token is not a valid token and when the
+                      user is not a member in the given dm
+        
+    Return Value:
+    this function has no return value 
+    '''
+
     u_id = detoken(token)
+    
+    if not helper.is_valid_token(token) :
+        raise InputError("Please enter a valid u_id")
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
     if not is_already_in_dm(u_id, dm_id):
         raise AccessError("Authorised user is not a member of the dm")
-    if not helper.is_valid_uid(u_id) :
-        raise InputError("Please enter a valid u_id")
+
     
     
     for dm in data['dm']:
@@ -222,4 +244,4 @@ def dm_leave_v1(token,dm_id):
             for member in dm['all_memebers']:
                 if member['u_id'] == u_id:
                     dm['all_members'].remove(member)
-    return
+    return{}
