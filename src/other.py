@@ -47,11 +47,11 @@ def search_v1(auth_user_id, query_str):
     
 def get_channel_dm_name(channel_id, dm_id):
     if channel_id == -1:
-        for dm in data['DM']:
+        for dm in data['DM']:   # pragma: no branch
             if dm['dm_id'] == dm_id:
                 return dm['name']
-    elif dm_id == -1:
-        for channel in data['channels']:
+    else:
+        for channel in data['channels']:    # pragma: no branch
             if channel['channel_id'] == channel_id:
                 return channel['name']
     
