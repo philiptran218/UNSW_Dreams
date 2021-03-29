@@ -153,7 +153,7 @@ def list_of_messages(channel_id, start, message_limit):
    
     return messages
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is part of, 
@@ -163,7 +163,8 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         there are no more messages in the channel to load.
        
     Arguments:
-        auth_user_id (int) - this is the ID of a registered user
+        token (str) - this is the token of a registered user during their 
+                      session
         channel_id (int) - this is the ID of a created channel
         start (int) - the beginning index for messages in a given channel
         
@@ -178,9 +179,10 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         u_id, message, time_created, start, end}
     '''
     
-     # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError("Please enter a valid u_id")  
+     # Check for valid token
+    if not helper.is_valid_token(token):
+        raise AccessError("Please enter a valid token") 
+    auth_user_id = helper.detoken(token) 
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError("Please enter a valid channel_id")
@@ -222,14 +224,15 @@ def find_permissions(u_id):
     else:
         return 2
 
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
     '''
     Function:
         Given a channel_id of a channel that the authorised user can join, adds 
         them to that channel.
         
     Arguments:
-        auth_user_id (int) - this is the ID of a registered user
+        token (str) - this is the token of a registered user during their 
+                      session
         channel_id (int) - this is the ID of a created channel
     
     Exceptions:
@@ -242,9 +245,10 @@ def channel_join_v1(auth_user_id, channel_id):
         Returns {} if successful or if the user is already in the channel
     '''
     
-    # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError("Please enter a valid u_id")
+    # Check for valid token
+    if not helper.is_valid_token(token):
+        raise AccessError("Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError("Please enter a valid channel_id") 
