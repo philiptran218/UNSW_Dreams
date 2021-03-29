@@ -208,6 +208,24 @@ def dm_messages_v1(token, dm_id, start):
         'end': end,
     }      
 def dm_leave_v1(token,dm_id):
+    '''
+    Function:
+    Given a DM ID, the user is removed as a member of this DM
+    
+    Arguments:
+        token (str) - this is the token of a registered user during their session
+        dm_id (int) - this is the ID of a created dm
+
+        
+    Exceptions:
+        InputError - occurs when the dm ID is not for valid dm and when
+                     
+        AccessError - occurs when the token is not a valid token and when the
+                      user is not a member in the given dm
+        
+    Return Value:
+    this function has no return value 
+    '''
     u_id = detoken(token)
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
@@ -222,4 +240,4 @@ def dm_leave_v1(token,dm_id):
             for member in dm['all_memebers']:
                 if member['u_id'] == u_id:
                     dm['all_members'].remove(member)
-    return
+    return{}
