@@ -6,6 +6,7 @@ from src.user import user_profile_v1
 from src.database import data
 from src.error import InputError, AccessError
 from src.message import message_send_v1, message_senddm_v1
+from src.dm import dm_create
 
 import pytest
 import random
@@ -25,31 +26,31 @@ WHITE_SPACE_QUERY_STR = "     it      "
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
-    return user['auth_user_id']
+    return user
 
 @pytest.fixture
 def public_channel_1 (user_1):
-    channel = channels_create_v1(user_1, "John's Channel", True)
+    channel = channels_create_v1(user_1['token'], "John's Channel", True)
     return channel['channel_id']
 
 @pytest.fixture
 def public_channel_2 (user_2):
-    channel = channels_create_v1(user_2, "Terry's Channel", True)
+    channel = channels_create_v1(user_2['token'], "Terry's Channel", True)
     return channel['channel_id']
 
 @pytest.fixture
 def user_1_dm (user_1, user_2):
-    dm = dm_create_v1(user_1, [user_1, user_2])
+    dm = dm_create(user_1['token'], [user_2['auth_user_id']])
     return dm['dm_id']
 
 @pytest.fixture
 def user_2_dm (user_1, user_2):
-    dm = dm_create_v1(user_2, [user_1, user_2])
+    dm = dm_create(user_2['token'], [user_1['auth_user_id']])
     return dm['dm_id']
 
 @pytest.fixture
@@ -72,7 +73,7 @@ def test_clear_channels(clear_data, user_1, public_channel_1):
     user_2 = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
     # Run channels_listall_v1() with user_2 which should return an empty list as 
     # all channels have been deleted.
-    assert(channels_listall_v1(user_2['auth_user_id']) == {'channels': []})
+    assert(channels_listall_v1(user_2['token']) == {'channels': []})
 
     # If both of the above tests are passed, then clear_v1() works as all of both
     # users and channels were deleted
@@ -338,12 +339,12 @@ def test_notifications_get_invalid_token(clear_data, user_1):
         
 def test_notifications_get_empty(clear_data, user_1):
     # Checks if an empty list is returned for no notifications 
-    assert notifications_get_v1(user_1) == []
+    assert notifications_get_v1(user_1['token']) == []
     
 def test_notifications_get_join_channel(clear_data, user_1, user_2, public_channel_1):
     # Tests notification for when user_2 is invited to join public_channel_1
-    channel_invite_v1(user_1, public_channel_1, user_2)
-    notif = notifications_get_v1(user_2)
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    notif = notifications_get_v1(user_2['token'])
     assert len(notif) == 1
     assert notif[0]['channel_id'] == public_channel_1
     assert notif[0]['dm_id'] == -1
@@ -351,7 +352,7 @@ def test_notifications_get_join_channel(clear_data, user_1, user_2, public_chann
     
 def test_notifications_get_join_dm(clear_data, user_1, user_2, user_1_dm):
     # Tests notification for when user_2 is added to user_1_dm
-    notif = notifications_get_v1(user_2)
+    notif = notifications_get_v1(user_2['token'])
     assert len(notif) == 1
     assert notif[0]['channel_id'] == -1
     assert notif[0]['dm_id'] == user_1_dm
@@ -359,9 +360,9 @@ def test_notifications_get_join_dm(clear_data, user_1, user_2, user_1_dm):
     
 def test_notifications_get_channel_tag(clear_data, user_1, user_2, public_channel_1):
     # Tests notifications for invite and tag (in a channel)
-    channel_invite_v1(user_1, public_channel_1, user_2)
-    message_send_v1(user_1, public_channel_1, 'Hello @terrynguyen')
-    notif = notifications_get_v1(user_2)
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    message_send_v1(user_1['token'], public_channel_1, 'Hello @terrynguyen')
+    notif = notifications_get_v1(user_2['token'])
     assert len(notif) == 2
     assert notif[0]['channel_id'] == public_channel_1
     assert notif[0]['dm_id'] == -1
@@ -372,8 +373,8 @@ def test_notifications_get_channel_tag(clear_data, user_1, user_2, public_channe
     
 def test_notifications_get_dm_tag(clear_data, user_1, user_2, user_1_dm):
     # Tests notifications for invite and tag (in a dm)
-    message_senddm_v1(user_1, user_1_dm, 'Welcome @terrynguyen')
-    notif = notifications_get_v1(user_2)
+    message_senddm_v1(user_1['token'], user_1_dm, 'Welcome @terrynguyen')
+    notif = notifications_get_v1(user_2['token'])
     assert len(notif) == 2
     assert notif[0]['channel_id'] == -1
     assert notif[0]['dm_id'] == user_1_dm
@@ -384,10 +385,10 @@ def test_notifications_get_dm_tag(clear_data, user_1, user_2, user_1_dm):
     
 def test_notifications_get_channel_and_dm(clear_data, user_1, user_2, public_channel_1, user_1_dm):
     # Testing notifications for invite and tag (in both a channel and a dm)
-    channel_invite_v1(user_1, public_channel_1, user_2)
-    message_send_v1(user_1, public_channel_1, "You joined the channel again @terrynguyen")
-    message_senddm_v1(user_1, user_1_dm, "Hey @terrynguyen, welcome to the dm")
-    notif = notifications_get_v1(user_2)
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    message_send_v1(user_1['token'], public_channel_1, "You joined the channel again @terrynguyen")
+    message_senddm_v1(user_1['token'], user_1_dm, "Hey @terrynguyen, welcome to the dm")
+    notif = notifications_get_v1(user_2['token'])
     assert len(notif) == 4
     assert notif[0]['channel_id'] == -1
     assert notif[0]['dm_id'] == user_1_dm
