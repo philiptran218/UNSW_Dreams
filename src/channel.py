@@ -90,6 +90,7 @@ def channel_invite_v1(token, channel_id, u_id):
     else:
         # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
+        helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
 def channel_details_v1(token, channel_id):
