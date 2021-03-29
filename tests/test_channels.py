@@ -20,12 +20,12 @@ def clear_data():
 @pytest.fixture
 def test_user():
     userid = auth_register_v1("validemail@g.com", "validpass", "validname","validname")
-    return userid["auth_user_id"]
+    return userid['token']
 
 @pytest.fixture
 def test_user2():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
-    return user['auth_user_id']
+    return user['token']
 
 @pytest.fixture
 def test_channel(test_user):
@@ -105,7 +105,7 @@ def test_valid_channels_create_v1_multiple(clear_data,test_user):
     channels_create_v1(test_user, "ValidChannelName1", True)
     # Valid case where a public channel with name "ValidChannelName2" is created 
     # by user with auth_id userId2
-    channels_create_v1(userId2['auth_user_id'], "ValidChannelName2", True)
+    channels_create_v1(userId2['token'], "ValidChannelName2", True)
     assert(len(data['channels']) > 1)
 
 # Testing an invalid case(channel name is more than 20 characters long) 
