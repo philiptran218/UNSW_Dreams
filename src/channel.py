@@ -77,7 +77,7 @@ def channel_invite_v1(token, channel_id, u_id):
     Return Type:
         This function doesn't return any value.
     ''' 
-    if helper.is_valid_token() == False:
+    if helper.is_valid_token(token) == False:
         raise InputError("Please enter a valid token")
     auth_user_id = helper.detoken(token)
     if is_valid_channelid(channel_id) == False:
