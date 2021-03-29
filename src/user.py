@@ -7,7 +7,7 @@ from src.helper import is_valid_token, is_valid_uid
 
 SECRET = 'COMP1531PROJECT'
 
-def user_profile_v1(token, u_id):
+def user_profile_v2(token, u_id):
     
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
@@ -15,7 +15,7 @@ def user_profile_v1(token, u_id):
     if is_valid_uid(u_id) == False:
         raise AccessError(description="Invalid u_id")
     
-    for users in data:
+    for user in data['users']:
         user_details = {
             'user' : {
                 'u_id': users.get('u_id'),
@@ -28,7 +28,13 @@ def user_profile_v1(token, u_id):
         
 
 def user_profile_setname(token, name_first, name_last):
-    
+       
+    if is_valid_token(token) == False:
+        raise AccessError(description="Token invalid")
+
+    if is_valid_uid(u_id) == False:
+        raise AccessError(description="Invalid u_id")
+
     if (len(name_first) < 1) or (len(name_first) > 50):
         raise InputError("First name is invalid")
     
@@ -41,7 +47,12 @@ def user_profile_setname(token, name_first, name_last):
 def user_profile_setemail_v2(token, email):
 
     REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    
+    if is_valid_token(token) == False:
+        raise AccessError(description="Token invalid")
 
+    if is_valid_uid(u_id) == False:
+        raise AccessError(description="Invalid u_id")
 
     #test for invalid email
     for user in data['users']:
@@ -62,8 +73,22 @@ def user_profile_setemail_v2(token, email):
     return {}
 
 def user_profile_sethandle_v2(token, handle_str):
+    if is_valid_token(token) == False:
+        raise AccessError("Token invalid")
+
+    if is_valid_uid(u_id) == False:
+        raise AccessError("Invalid u_id")
+
+    if len(handle_str) < 3 or len(handle_str) > 20:
+        raise error.InputError("Handle_str invalid")
     
+    for user in data['users']:
+        if user['handle_str'] == handle:
+            raise InputError("Handle taken")
     
-    
-    return {
-    }
+    for user in data['users']:
+        if user.get("u_id") == u_id:
+            user["handle"] = handle_str
+            break
+
+    return {}
