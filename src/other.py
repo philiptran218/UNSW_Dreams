@@ -2,24 +2,13 @@ from src.database import data
 from src.error import InputError, AccessError
 import src.helper as helper
 
-
-from src.auth import auth_register_v1, auth_login_v1
-from src.channel import channel_messages_v1, channel_invite_v1
-from src.channels import channels_create_v1, channels_listall_v1
-from src.user import user_profile_v1
-from src.database import data
-from src.error import InputError, AccessError
-from src.message import message_send_v1, message_senddm_v1
-from src.dm import dm_create_v1
-MIXED_QUERY_STR = "1. How's it going?"
-
 import pytest
 import random
 import string
 
 MAX_STRING_LENGTH = 1000
 
-# Helper fucntion that when given a key mapping to a list in a dicionary, empties that list. 
+# Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
 
@@ -48,8 +37,6 @@ def is_already_in_dm(u_id, dm_id):
     return False
 
 def is_query_str_in_msg(query_str, message):
-    #print(query_str)
-    #print(message)
     if query_str in message['message']:
         return True
     return False

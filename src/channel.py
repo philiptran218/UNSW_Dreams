@@ -448,9 +448,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
     '''
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
-    auth_user_id = helper.detoken(token)
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid user")  
+    auth_user_id = helper.detoken(token) 
     if not helper.is_valid_uid(u_id):
         raise AccessError(description="Please enter a valid user") 
     if not is_valid_channelid(channel_id):
@@ -462,6 +460,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
     if find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
+    elif not is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not an owner of the channel")
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise InputError(description="User is not authorised")
     remove_channel_owner(u_id, channel_id)
