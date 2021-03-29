@@ -1,8 +1,8 @@
 from src.error import InputError, AccessError
 from src.database import data
-from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle
+from src.helper import is_valid_token,get_first_name, get_last_name, get_email, get_handle, detoken
 
-def channels_listall_v1(auth_user_id):
+def channels_listall_v1(token):
     """
 
     Function:
@@ -21,7 +21,7 @@ def channels_listall_v1(auth_user_id):
 
     """ 
     channel_list = []
-    if is_valid_uid(auth_user_id) == True:
+    if is_valid_token(token) == True:
         for channel in data["channels"]:
             output = {
                 "channel_id": channel["channel_id"],
@@ -30,9 +30,9 @@ def channels_listall_v1(auth_user_id):
             channel_list.append(output)
         return {'channels': channel_list}
     else:
-        raise AccessError("Please enter a valid user id")
+        raise AccessError("Please enter a valid token")
 
-def channels_list_v1(auth_user_id): 
+def channels_list_v1(token): 
     """
     
     Function:
@@ -52,7 +52,8 @@ def channels_list_v1(auth_user_id):
 
     """ 
     channel_list = []
-    if is_valid_uid(auth_user_id) == True:
+    if is_valid_token(token) == True:
+        auth_user_id = detoken(token)
         for channel in data["channels"]:
             for member in channel["all_members"]:
                 if member["u_id"]== auth_user_id:
@@ -63,9 +64,9 @@ def channels_list_v1(auth_user_id):
                     channel_list.append(output)
         return {'channels': channel_list}
     else:
-        raise AccessError("Please enter a valid user id")
+        raise AccessError("Please enter a valid token")
 
-def channels_create_v1(auth_user_id, name, is_public):
+def channels_create_v1(token, name, is_public):
     '''
     channels_create_v1 - a function that creates a new channel with a given name that is either a public or private channel.
 
@@ -86,9 +87,9 @@ def channels_create_v1(auth_user_id, name, is_public):
     if len(name) > 20:
         raise InputError('channel name must be less than 20 characters')
 
-    if not is_valid_uid(auth_user_id,):
-        raise AccessError('user_id is invalid')
-    
+    if not is_valid_token(token):
+        raise AccessError('token is invalid')
+    auth_user_id = detoken(token)
     channel_id = len(data['channels'])+1
     new_chan = {
         'channel_id': channel_id,
