@@ -1,7 +1,5 @@
 from src.error import AccessError, InputError
 from src.database import data
-from src.user import user_profile_setname_v2
-from src.message import message_edit_v1
 from src.helper import is_valid_token, detoken
 
 OWNER = 1
@@ -41,7 +39,6 @@ def admin_user_remove_v1(token, u_id):
 
     if token_validator == True:
 
-        token_u_id = detoken(token)
         changer_perm = check_permissions(token)
 
         if changer_perm != OWNER:
@@ -61,10 +58,15 @@ def admin_user_remove_v1(token, u_id):
             raise InputError('entered u_id is invalid')
 
         for message in data['messages']:
-            if message['u_id'] == token_u_id:
-                message_edit_v2(token, message['message_id'], 'Removed User')
+            print(u_id)
+            print(message['u_id'])
+            if message['u_id'] == u_id:
+                message.update({'message': 'Removed User'})
 
-        user_profile_setname_v2(token, 'Removed', 'User')
+        for user in data['users']:
+            if user['u_id'] == u_id:
+                user['name_first'] = 'Removed'
+                user['name_last'] = 'User'
     else:
         raise AccessError('Invalid Token')
 
@@ -92,21 +94,22 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
 
     if token_validator == True:
 
-        token_u_id = detoken(token)
-        changer_perm = check_permissions(token)
+        if permission_id == OWNER or permission_id == MEMBER:
 
-        if permission_id != OWNER or permission_id != MEMBER:
+            changer_perm = check_permissions(token) 
+
+            if changer_perm == OWNER:
+                validator = False
+                for user in data['users']:
+                    if user['u_id'] == u_id:
+                        validator = True
+                        user['perm_id'] = permission_id
+
+                if validator == False:
+                    raise InputError ('Inputted u_id is invalid')
+            else:
+                raise AccessError('Only owners can change permissions in Dreams')
+        else:
             raise InputError('Permission id is invalid.')
-        elif changer_perm != OWNER:
-            raise AccessError('Only owners can change permissions in Dreams')
-
-        validator = False
-        for user in data['users']:
-            if user['u_id'] == token_u_id:
-                validator = True
-                user['perm_id'] = permission_id
-
-        if validator == False:
-            raise InputError ('Inputted u_id is invalid')
     else:
         raise AccessError('Invalid Token')
