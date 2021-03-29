@@ -1,6 +1,7 @@
 import src.helper as helper
 from src.error import AccessError, InputError
 from src.database import data
+from datetime import datetime, timezone
 
 
 #helper fucntion that checks if given dm_id is valid
@@ -64,6 +65,19 @@ def list_of_messages(dm_id, start, message_limit):
    
     return messages
 
+def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    notification = {
+    'auth_user_id': auth_user_id,
+    'u_id': u_id,
+    'channel_id': channel_id,
+    'dm_id': dm_id,
+    'time_created': round(time)
+    }
+    data['notifications'].append(notification)
+
+
 
 def dm_invite_v1(token, dm_id, u_id):
     '''
@@ -109,6 +123,7 @@ def dm_invite_v1(token, dm_id, u_id):
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             dm['dm_members'].append(invited_member)
+            add_to_notifications(token_u_id,u_id,-1,dm_id)
             return{}
 
 
