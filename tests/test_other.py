@@ -12,6 +12,7 @@ import pytest
 import random
 import string
 
+INVALID_VALUE = -1
 INVALID_STRING_LENGTH = 1001
 
 LOWER_QUERY_STR = "hows it going"
@@ -31,6 +32,11 @@ def user_1():
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
+    return user
+
+@pytest.fixture
+def user_3():
+    user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
     return user
 
 @pytest.fixture
@@ -88,7 +94,11 @@ def create_invalid_string():
     chars = string.ascii_letters + string.digits + string.punctuation
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
 
-def test_search_invalid_query_str(user_1):
+def test_search_invalid_token(clear_data, user_1):
+    with pytest.raises(AccessError):
+        search_v1(INVALID_VALUE, string)
+
+def test_search_invalid_query_str(clear_data, user_1):
     string = create_invalid_string()
     with pytest.raises(InputError):
         search_v1(user_1['token'], string)
@@ -317,4 +327,14 @@ def test_search_query_string_with_white_space(clear_data, user_1, public_channel
     message_send_v1(user_1['token'], public_channel_1, MIXED_QUERY_STR)
     message_senddm_v1(user_1['token'], user_1_dm, MIXED_QUERY_STR)
     output = search_v1(user_1['token'], WHITE_SPACE_QUERY_STR)
+    assert output['messages'] == []
+
+def test_search_user_not_in_channel(clear_data, user_1, user_2, public_channel_1):
+    message_send_v1(user_1['token'], public_channel_1, MIXED_QUERY_STR)
+    output = search_v1(user_2['token'], MIXED_QUERY_STR)
+    assert output['messages'] == []
+
+def test_search_user_not_in_dm(clear_data, user_1, user_2, user_3, user_1_dm):
+    message_senddm_v1(user_1['token'], user_1_dm, MIXED_QUERY_STR)
+    output = search_v1(user_3['token'], MIXED_QUERY_STR)
     assert output['messages'] == []
