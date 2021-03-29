@@ -3,6 +3,8 @@ data = {
     'channels': [],
     'messages': [],
     'DM': [],
+    'sessions': [],
+    'session_ids': [],
 }
 ''' initialise empty lists for data fields '''
 ''' what information each list should have '''
