@@ -115,7 +115,33 @@ def test_setname_invalid_token():
 #                                                                               #
 #################################################################################
 
+def test_setemail_pass(clear_data):
+    new_user = auth_register("validemail@gmail.com", "GoodPassword10", "Kevin", "Tran")
+    user_token = new_user.get("token")
+    user_profile_setemail(user_token, "newemail@gmail.com")
+    email = user_profile(user_token, new_user.get("u_id")).get("user").get("email")
+    assert email == "newemail@gmail.com"
 
+def test_invalid_email(clear_data):
+    new_user = auth_register("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
+    with pytest.raises(InputError):
+        user_profile_setemail(new_user.get('token'), 'bademail')
+    
+def test_sameemail(clear_data):
+    new_user = auth_register("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
+    with pytest.raises(InputError):
+        user_profile_setemail(new_user.get('token'), 'thisismyemail@gmail.com')
+
+def test_email_taken(clear_data):
+    new_user1 = auth_register("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
+    new_user2 = auth_register("somethingcompletelyrandom@gmail.com", "Thisismyaccount24", "John", "Stone")
+
+    with pytest.raises(InputError):
+        user_profile_setemail(new_user2.get('token'), 'thisismyemail@gmail.com')
+    
+def test_unregistered_user(clear_data):
+    with pytest.raises(AccessError):
+        user_profile('invalid_token', 'invalid_u_id')
 
 
 
