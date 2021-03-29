@@ -1,25 +1,31 @@
 import pytest
-from src.error import InputError
+from src.error import InputError, AccessError
 import re
 from src.database import data
 import jwt
+from src.helper import is_valid_token, is_valid_uid
 
 SECRET = 'COMP1531PROJECT'
 
 def user_profile_v1(token, u_id):
     
-    if helper_functions.is_valid_token(token).get('token_status'):
-        raise error.AccessError(description="Token invalid")
+    if is_valid_token(token) == False:
+        raise AccessError(description="Token invalid")
+
+    if is_valid_uid(u_id) == False:
+        raise AccessError(description="Invalid u_id")
     
-    return {
-        'user': {
-            'u_id': 1,
-            'email': 'cs1531@cse.unsw.edu.au',
-            'name_first': 'Hayden',
-            'name_last': 'Jacobs',
-            'handle_str': 'haydenjacobs',
-        },
-    }
+    for users in data:
+        user_details = {
+            'user' : {
+                'u_id': users.get('u_id'),
+                'email': users.get('email'),
+                'name_first': users.get('first_name'),
+                'name_last': users.get('last_name'),
+                'handle_str': users.get('handle'),
+    
+        return user_details
+        
 
 def user_profile_setname(token, name_first, name_last):
     
