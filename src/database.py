@@ -3,6 +3,7 @@ data = {
     'channels': [],
     'messages': [],
     'DM': [],
+    'notifications': [],
     'sessions': [],
     'session_ids': [],
 }
