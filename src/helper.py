@@ -73,3 +73,15 @@ def add_owner_to_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
+
+
+def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
+    notification = {
+                    'auth_user_id': auth_user_id,
+                    'u_id': u_id,
+                    'channel_id': channel_id,
+                    'dm_id': dm_id,
+                    'type': 2,
+                    'message': None,     
+                }
+    data['notifications'].append(notification)
