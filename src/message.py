@@ -103,6 +103,36 @@ def is_message_deleted(message):
         return True
     else:
         return False
+ 
+def retrieve_members(channel_id, dm_id): 
+    members = None
+    if channel_id == -1:
+        for dm in data['DM']:
+            if dm['dm_id'] == dm_id:
+                members = dm['dm_members']
+                break
+    elif dm_id == -1:
+        for channel in data['channels']:
+            if channel['channel_id'] == channel_id:
+                members = channel['all_members']
+                break
+    return members 
+                    
+def add_tag_notification(auth_user_id, channel_id, dm_id, message):
+    members = retrieve_members(channel_id, dm_id)
+    
+    for member in members:
+        handle = '@' + member['handle_str']
+        if handle in message:
+            notification = {
+                'auth_user_id': auth_user_id,
+                'u_id': member['u_id'],
+                'channel_id': channel_id,
+                'dm_id': dm_id,
+                'type': 1,
+                'message': message,
+            }
+            data['notifications'].append(notification)
 
 
 def message_send_v1(token, channel_id, message):
@@ -159,6 +189,7 @@ def message_send_v1(token, channel_id, message):
         'time_created': round(time),
     }
     data['messages'].append(message_info)
+    add_tag_notification(auth_user_id, channel_id, -1, message)
     return {
         'message_id': message_id,
     }
@@ -335,6 +366,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'time_created': round(time),
     }
     data['messages'].append(msg)
+    add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
     return {'shared_message_id': message_id}
 
 def message_senddm_v1(token, dm_id, message):
@@ -390,6 +422,7 @@ def message_senddm_v1(token, dm_id, message):
         'time_created': round(time),
     }
     data['messages'].append(message_info)
+    add_tag_notification(auth_user_id, -1, dm_id, message)
     return {
         'message_id': message_id,
     }
