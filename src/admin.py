@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.database import data
 from src.user import user_profile_setname_v2
-from src.message import message_edit_v2
+from src.message import message_edit_v1
 from src.helper import is_valid_token, detoken
 
 OWNER = 1
