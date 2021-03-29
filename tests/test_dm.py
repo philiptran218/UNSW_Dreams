@@ -25,7 +25,7 @@ def test_user2():
 
 @pytest.fixture
 def test_user3():
-    user_info = auth_register_v2("dan@gmail.com", "password", "dan", "Smith")
+    user_info = auth_register_v2("danimatt@gmail.com", "valpassword", "danny", "Smithy")
     return user_info
 
 #Fixture that create a dm to test functions. 
@@ -37,16 +37,18 @@ def test_dm(test_user1, test_user2):
 #Function that shows expected output for dm_details.
 def expected_output_details_v1():
     return {
-        "dm_name": 'validnamevalidname',
-        "members": [
-            {
-                'u_id': 1,
-                'name_first': 'validname',
-                'name_last': 'vaidname',
-                'email': 'validemail@g.com',
-                'handle_str': 'validnamevalidname'
-            }
-        ]
+        'dm': [{
+            "dm_name": 'dansmith, validnamevalidname',
+            "dm_members": [
+                {
+                    'u_id': 2,
+                    'name_first': 'dan',
+                    'name_last': 'Smith',
+                    'email': 'dan@gmail.com',
+                    'handle_str': 'dansmith'
+                }
+            ]
+        }]
     }
 
 #Function that shows expected output for dm_list.
@@ -55,7 +57,7 @@ def expected_output_list_v1():
         'dm': [
             {
                 "dm_id": 1,
-                "name": "validnamevalidname, danSmith"
+                "dm_name": "dansmith, validnamevalidname"
             }
         ]
     }
@@ -64,18 +66,16 @@ def expected_output_list_v1():
 # output for list, despite looking similar.
 def expected_output_create_v1():
     return {
-        {
-            "dm_id": 1,
-            "dm_name": "validnamevalidname, danSmith"
-        }
+        "dm_id": 1,
+        "dm_name": "danSmith, validnamevalidname"
     }
 
 ################################################################################
 #  dm_details_v1 testing                                                       #
 ################################################################################
 
-def test_dm_details_v1_valid(clear_data, test_dm, test_user1):
-    assert(dm_details_v1(test_user1['token'], test_dm['dm_id']) == expected_output_details_v1())
+def test_dm_details_v1_valid(clear_data, test_dm, test_user2):
+    assert(dm_details_v1(test_user2['token'], test_dm['dm_id']) == expected_output_details_v1())
 
 def test_dm_details_v1_invalid_InputError(clear_data, test_user1, test_dm):
     with pytest.raises(InputError):
