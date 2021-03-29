@@ -358,6 +358,22 @@ def test_notifications_get_join_dm(clear_data, user_1, user_2, user_1_dm):
     assert notif[0]['dm_id'] == user_1_dm
     assert notif[0]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
     
+def test_notifications_multi_channels(clear_data, user_1, user_2, public_channel_1, public_channel_2):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
+    notif = notifications_get_v1(user_1['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == public_channel_2
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "terrynguyen added you to Terry's Channel"
+    
+def test_notifications_multi_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
+    notif = notifications_get_v1(user_1['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == -1
+    assert notif[0]['dm_id'] == user_2_dm
+    assert notif[0]['notification_message'] == "terrynguyen added you to johnsmith, terrynguyen"    
+    
 def test_notifications_get_channel_tag(clear_data, user_1, user_2, public_channel_1):
     # Tests notifications for invite and tag (in a channel)
     channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
@@ -402,4 +418,4 @@ def test_notifications_get_channel_and_dm(clear_data, user_1, user_2, public_cha
     assert notif[3]['channel_id'] == -1
     assert notif[3]['dm_id'] == user_1_dm
     assert notif[3]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
-
+ 
