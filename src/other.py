@@ -1,5 +1,6 @@
 from src.database import data
 from src.helper import is_valid_token, detoken, get_handle
+from src.error import AccessError, InputError
 
 TAG = 1
 INVITE = 2
@@ -27,6 +28,7 @@ def clear_v1():
     delete('channels')
     delete('messages')
     delete('DM')
+    delete('notifications')
     delete('sessions')
     delete('session_ids')
 
@@ -53,11 +55,11 @@ def get_channel_dm_name(channel_id, dm_id):
             if channel['channel_id'] == channel_id:
                 return channel['name']
     
-def get_notifications_v1(token):
+def notifications_get_v1(token):
     if not is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = detoken(token)
-    notif_list = data['notifications'].reverse()
+    notif_list = list(reversed(data['notifications']))
     recent_notifs = []
     
     for notif in notif_list:
@@ -66,7 +68,7 @@ def get_notifications_v1(token):
             if notif['type'] == TAG:
                 notif_msg = get_handle(notif['auth_user_id']) + ' tagged you in '
                 notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
-            elif notif['type'] == INVITE:
+            else:
                 notif_msg = get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name
                 
             notif_dict = {
