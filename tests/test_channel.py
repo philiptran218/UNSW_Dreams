@@ -27,17 +27,17 @@ def user_3():
 
 @pytest.fixture
 def public_channel_1(user_1):
-    channel = channels_create_v1(user_1, "John's Channel", True)
+    channel = channels_create_v1(user_1['token'], "John's Channel", True)
     return channel['channel_id']
     
 @pytest.fixture
 def public_channel_2(user_2):
-    channel = channels_create_v1(user_2, "Terry's Channel", True)
+    channel = channels_create_v1(user_2['token'], "Terry's Channel", True)
     return channel['channel_id']
 
 @pytest.fixture
 def private_channel(user_2):
-    channel = channels_create_v1(user_2, "Terry's Channel", False)
+    channel = channels_create_v1(user_2['token'], "Terry's Channel", False)
     return channel['channel_id']
 
 @pytest.fixture
@@ -476,7 +476,7 @@ def test_channel_join_valid_multi(clear_data, user_1, user_2, user_3, public_cha
     channel_join_v1(user_2['token'], public_channel_1)
     channel_join_v1(user_3['token'], public_channel_1)
 
-    channels = channel_details_v1(user_1, public_channel_1)
+    channels = channel_details_v1(user_1['token'], public_channel_1)
     assert len(channels['all_members']) == 3
     assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
     assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
@@ -488,7 +488,7 @@ def test_channel_join_global_private(clear_data, user_1, user_2, private_channel
     # of private_channel
     channel_join_v1(user_1['token'], private_channel)
     
-    channels = channel_details_v1(user_2, private_channel)
+    channels = channel_details_v1(user_2['token'], private_channel)
     # Checking if user_1 has been added into the members and owners list 
     assert len(channels['all_members']) == 2
     assert len(channels['owner_members']) == 2
