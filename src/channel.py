@@ -56,7 +56,7 @@ def channel_owners(channel_id):
             list_of_owners = channel['owner_members']
     return list_of_owners
 
-def channel_invite_v1(auth_user_id, channel_id, u_id):
+def channel_invite_v1(token, channel_id, u_id):
     '''
     Function:
         Invites a user (with user id u_id) to join a channel with ID channel_id. 
@@ -77,12 +77,13 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     Return Type:
         This function doesn't return any value.
     ''' 
+    if helper.is_valid_token() == False:
+        raise InputError("Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id")
     if is_already_in_channel(auth_user_id, channel_id) == False:
         raise AccessError("Authorised user is not a member of the channel")
-    if helper.is_valid_uid(u_id) == False:
-        raise InputError("Please enter a valid u_id")
     if is_already_in_channel(u_id, channel_id) == True:
         # If u_id is already in channel, u_id is not appended again.
         return {}
@@ -91,7 +92,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         helper.add_uid_to_channel(u_id, channel_id)
     return {}
 
-def channel_details_v1(auth_user_id, channel_id):
+def channel_details_v1(token, channel_id):
     '''
     Function:
         Given a Channel with ID channel_id that the authorised user is part of, 
@@ -110,6 +111,9 @@ def channel_details_v1(auth_user_id, channel_id):
     Return Type:
         { name, owner_members, all_members }
     '''
+    if helper.is_valid_token(token) == False:
+        raise AccessError("Please enter a valid token")
+    auth_user_id = helper.detoken(token)
     if is_valid_channelid(channel_id) == False:
         raise InputError("Please enter a valid channel_id")
     if is_already_in_channel(auth_user_id, channel_id) == False:
@@ -179,7 +183,7 @@ def channel_messages_v1(token, channel_id, start):
         u_id, message, time_created, start, end}
     '''
     
-     # Check for valid token
+    # Check for valid token
     if not helper.is_valid_token(token):
         raise AccessError("Please enter a valid token") 
     auth_user_id = helper.detoken(token) 
