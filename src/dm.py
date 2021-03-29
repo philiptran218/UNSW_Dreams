@@ -414,7 +414,7 @@ def dm_create_v1(token, u_ids):
                 }
             )
             if user_id != token_u_id:
-                add_to_notifications(token_u_id, user_id, -1, dm_id)
+                helper.add_to_notifications(token_u_id, user_id, -1, dm_id)
 
         data['DM'].append(new_dm)
 
