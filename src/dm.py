@@ -84,7 +84,7 @@ def dm_name_generator(u_id):
 
     return dm_name
 
-def dm_details(token, dm_id):
+def dm_details_v1(token, dm_id):
     '''
     Function:
         Displays basic information about the dm.
@@ -104,7 +104,7 @@ def dm_details(token, dm_id):
     ''' 
     pass
 
-def dm_list(token):
+def dm_list_v1(token):
     '''
     Function:
        returns a list of DM's the user is a part of. 
@@ -120,7 +120,7 @@ def dm_list(token):
     ''' 
     pass
 
-def dm_create(token, u_id):
+def dm_create_v1(token, u_id):
     '''
     Function:
         creates a dm. Geenrates name based on handle strings of members.

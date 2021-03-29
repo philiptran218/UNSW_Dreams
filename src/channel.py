@@ -7,6 +7,7 @@ from datetime import timezone, datetime
 
 OWNER = 1
 MEMBER = 2
+CHANNEL = 2
 
 def is_valid_channelid(channel_id): 
     for channel in data['channels']:
@@ -133,6 +134,7 @@ def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
                     'u_id': u_id,
                     'channel_id': channel_id,
                     'dm_id': dm_id,
+                    'notification_type': CHANNEL,
                     'time_created': round(time)
                 }
     data['notifications'].append(notification)
