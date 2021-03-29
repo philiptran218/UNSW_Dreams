@@ -66,6 +66,10 @@ def test_dm_invite_user_not_a_member(clear_data,test_user1_token,test_user2_u_id
     with pytest.raises(AccessError):
         dm_invite_v1(test_user3_token['token'],test_create_dm,test_user2_u_id['auth_user_id'])
 
+def test_dm_invite_invalid_token(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    with pytest.raises(AccessError):
+        dm_invite_v1(INVALID_TOKEN,test_create_dm,test_user2_u_id['auth_user_id'])
+
 #testing a valid case by inviting a user and checking for membership
 def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_u_id,test_create_dm):
     dm_invite_v1(test_user1_token['token'],test_create_dm,test_user4_u_id['auth_user_id'])
