@@ -4,6 +4,7 @@ from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
 
+
 @pytest.fixture
 def clear_data():
     clear_v1
@@ -151,12 +152,41 @@ def test_unregistered_user(clear_data):
 #                                                                               #
 #################################################################################
 
+def test_handle_simple_pass(clear_data):
+    new_user = auth_register("myemail@gmail.com", "my12password", "Brad", "Lee")
+    new_user_token = new_user.get("token")
+    user_id = new_user.get("u_id")
+    output = user_profile_sethandle(user_token, "MyHandle")
+    handle = details.get('user').get('handle_str')
+    assert handle == "MyHandle"
 
 
+def test_invalid_handle(clear_data):
+    new_user = auth_register("validemail@gmail.com", "PaSsWoRd321My", "Ash", "Ketchum")
+    new_user_token = new_user.get("token")
 
+    with pytest.raises(InputError):
+        user.user_profile_sethandle(new_user_token, '')
 
-#################################################################################
-#                                                                               #
-#                      users_all_v1 testing functions                           #
-#                                                                               #
-#################################################################################
+def test_invalid_long_handle(clear_data):
+    new_user = auth_register("validemail@gmail.com", "PaSsWoRd321My", "Ash", "Ketchum")
+    new_user_token = new_user.get("token")
+
+    with pytest.raises(InputError):
+        user.user_profile_sethandle(new_user_token, 'thisisaverylonghandlethatcantbeused')
+
+def test_handle_taken(clear_data):
+    new_user1 = auth_register("validemail@gmail.com", "PaSsWoRd321My", "Ash", "Ketchum")
+    new_user1_token = new_user1.get("token")
+    user_profile_sethandle(new_user1_token, "PokemonMaster")
+
+    new_user2 = auth_register("thisemail@gmail.com", "DifferentPassword", "Gary", "Oak")
+    new_user2_token = new_user2.get("token")
+    with pytest.raises(InputError):
+        user_profile_sethandle(new_user2_token, "PokemonMaster")
+
+def test_sethandle_invalid_token(clear_data):
+    auth_register("thismyemail@gmail.com", "whatisapassword1", "Bill", "Gates")
+
+    with pytest.raises(error.AccessError):
+        user_profile_sethandle("invalid", 'mycrosoft')
