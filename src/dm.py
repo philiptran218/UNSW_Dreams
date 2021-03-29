@@ -227,10 +227,7 @@ def dm_leave_v1(token,dm_id):
     Return Value:
     this function has no return value 
     '''
-<<<<<<< HEAD
 
-=======
->>>>>>> 5a298cd7a4ef0f92dd56a097d69f915cbbb73220
     u_id = detoken(token)
     
     if not helper.is_valid_token(token) :
