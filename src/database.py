@@ -5,6 +5,7 @@ data = {
     'DM': [],
     'sessions': [],
     'session_ids': [],
+    'notifications':[]
 }
 ''' initialise empty lists for data fields '''
 ''' what information each list should have '''
