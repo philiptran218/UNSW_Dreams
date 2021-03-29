@@ -7,6 +7,7 @@ from src.database import data
 import pytest
 
 INVALID_USER = -1
+INVALID_TOKEN = -1
 
 ################################################################################
 # channel_list_v1 and channel_listall_v1 tests                                 #
@@ -118,11 +119,11 @@ def test_invalidName_channels_create_v1(clear_data,test_user):
     with pytest.raises(InputError): 
         channels_create_v1(test_user,invalidName, True)
     
-# Testing when a user with an invalid u_id trys to create a channel
+# Testing when a user with an invalid token trys to create a channel
 def test_invalid_user(clear_data):
     # Invalid case where a public channel with name "ValidChannelName" is created 
     # by user with an Invalid u_id
     with pytest.raises(AccessError): 
-        channels_create_v1(INVALID_USER,'channelname',True)
+        channels_create_v1(INVALID_TOKEN,'channelname',True)
     
 
