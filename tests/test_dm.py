@@ -46,7 +46,7 @@ def test_user4_u_id():
 #fixture that creates a dm by user1
 @pytest.fixture
 def test_create_dm(test_user1_token,test_user2_u_id):
-    dm = dm_create_v1((test_user1_token['token'],[test_user2_u_id['auth_user_id']]))
+    dm = dm_create_v1(test_user1_token['token'],test_user2_u_id['auth_user_id'])
     return dm['dm_id']
 
 ################################################################################
@@ -71,7 +71,7 @@ def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_
     dm_invite_v1(test_user1_token['token'],test_create_dm,test_user4_u_id['auth_user_id'])
     member_check = False
     dm_details = dm_details_v1(test_user1_token['token'],test_create_dm)
-    members_list = dm_details['members']
+    members_list = dm_details['dm_members']
     for member in members_list:
         if member['u_id'] == test_user4_u_id['auth_user_id']:
             member_check = True
@@ -84,7 +84,8 @@ def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_
 
 def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
     dmsdict =  dm_list_v1(test_user1_token['token'])
-    assert(dm_remove_v1(test_user1_token['token'],test_create_dm) ==( bool (not dmsdict['dms'])) )
+    dm_remove_v1(test_user1_token['token'],test_create_dm) 
+    assert( bool (dmsdict['dm']))
 
 #testing when dm_id is invalid -> InputError is raised
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,test_create_dm):
@@ -138,7 +139,7 @@ def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1_token,tes
     
     # Checking the message dictionary to see if message has been appended
     assert message_detail['messages'][0]['message_id'] == 1
-    assert message_detail['messages'][0]['u_id'] == test_user1_token['auth_u_id']
+    assert message_detail['messages'][0]['u_id'] == test_user1_token['auth_user_id']
     assert message_detail['messages'][0]['message'] == 'A new message'
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
@@ -159,7 +160,7 @@ def test_dm_messages_multiple(clear_data,test_create_dm,test_user1_token,test_us
     j = 0
     while i >= 4:
         assert message_detail['messages'][j]['message_id'] == i
-        assert message_detail['messages'][j]['u_id'] == test_user1_token['auth_u_id']
+        assert message_detail['messages'][j]['u_id'] == test_user1_token['auth_user_id']
         assert message_detail['messages'][j]['message'] == str(i)
         i -= 1
         j += 1 
@@ -186,9 +187,9 @@ def test_dm_leave(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
     dm_leave_v1(test_user1_token['token'],test_create_dm)
     member_left = True
     dlist = dm_list_v1(test_user1_token['token'])
-    for dm in dlist:
-        for memeber in dm['dm_members']:
-            if memeber['u_id'] == test_user1_token['auth_u_id']:
+    for dm in dlist['dm']:
+        for member in dm['dm_members']:
+            if member['u_id'] == test_user1_token['auth_u_id']:
                 member_left = False
     assert(member_left)
                 
