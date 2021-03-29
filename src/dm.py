@@ -65,17 +65,7 @@ def list_of_messages(dm_id, start, message_limit):
    
     return messages
 
-def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    notification = {
-    'auth_user_id': auth_user_id,
-    'u_id': u_id,
-    'channel_id': channel_id,
-    'dm_id': dm_id,
-    'time_created': round(time)
-    }
-    data['notifications'].append(notification)
+
 
 
 # Helper funciton to get the name of the dm.
@@ -119,11 +109,12 @@ def dm_invite_v1(token, dm_id, u_id):
     Return Type:
         This function doesn't return any data.
     ''' 
-    
+    if not helper.is_valid_token(token) :
+        raise AccessError("token is invalid")
+
     token_u_id = int(helper.detoken(token))
     #checking if user who called fucntion has a valid token    
-    if not helper.is_valid_token(token) :
-        raise InputError("token is invalid")
+
     if not helper.is_valid_uid(u_id):
         raise InputError('u_id is not valid')
     #checking if the dm  has a valid dm_id
@@ -146,7 +137,7 @@ def dm_invite_v1(token, dm_id, u_id):
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             dm['dm_members'].append(invited_member)
-            add_to_notifications(token_u_id,u_id,-1,dm_id)
+            helper.add_to_notifications(token_u_id,u_id,-1,dm_id)
             return{}
 
 
@@ -169,11 +160,14 @@ def dm_remove_v1(token,dm_id):
     Return Type:
         This function doesn't return any data.
     ''' 
-    u_id = int(helper.detoken(token))
-
     #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
         raise InputError("token is invalid")
+    
+    
+    u_id = int(helper.detoken(token))
+
+
     #checking if the dm to be removed has a valid dm_id
     if not is_valid_dm_id(dm_id):
         raise InputError('dm_id is invalid')
@@ -215,11 +209,13 @@ def dm_messages_v1(token, dm_id, start):
         Returns a dictionary, where each dictionary contains types {message_id,
         u_id, message, time_created, start, end}
     '''
-    u_id = int(helper.detoken(token))
-    
     #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise InputError("token is invalid")  
+        raise AccessError("token is invalid")  
+    
+    u_id = int(helper.detoken(token))
+    
+
     # Check for valid dm id 
     if not is_valid_dm_id(dm_id): 
         raise InputError("Please enter a valid channel_id")
@@ -265,11 +261,12 @@ def dm_leave_v1(token,dm_id):
     Return Value:
     this function has no return value 
     '''
+    if not helper.is_valid_token(token) :
+        raise InputError("token is invalid")
 
     u_id = int(helper.detoken(token))
     #checking if user who called fucntion has a valid token
-    if not helper.is_valid_token(token) :
-        raise InputError("token is invalid")
+
     # Check for valid dm id 
     if not is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
