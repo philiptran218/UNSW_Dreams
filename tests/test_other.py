@@ -338,4 +338,3 @@ def test_search_user_not_in_dm(clear_data, user_1, user_2, user_3, user_1_dm):
     message_senddm_v1(user_1['token'], user_1_dm, MIXED_QUERY_STR)
     output = search_v1(user_3['token'], MIXED_QUERY_STR)
     assert output['messages'] == []
-

@@ -86,4 +86,3 @@ def search_v1(token, query_str):
         if user_found == True and is_query_str_in_msg(query_str, message):
             search_matches['messages'].append(message)
     return search_matches
-
