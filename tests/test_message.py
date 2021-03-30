@@ -58,7 +58,7 @@ def clear_database():
 # message_send_v1 tests                                                        #
 ################################################################################
 
-def test_message_send_invalid_uid(clear_database, user1, channel1):
+def test_message_send_invalid_token(clear_database, user1, channel1):
     # Raises AccessError since token INVALID_ID does not exist
     with pytest.raises(AccessError):
         message_send_v1(INVALID_ID, channel1, 'Hello World')
@@ -67,6 +67,11 @@ def test_message_send_invalid_channel(clear_database, user1):
     # Raises InputError since channel_id INVALID_ID does not exist
     with pytest.raises(InputError):
         message_send_v1(user1['token'], INVALID_ID, 'Nice to meet you!')
+        
+def test_message_send_invalid_channel_2(clear_database, user1):
+    # Raises InputError since channel_id 10 does not exist
+    with pytest.raises(InputError):
+        message_send_v1(user1['token'], 10, 'Hello World')
         
 def test_message_send_uid_not_in_channel(clear_database, user1, channel1, user2):
     # Raises AccessError since user2 is not in channel1
@@ -331,6 +336,11 @@ def test_message_senddm_invalid_dm(clear_database, user1):
     # Raises InputError since dm_id INVALID_ID does not exist
     with pytest.raises(InputError):
         message_senddm_v1(user1['token'], INVALID_ID, 'Nice to meet you!')
+        
+def test_message_senddm_invalid_dm_2(clear_database, user1):
+    # Raises InputError since dm_id 10 does not exist
+    with pytest.raises(InputError):
+        message_senddm_v1(user1['token'], 10, 'Hello World')
         
 def test_message_senddm_uid_not_in_dm(clear_database, user1, dm1, user2):
     # Raises AccessError since user2 is not in dm1
