@@ -51,12 +51,12 @@ def public_channel_2 (user_2):
 
 @pytest.fixture
 def user_1_dm (user_1, user_2):
-    dm = dm_create_v1(user_1['token'], [user_1['auth_user_id'], user_2['auth_user_id']])
+    dm = dm_create_v1(user_1['token'], [user_2['auth_user_id']])
     return dm['dm_id']
 
 @pytest.fixture
 def user_2_dm (user_1, user_2):
-    dm = dm_create_v1(user_2['token'], [user_1['auth_user_id'], user_2['auth_user_id']])
+    dm = dm_create_v1(user_2['token'], [user_1['auth_user_id']])
     return dm['dm_id']
 
 @pytest.fixture
