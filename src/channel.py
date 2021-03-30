@@ -7,20 +7,15 @@ from datetime import timezone, datetime
 
 OWNER = 1
 MEMBER = 2
-CHANNEL = 2
-
-def is_valid_channelid(channel_id): 
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            return True       
-    return False     
+CHANNEL = 2   
 
 def is_channel_public(channel_id):
+    channel_found = None
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            break
+            channel_found = channel
     
-    if channel['is_public']:
+    if channel_found['is_public']:
         return True
     else:
         return False
@@ -30,7 +25,6 @@ def is_already_channel_owner(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
@@ -42,7 +36,6 @@ def is_already_in_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['all_members']:
         if member['u_id'] == u_id:
@@ -55,7 +48,6 @@ def is_only_owner_in_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
@@ -69,7 +61,7 @@ def remove_channel_owner(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
+ 
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
             selected_channel['owner_members'].remove(member)
@@ -107,7 +99,7 @@ def remove_user(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
+ 
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
             selected_channel['owner_members'].remove(member)
@@ -115,16 +107,6 @@ def remove_user(u_id, channel_id):
     for member in selected_channel['all_members']:
         if member['u_id'] == u_id:
             selected_channel['all_members'].remove(member)
-
-def find_permissions(u_id):
-    for user in data['users']:
-        if user['u_id'] == u_id:
-            break
-            
-    if user['perm_id'] == 1:
-        return 1
-    else:
-        return 2
 
 def get_len_messages(channel_id):
     total = 0
@@ -183,9 +165,9 @@ def channel_invite_v1(token, channel_id, u_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if find_permissions(auth_user_id) == OWNER:
+    if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can invite the u_id.
         pass
     elif not is_already_in_channel(auth_user_id, channel_id):
@@ -198,7 +180,7 @@ def channel_invite_v1(token, channel_id, u_id):
     else:
         # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
-    if find_permissions(u_id) == OWNER:
+    if helper.find_permissions(u_id) == OWNER:
         helper.add_owner_to_channel(auth_user_id, channel_id)
     helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
@@ -225,9 +207,9 @@ def channel_details_v1(token, channel_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if find_permissions(auth_user_id) == OWNER:
+    if helper.find_permissions(auth_user_id) == OWNER:
      # If auth_user_id is the global owner, they can access channel details.
         pass
     elif not is_already_in_channel(auth_user_id, channel_id):
@@ -268,7 +250,7 @@ def channel_messages_v1(token, channel_id, start):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)  
     # Check for valid channel_id
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")
     # Check if user is not in the channel
     if not is_already_in_channel(auth_user_id, channel_id):
@@ -316,7 +298,7 @@ def channel_leave_v1(token, channel_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if not is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="Please enter a valid user")
@@ -348,10 +330,10 @@ def channel_join_v1(token, channel_id):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
     # Check for valid channel_id
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id") 
     # Check if auth_user_id cannot join a private channel
-    if find_permissions(auth_user_id) == MEMBER and not is_channel_public(channel_id):
+    if helper.find_permissions(auth_user_id) == MEMBER and not is_channel_public(channel_id):
         raise AccessError(description="Members cannot join a private channel")
     # If auth_user_id is already in the channel     
     if is_already_in_channel(auth_user_id, channel_id):
@@ -359,7 +341,7 @@ def channel_join_v1(token, channel_id):
         
     helper.add_uid_to_channel(auth_user_id, channel_id)
     # Adding user into the owners list if they have global permissions
-    if find_permissions(auth_user_id) == OWNER:
+    if helper.find_permissions(auth_user_id) == OWNER:
         helper.add_owner_to_channel(auth_user_id, channel_id) 
   
     return {}
@@ -389,11 +371,11 @@ def channel_addowner_v1(token, channel_id, u_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if is_already_channel_owner(u_id, channel_id):
         raise InputError(description="User is already an owner of the channel")
-    if find_permissions(auth_user_id) == OWNER:
+    if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
     elif not is_already_channel_owner(auth_user_id, channel_id):
@@ -432,13 +414,13 @@ def channel_removeowner_v1(token, channel_id, u_id):
     auth_user_id = helper.detoken(token) 
     if not helper.is_valid_uid(u_id):
         raise AccessError(description="Please enter a valid user") 
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
     if not is_already_channel_owner(u_id, channel_id):
         raise InputError(description="User is not an owner of the channel")
     if is_only_owner_in_channel(auth_user_id, channel_id):
         raise InputError(description="User is currently the only owner")
-    if find_permissions(auth_user_id) == OWNER:
+    if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
     elif not is_already_in_channel(auth_user_id, channel_id):

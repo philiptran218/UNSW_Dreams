@@ -359,11 +359,11 @@ def test_removeowner_u_id_not_owner(clear_data, user_1, user_2, public_channel_1
     with pytest.raises(InputError):
         channel_removeowner_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
 
-def test_removeowner_only_owner_in_channel(clear_data, user_1, public_channel_1):
+def test_removeowner_only_owner_in_channel(clear_data, user_1, user_2, public_channel_1, public_channel_2):
     with pytest.raises(InputError):
-        channel_removeowner_v1(user_1['token'], public_channel_1, user_1['auth_user_id'])
+        channel_removeowner_v1(user_2['token'], public_channel_2, user_2['auth_user_id'])
 
-def test_removeowner_valid_inputs(clear_data, user_1, user_2, user_3, public_channel_2):
+def test_removeowner_valid_inputs(clear_data, user_1, user_2, user_3, public_channel_1, public_channel_2):
     channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
     channel_addowner_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
     channel_removeowner_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
@@ -527,11 +527,11 @@ def test_channel_leave_auth_id_not_in_channel(clear_data, user_1, user_2, public
     with pytest.raises(AccessError):
         channel_leave_v1(user_2['token'], public_channel_1)
 
-def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1):
-    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
-    channel_leave_v1(user_2['token'], public_channel_1)
-    info = channel_details_v1(user_1['token'], public_channel_1)
-    assert user_2['auth_user_id'] not in info['all_members']
+def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1, public_channel_2):
+    channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
+    channel_leave_v1(user_1['token'], public_channel_2)
+    info = channel_details_v1(user_2['token'], public_channel_2)
+    assert user_1['auth_user_id'] not in info['all_members']
 
 def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1):
     channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
