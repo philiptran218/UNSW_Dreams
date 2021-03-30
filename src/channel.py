@@ -126,19 +126,6 @@ def find_permissions(u_id):
     else:
         return 2
 
-def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    notification = {
-                    'auth_user_id': auth_user_id,
-                    'u_id': u_id,
-                    'channel_id': channel_id,
-                    'dm_id': dm_id,
-                    'notification_type': CHANNEL,
-                    'time_created': round(time)
-                }
-    data['notifications'].append(notification)
-
 def get_len_messages(channel_id):
     total = 0
     for message in data['messages']:
@@ -213,7 +200,7 @@ def channel_invite_v1(token, channel_id, u_id):
         helper.add_uid_to_channel(u_id, channel_id)
     if find_permissions(u_id) == OWNER:
         helper.add_owner_to_channel(auth_user_id, channel_id)
-    add_to_notifications(auth_user_id, u_id, channel_id, -1)
+    helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
 def channel_details_v1(token, channel_id):
