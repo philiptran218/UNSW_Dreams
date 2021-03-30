@@ -109,6 +109,10 @@ def test_dm_remove_v1_unoriginal(clear_data,test_user1,test_user2,test_user3,tes
     with pytest.raises(AccessError):
         dm_remove_v1(test_user3['token'],test_create_dm)
 
+#testing when user trying to remove is not the original dm creator and dm_id is invalid
+def test_dm_remove_v1_inval_dm_id_not_creator(clear_data,test_user1,test_user2,test_user3,test_create_dm):
+    with pytest.raises(InputError):
+        dm_remove_v1(test_user3['token'],INVALID_DM_ID)
 
 
 ################################################################################
