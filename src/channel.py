@@ -16,11 +16,12 @@ def is_valid_channelid(channel_id):
     return False     
 
 def is_channel_public(channel_id):
+    channel_found = None
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            break
+            channel_found = channel
     
-    if channel['is_public']:
+    if channel_found['is_public']:
         return True
     else:
         return False
@@ -30,7 +31,6 @@ def is_already_channel_owner(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
@@ -42,7 +42,6 @@ def is_already_in_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['all_members']:
         if member['u_id'] == u_id:
@@ -55,7 +54,6 @@ def is_only_owner_in_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
@@ -69,7 +67,7 @@ def remove_channel_owner(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
+ 
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
             selected_channel['owner_members'].remove(member)
@@ -107,7 +105,7 @@ def remove_user(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
+ 
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
             selected_channel['owner_members'].remove(member)
@@ -117,11 +115,12 @@ def remove_user(u_id, channel_id):
             selected_channel['all_members'].remove(member)
 
 def find_permissions(u_id):
+    user_found = None
     for user in data['users']:
         if user['u_id'] == u_id:
-            break
+            user_found = user
             
-    if user['perm_id'] == 1:
+    if user_found['perm_id'] == 1:
         return 1
     else:
         return 2
