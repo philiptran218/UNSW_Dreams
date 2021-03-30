@@ -103,6 +103,36 @@ def is_message_deleted(message):
         return True
     else:
         return False
+ 
+def retrieve_members(channel_id, dm_id): 
+    members = None
+    if channel_id == -1:
+        for dm in data['DM']:
+            if dm['dm_id'] == dm_id:
+                members = dm['dm_members']
+                break
+    elif dm_id == -1:
+        for channel in data['channels']:
+            if channel['channel_id'] == channel_id:
+                members = channel['all_members']
+                break
+    return members 
+                    
+def add_tag_notification(auth_user_id, channel_id, dm_id, message):
+    members = retrieve_members(channel_id, dm_id)
+    
+    for member in members:
+        handle = '@' + member['handle_str']
+        if handle in message:
+            notification = {
+                'auth_user_id': auth_user_id,
+                'u_id': member['u_id'],
+                'channel_id': channel_id,
+                'dm_id': dm_id,
+                'type': 1,
+                'message': message,
+            }
+            data['notifications'].append(notification)
 
 
 def message_send_v1(token, channel_id, message):
@@ -123,9 +153,9 @@ def message_send_v1(token, channel_id, message):
         InputError - occurs when the channel ID is not a valid ID, when the
                      message being sent is empty and when the message has more
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not a member of the channel they are sending the
-                      message to 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the channel they are sending 
+                      the message to 
         
     Return value:
         Returns a dictionary containing the type {message_id}
@@ -159,6 +189,7 @@ def message_send_v1(token, channel_id, message):
         'time_created': round(time),
     }
     data['messages'].append(message_info)
+    add_tag_notification(auth_user_id, channel_id, -1, message)
     return {
         'message_id': message_id,
     }
@@ -177,8 +208,8 @@ def message_remove_v1(token, message_id):
     Exceptions:
         InputError - occurs when the message ID is not a valid ID and when the
                      message has already been deleted
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not authorised to remove the message
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not authorised to remove the message
                       
     Return value:
         Returns an empty dictionary {}
@@ -221,8 +252,8 @@ def message_edit_v1(token, message_id, message):
         InputError - occurs when the message ID is not a valid ID, when the 
                      message has already been deleted and when the edited 
                      message is longer than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not authorised to edit the message 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not authorised to edit the message 
                       
     Return value:
         Returns an empty dictionary {}
@@ -280,9 +311,9 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
                      og_message ID is not a valid ID, when the og_message has 
                      already been deleted and when the shared message is longer
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the
-                      user is not a member of the channel/DM they are sharing
-                      the message to 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the channel/DM they are 
+                      sharing the message to 
                       
     Return value:
         Returns a dictionary containing the type {shared_message_id}
@@ -335,6 +366,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'time_created': round(time),
     }
     data['messages'].append(msg)
+    add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
     return {'shared_message_id': message_id}
 
 def message_senddm_v1(token, dm_id, message):
@@ -354,8 +386,8 @@ def message_senddm_v1(token, dm_id, message):
         InputError - occurs when the dm ID is not a valid ID, when the
                      message being sent is empty and when the message has more
                      than 1000 characters
-        AccessError - occurs when the user ID is not a valid ID and when the 
-                      user is not a member of the DM they are sending the 
+        AccessError - occurs when the user's token is not a valid token and when 
+                      the user is not a member of the DM they are sending the 
                       message to 
                       
     Return value:
@@ -390,6 +422,8 @@ def message_senddm_v1(token, dm_id, message):
         'time_created': round(time),
     }
     data['messages'].append(message_info)
+    add_tag_notification(auth_user_id, -1, dm_id, message)
     return {
         'message_id': message_id,
     }
+

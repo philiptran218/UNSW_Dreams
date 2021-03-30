@@ -126,19 +126,6 @@ def find_permissions(u_id):
     else:
         return 2
 
-def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    notification = {
-                    'auth_user_id': auth_user_id,
-                    'u_id': u_id,
-                    'channel_id': channel_id,
-                    'dm_id': dm_id,
-                    'notification_type': CHANNEL,
-                    'time_created': round(time)
-                }
-    data['notifications'].append(notification)
-
 def get_len_messages(channel_id):
     total = 0
     for message in data['messages']:
@@ -213,7 +200,7 @@ def channel_invite_v1(token, channel_id, u_id):
         helper.add_uid_to_channel(u_id, channel_id)
     if find_permissions(u_id) == OWNER:
         helper.add_owner_to_channel(auth_user_id, channel_id)
-    add_to_notifications(auth_user_id, u_id, channel_id, -1)
+    helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
 def channel_details_v1(token, channel_id):
@@ -279,10 +266,7 @@ def channel_messages_v1(token, channel_id, start):
     '''
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
-    auth_user_id = helper.detoken(token)
-     # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid u_id")  
+    auth_user_id = helper.detoken(token)  
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")
@@ -363,9 +347,6 @@ def channel_join_v1(token, channel_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid u_id")
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id") 
@@ -448,9 +429,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
     '''
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
-    auth_user_id = helper.detoken(token)
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid user")  
+    auth_user_id = helper.detoken(token) 
     if not helper.is_valid_uid(u_id):
         raise AccessError(description="Please enter a valid user") 
     if not is_valid_channelid(channel_id):
@@ -462,6 +441,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
     if find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
+    elif not is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not an owner of the channel")
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise InputError(description="User is not authorised")
     remove_channel_owner(u_id, channel_id)

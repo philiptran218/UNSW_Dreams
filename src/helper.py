@@ -1,5 +1,4 @@
 from src.database import data
-from datetime import timezone, datetime
 import jwt
 
 SECRET = 'COMP1531PROJECT'
@@ -74,16 +73,15 @@ def add_owner_to_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
-
+            
 def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
     notification = {
-        'auth_user_id': auth_user_id,
-        'u_id': u_id,
-        'channel_id': channel_id,
-        'dm_id': dm_id,
-        'time_created': round(time)
-    }
+                    'auth_user_id': auth_user_id,
+                    'u_id': u_id,
+                    'channel_id': channel_id,
+                    'dm_id': dm_id,
+                    'type': 2,
+                    'message': None,     
+                }
     data['notifications'].append(notification)
 
