@@ -169,4 +169,19 @@ def auth_register_v1(email, password, name_first, name_last):
     
     data['users'].append(user)
     return auth_login_v1(email, password)
-    
+
+def auth_logout(token):
+    invalid_token = True
+    for sesh in session_ids:
+        if sesh.get('token') == token:
+            sesh.remove(sesh)
+            invalid_token = False
+
+    if invalid_token:
+        return {
+            'is_success': False,
+        }
+
+    return {
+        'is_success': True,
+    }
