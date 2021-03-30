@@ -114,48 +114,11 @@ def search_v1(token, query_str):
         else:
             user_found = is_already_in_dm(auth_user_id, message['dm_id'])
         if user_found == True and is_query_str_in_msg(query_str, message):
-            search_matches['messages'].append(message)
+            message_match = {
+                            'message_id': message['message_id'],
+                            'u_id': message['u_id'],
+                            'message': message['message'],
+                            'time_created': message['time_created']
+                        }
+            search_matches['messages'].append(message_match)
     return search_matches
-
-  
-def notifications_get_v1(token):
-    '''
-    Function:
-        Returns the user's most recent 20 notifications
-        
-    Arguments:
-        token (str) - this is the token of a registered user during their
-                      session
-                   
-    Exceptions:
-        AccessError - occurs when the user's token is not a valid token
-        
-    Return value:
-        Returns a list of dictionaries containing types {channel_id, dm_id,
-        notification_message}
-    '''
-    # Checks if token is valid
-    if not helper.is_valid_token(token):
-        raise AccessError(description="Please enter a valid token")
-    auth_user_id = helper.detoken(token)
-    notif_list = list(reversed(data['notifications']))
-    recent_notifs = []
-    # Searches for user's notifications in data['notifications']
-    for notif in notif_list:
-        chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
-        if notif['u_id'] == auth_user_id:
-            # If the notification is a tag
-            if notif['type'] == TAG:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
-                notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
-            # Else the notification is an invite (for iteration 2)
-            else:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name   
-            notif_dict = {
-                'channel_id': notif['channel_id'],
-                'dm_id': notif['dm_id'],
-                'notification_message': notif_msg
-            }
-            recent_notifs.append(notif_dict)
-    return recent_notifs
-

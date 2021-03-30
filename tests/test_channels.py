@@ -126,4 +126,3 @@ def test_invalid_user(clear_data):
     with pytest.raises(AccessError): 
         channels_create_v1(INVALID_TOKEN,'channelname',True)
     
-

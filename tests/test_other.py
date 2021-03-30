@@ -108,8 +108,6 @@ def test_search_only_DMs(clear_data, user_1, user_1_dm):
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
 
 def test_search_only_channels(clear_data, user_1, public_channel_1):
@@ -117,8 +115,6 @@ def test_search_only_channels(clear_data, user_1, public_channel_1):
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
 
 def test_search_DMs_and_channels(clear_data, user_1, public_channel_1, user_1_dm):
@@ -127,13 +123,9 @@ def test_search_DMs_and_channels(clear_data, user_1, public_channel_1, user_1_dm
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_no_query_str_matches(clear_data, user_1, public_channel_1, user_1_dm):
@@ -152,13 +144,9 @@ def test_search_lowercase_query_str(clear_data, user_1, public_channel_1, user_1
     output = search_v1(user_1['token'], LOWER_QUERY_STR)
     assert output['messages'][0]['message_id'] == 3
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == LOWER_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == LOWER_QUERY_STR
 
 def test_search_uppercase_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -171,13 +159,9 @@ def test_search_uppercase_query_str(clear_data, user_1, public_channel_1, user_1
     output = search_v1(user_1['token'], UPPER_QUERY_STR)
     assert output['messages'][0]['message_id'] == 5
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == UPPER_QUERY_STR
     assert output['messages'][1]['message_id'] == 6
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == UPPER_QUERY_STR
 
 def test_search_numeric_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -190,13 +174,9 @@ def test_search_numeric_query_str(clear_data, user_1, public_channel_1, user_1_d
     output = search_v1(user_1['token'], NUMERIC_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == NUMERIC_QUERY_STR
     assert output['messages'][1]['message_id'] == 6
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == NUMERIC_QUERY_STR
 
 def test_search_symbols_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -209,13 +189,9 @@ def test_search_symbols_query_str(clear_data, user_1, public_channel_1, user_1_d
     output = search_v1(user_1['token'], SYMBOLS_QUERY_STR)
     assert output['messages'][0]['message_id'] == 2
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == SYMBOLS_QUERY_STR
     assert output['messages'][1]['message_id'] == 5
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == 1
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == SYMBOLS_QUERY_STR
 
 def test_search_empty_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -241,23 +217,15 @@ def test_search_substring(clear_data, user_1, user_2, public_channel_1, user_1_d
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 3
     assert output['messages'][0]['u_id'] == 2
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
     assert output['messages'][2]['message_id'] == 7
     assert output['messages'][2]['u_id'] == 1
-    assert output['messages'][2]['channel_id'] == 1
-    assert output['messages'][2]['dm_id'] == -1
     assert output['messages'][2]['message'] == LOWER_QUERY_STR
     assert output['messages'][3]['message_id'] == 8
     assert output['messages'][3]['u_id'] == 2
-    assert output['messages'][3]['channel_id'] == -1
-    assert output['messages'][3]['dm_id'] == 1
     assert output['messages'][3]['message'] == LOWER_QUERY_STR
 
 def test_search_multiple_channels(clear_data, user_1, user_2, public_channel_1, public_channel_2):
@@ -267,13 +235,9 @@ def test_search_multiple_channels(clear_data, user_1, user_2, public_channel_1, 
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == 2
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_multiple_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
@@ -282,13 +246,9 @@ def test_search_multiple_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 2
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_multiple_channels_and_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm, public_channel_1, public_channel_2):
@@ -304,23 +264,15 @@ def test_search_multiple_channels_and_dms(clear_data, user_1, user_2, user_1_dm,
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == 2
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
     assert output['messages'][2]['message_id'] == 6
     assert output['messages'][2]['u_id'] == 1
-    assert output['messages'][2]['channel_id'] == -1
-    assert output['messages'][2]['dm_id'] == 1
     assert output['messages'][2]['message'] == MIXED_QUERY_STR
     assert output['messages'][3]['message_id'] == 7
     assert output['messages'][3]['u_id'] == 2
-    assert output['messages'][3]['channel_id'] == -1
-    assert output['messages'][3]['dm_id'] == 2
     assert output['messages'][3]['message'] == MIXED_QUERY_STR
 
 def test_search_query_string_with_white_space(clear_data, user_1, public_channel_1, user_1_dm):
