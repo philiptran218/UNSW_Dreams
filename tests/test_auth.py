@@ -9,17 +9,17 @@ def clear_data():
 
 def test_pass(clear_data):
     # Testing if a single user can register and login
-    assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest') == {'auth_user_id': 1}
-    assert auth_login_v1('validemail@gmail.com', '123abc!@#') == {'auth_user_id': 1}
+    assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest')['auth_user_id'] == 1
+    assert auth_login_v1('validemail@gmail.com', '123abc!@#')['auth_user_id'] == 1
 
 def test_valid_users(clear_data):
     # Testing if multiple users can register and login
-    assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith') == {'auth_user_id': 1}
-    assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve') == {'auth_user_id': 2}
-    assert auth_register_v1('jasonbourne@gmail.com', 'itsjasonbourne', 'Jason', 'Bourne') == {'auth_user_id': 3}
-    assert auth_login_v1('jsmith@gmail.com', 'password') == {'auth_user_id': 1}
-    assert auth_login_v1('anotheremail@gmail.com', 'stevenses') == {'auth_user_id': 2}
-    assert auth_login_v1('jasonbourne@gmail.com', 'itsjasonbourne') == {'auth_user_id': 3}
+    assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith')['auth_user_id'] == 1
+    assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve')['auth_user_id'] == 2
+    assert auth_register_v1('jasonbourne@gmail.com', 'itsjasonbourne', 'Jason', 'Bourne')['auth_user_id'] == 3
+    assert auth_login_v1('jsmith@gmail.com', 'password')['auth_user_id'] == 1
+    assert auth_login_v1('anotheremail@gmail.com', 'stevenses')['auth_user_id'] == 2
+    assert auth_login_v1('jasonbourne@gmail.com', 'itsjasonbourne')['auth_user_id'] == 3
 
 def test_unregistered_email(clear_data):
     # Testing login with an unregistered email

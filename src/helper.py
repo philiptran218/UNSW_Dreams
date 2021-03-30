@@ -1,4 +1,17 @@
 from src.database import data
+import jwt
+
+SECRET = 'COMP1531PROJECT'
+
+def detoken(token):
+    payload = jwt.decode(token, SECRET, algorithms=['HS256'])
+    return payload['u_id']
+    
+def is_valid_token(token):
+    for session in data['sessions']:
+        if session['token'] == token:
+            return True
+    return False
 
 def is_valid_uid(u_id): 
     for user in data['users']:
@@ -60,4 +73,15 @@ def add_owner_to_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
+            
+def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
+    notification = {
+                    'auth_user_id': auth_user_id,
+                    'u_id': u_id,
+                    'channel_id': channel_id,
+                    'dm_id': dm_id,
+                    'type': 2,
+                    'message': None,     
+                }
+    data['notifications'].append(notification)
 

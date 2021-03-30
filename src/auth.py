@@ -2,9 +2,12 @@ import pytest
 from src.error import InputError
 import re
 from src.database import data
+import hashlib
+import jwt
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+SECRET = 'COMP1531PROJECT'
 
 
 def generate_handle(name_first, name_last):
@@ -37,6 +40,11 @@ def is_handle_taken(handle):
         if user['handle_str'] == handle:
             return True
     return False
+    
+def generate_session_id():
+    new_session_id = len(data['session_ids']) + 1
+    data['session_ids'].append(new_session_id)
+    return new_session_id
 
 def auth_login_v1(email, password):
     # invalid email entered
@@ -49,26 +57,37 @@ def auth_login_v1(email, password):
         if user.get('email') == email:
             user_not_found = False
             break
-
+    
     if user_not_found:
         raise InputError("User not found")
-
+    
     incorrect_password = True
-
+    enc_password = hashlib.sha256(password.encode()).hexdigest()
     # Check if enter password matches the password used to register
     for user in data['users']:
-        if user.get('email') == email:
-            if user.get('password') == password:
-                incorrect_password = False
+        if user.get('email') == email and user.get('password') == enc_password:
+            incorrect_password = False
+            break
 
     if incorrect_password:
         raise InputError("Invalid Password")
-
-    for user in data['users']:
-        if user.get('email') == email:
-            break
-
-    return {'auth_user_id': user.get('u_id')}
+    # Payload for token generation
+    payload = {
+        'u_id': user['u_id'],
+        'session_id': generate_session_id()
+    }   
+    token = jwt.encode(payload, SECRET, algorithm='HS256')
+    session = {
+        'u_id': payload['u_id'],
+        'session_id': payload['session_id'],
+        'token': token,
+    }
+    # Append the session information to sessions list in data
+    data['sessions'].append(session)    
+    return {
+        'token': token,
+        'auth_user_id': user['u_id']
+    }
 
 def auth_register_v1(email, password, name_first, name_last):
     for user in data['users']:
@@ -99,16 +118,16 @@ def auth_register_v1(email, password, name_first, name_last):
     else:
         perm_id = 2
 
-
     user = {
         'u_id': number_users + 1,
         'name_first': name_first,
         'name_last': name_last,
         'perm_id': perm_id,
-        'password': password,
+        'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
     }
     
     data['users'].append(user)
-    return {'auth_user_id': number_users + 1}
+    return auth_login_v1(email, password)
+    
