@@ -85,4 +85,3 @@ def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
                 }
     data['notifications'].append(notification)
 
-

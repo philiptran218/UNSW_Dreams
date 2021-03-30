@@ -19,7 +19,7 @@ def user_1():
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
     return user
-    
+
 @pytest.fixture
 def user_3():
     user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
@@ -43,10 +43,14 @@ def private_channel(user_2):
 @pytest.fixture
 def clear_data():
     clear_v1()
-    
+
 ################################################################################
 # channel_invite_v1 tests                                                      #
 ################################################################################
+
+def test_invite_invalid_token(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_invite_v1(INVALID_VALUE, public_channel_1, user_1['auth_user_id'])
 
 def test_invite_invalid_channel(clear_data, user_1, user_2):
     with pytest.raises(InputError):
@@ -56,7 +60,7 @@ def test_invite_invalid_uid(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(InputError):
         channel_invite_v1(user_1['token'], public_channel_1, INVALID_VALUE)
 
-def test_invite_invalid_token(clear_data, user_1, user_2, public_channel_1):
+def test_invite_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(AccessError):
         channel_invite_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
 
@@ -78,7 +82,7 @@ def test_invite_valid_inputs(clear_data, user_1, user_2, public_channel_1):
         if members['u_id'] == user_2['auth_user_id']:
             member_found = True
     assert member_found == True
-    
+
 def test_invite_global_owner_allowed(clear_data, user_1, user_2, user_3, public_channel_2):
     channel_invite_v1(user_1['token'], public_channel_2, user_3['auth_user_id'])
     channel_members = channel_details_v1(user_2['token'], public_channel_2)
@@ -156,10 +160,10 @@ def expected_output_details_2():
     }
     return Terry_Channel_Details
 
-def test_details_invalid_channel(clear_data, user_1):
-    with pytest.raises(InputError):
-        channel_details_v1(user_1['token'], INVALID_VALUE)
-        
+def test_details_invalid_token(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_details_v1(INVALID_VALUE, public_channel_1)
+
 def test_details_invalid_channel(clear_data, user_1):
     with pytest.raises(InputError):
         channel_details_v1(user_1['token'], INVALID_VALUE)
@@ -175,6 +179,201 @@ def test_details_valid_inputs(clear_data, user_1, user_2, public_channel_1):
 def test_details_global_owner_allowed(clear_data, user_1, user_2, user_3, public_channel_2):
     channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
     assert channel_details_v1(user_1['token'], public_channel_2) == expected_output_details_2()
+
+################################################################################
+# channel_addowner_v1 tests                                                    #
+################################################################################
+
+def expected_output_addowner_1():
+    John_Channel_Details = {
+        'name': "John's Channel",
+        'is_public': True,
+        'owner_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            },
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            },
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            }
+        ]
+    }
+    return John_Channel_Details
+
+def expected_output_addowner_2():
+    Terry_Channel_Details = {
+        'name': "Terry's Channel",
+        'is_public': True,
+        'owner_members': [
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            },
+            {
+                'u_id': 3,
+                'name_first': 'Phil',
+                'name_last': 'Tran',
+                'email': 'philt@gmail.com',
+                'handle_str': 'philtran',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            },
+            {
+                'u_id': 3,
+                'name_first': 'Phil',
+                'name_last': 'Tran',
+                'email': 'philt@gmail.com',
+                'handle_str': 'philtran',
+            }
+        ]
+    }
+    return Terry_Channel_Details
+
+def test_addowner_invalid_token(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_addowner_v1(INVALID_VALUE, public_channel_1, user_2['auth_user_id'])
+
+def test_addowner_invalid_channel(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1['token'], INVALID_VALUE, user_2['auth_user_id'])
+
+def test_addowner_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_addowner_v1(user_2['token'], public_channel_1, user_2['auth_user_id'])
+
+def test_addowner_invalid_uid(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_addowner_v1(user_1['token'], public_channel_1, INVALID_VALUE)
+
+def test_addowner_already_owner(clear_data, user_1, public_channel_1):
+    with pytest.raises(InputError):
+        channel_addowner_v1(user_1['token'], public_channel_1, user_1['auth_user_id'])
+
+def test_addowner_auth_user_not_owner(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    with pytest.raises(AccessError):
+        channel_addowner_v1(user_2['token'], public_channel_1, user_2['auth_user_id'])
+
+def test_addowner_global_owner_allowed(clear_data, user_1, user_2, user_3, public_channel_1, public_channel_2):
+    channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    channel_addowner_v1(user_1['token'], public_channel_2, user_3['auth_user_id'])
+    assert channel_details_v1(user_1['token'], public_channel_2) == expected_output_addowner_2()
+
+def test_addowner_valid_inputs(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_addowner_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    assert channel_details_v1(user_1['token'], public_channel_1) == expected_output_addowner_1()
+
+################################################################################
+# channel_removeowner_v1 tests                                                 #
+################################################################################
+
+def expected_output_removeowner():
+    Terry_Channel_Details = {
+        'name': "Terry's Channel",
+        'is_public': True,
+        'owner_members': [
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 2,
+                'name_first': 'Terry',
+                'name_last': 'Nguyen',
+                'email': 'terrynguyen@gmail.com',
+                'handle_str': 'terrynguyen',
+            },
+            {
+                'u_id': 3,
+                'name_first': 'Phil',
+                'name_last': 'Tran',
+                'email': 'philt@gmail.com',
+                'handle_str': 'philtran',
+            }
+        ]
+    }
+    return Terry_Channel_Details
+
+def test_removeowner_invalid_token(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_removeowner_v1(INVALID_VALUE, public_channel_1, user_2['auth_user_id'])
+
+def test_removeowner_invalid_channel(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(InputError):
+        channel_removeowner_v1(user_1['token'], INVALID_VALUE, user_2['auth_user_id'])
+
+def test_removeowner_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_removeowner_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
+
+def test_removeowner_invalid_uid(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_removeowner_v1(user_1['token'], public_channel_1, INVALID_VALUE)
+        
+def test_removeowner_auth_id_not_owner(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    with pytest.raises(InputError):
+        channel_removeowner_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
+
+def test_removeowner_u_id_not_owner(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    with pytest.raises(InputError):
+        channel_removeowner_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+
+def test_removeowner_only_owner_in_channel(clear_data, user_1, public_channel_1):
+    with pytest.raises(InputError):
+        channel_removeowner_v1(user_1['token'], public_channel_1, user_1['auth_user_id'])
+
+def test_removeowner_valid_inputs(clear_data, user_1, user_2, user_3, public_channel_2):
+    channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    channel_addowner_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    channel_removeowner_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    assert channel_details_v1(user_1['token'], public_channel_2) == expected_output_removeowner()
+
+def test_removeowner_global_owner_allowed(clear_data, user_1, user_2, user_3, public_channel_2):
+    channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    channel_addowner_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
+    channel_removeowner_v1(user_1['token'], public_channel_2, user_3['auth_user_id'])
+    assert channel_details_v1(user_1['token'], public_channel_2) == expected_output_removeowner()
 
 ################################################################################
 # channel_messages_v1 tests                                                    #
@@ -208,10 +407,7 @@ def test_channel_messages_start_equal(clear_data, user_1, public_channel_1):
     # Testing for when start = number of messages in channel
     channels = channel_messages_v1(user_1['token'], public_channel_1, 0) 
     assert channels == {'messages': [], 'start': 0, 'end': -1}
-    
-
-# This tests requires message_send_v1 to be implemented.   
-'''        
+         
 def test_channel_messages_valid_single(clear_data, user_1, public_channel_1):
     # Tests for a single message in channel
     message_send_v1(user_1['token'], public_channel_1, 'A new message')
@@ -223,10 +419,7 @@ def test_channel_messages_valid_single(clear_data, user_1, public_channel_1):
     assert message_detail['messages'][0]['message'] == 'A new message'
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
-''' 
 
-# This tests requires message_send_v1 to be implemented.  
-'''     
 def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
     # Testing for multiple messages, and non-zero start value 
     # Sends 55 messages to channel, the messages are just numbers as strings
@@ -248,7 +441,6 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
         j += 1 
     assert message_detail['start'] == 2
     assert message_detail['end'] == 52
-''' 
     
 ################################################################################
 # channel_join_v1 tests                                                        #
@@ -257,21 +449,18 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
 def test_channel_join_invalid_token(clear_data, user_1, public_channel_1):
     # Raises AccessError since token INVALID_VALUE does not exist
     with pytest.raises(AccessError):
-        channel_join_v1(INVALID_VALUE, public_channel_1) 
-                
+        channel_join_v1(INVALID_VALUE, public_channel_1)    
     
 def test_channel_join_invalid_channel(clear_data, user_1, public_channel_1):
     # Raises InputError since channel_id INVALID_VALUE does not exist
     with pytest.raises(InputError):
         channel_join_v1(user_1['token'], INVALID_VALUE) 
         
-        
 def test_channel_join_private_channel(clear_data, user_2, private_channel, user_1):        
     # Raises AccessError since user_1 is a member attempting to enter a private
     # channel
     with pytest.raises(AccessError):    
         channel_join_v1(user_1['token'], private_channel) 
-  
         
 def test_channel_join_valid(clear_data, user_1, public_channel_1, user_2):
     # Testing if a single member can join a public channel
@@ -280,7 +469,7 @@ def test_channel_join_valid(clear_data, user_1, public_channel_1, user_2):
     channels = channel_details_v1(user_1['token'], public_channel_1)
     assert len(channels['all_members']) == 2
     assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
-    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']    
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id'] 
     
 def test_channel_join_already_joined(clear_data, user_1, public_channel_1, user_2):
     # Testing when user_2, who is already a channel member, joins the channel again
@@ -289,12 +478,11 @@ def test_channel_join_already_joined(clear_data, user_1, public_channel_1, user_
     channels = channel_details_v1(user_1['token'], public_channel_1)
     
     assert len(channels['all_members']) == 2
-    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
-    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
+    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id'] 
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']   
     
-    
-def test_channel_join_valid_multi(clear_data, user_1, user_2, public_channel_1):
-    user_3 = auth_register_v1("philiptran@gmail.com", "password", "Philip", "Tran")
+def test_channel_join_valid_multi(clear_data, user_1, user_2, user_3, public_channel_1):
+    # user_3 = auth_register_v1("philiptran@gmail.com", "password", "Philip", "Tran")
     # Testing if multiple members can join a public channel
     channel_join_v1(user_2['token'], public_channel_1)
     channel_join_v1(user_3['token'], public_channel_1)
@@ -304,7 +492,6 @@ def test_channel_join_valid_multi(clear_data, user_1, user_2, public_channel_1):
     assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
     assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
     assert channels['all_members'][2]['u_id'] == user_3['auth_user_id']
-    
 
 def test_channel_join_global_private(clear_data, user_1, user_2, private_channel):
     # Test to see if a global member (user_1), gets added as a member and owner
@@ -320,3 +507,44 @@ def test_channel_join_global_private(clear_data, user_1, user_2, private_channel
     assert channels['owner_members'][0]['u_id'] == user_2['auth_user_id']
     assert channels['owner_members'][1]['u_id'] == user_1['auth_user_id']
 
+################################################################################
+# channel_leave_v1 tests                                                       #
+################################################################################
+
+def test_channel_leave_invalid_token(clear_data, user_1, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_leave_v1(INVALID_VALUE, public_channel_1)
+
+def test_channel_leave_invalid_channel(clear_data, user_1, public_channel_1):
+    with pytest.raises(InputError):
+        channel_leave_v1(user_1['token'], INVALID_VALUE)
+
+def test_channel_leave_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_leave_v1(user_2['token'], public_channel_1)
+
+def test_channel_leave_auth_id_not_in_channel(clear_data, user_1, user_2, public_channel_1):
+    with pytest.raises(AccessError):
+        channel_leave_v1(user_2['token'], public_channel_1)
+
+def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_leave_v1(user_2['token'], public_channel_1)
+    info = channel_details_v1(user_1['token'], public_channel_1)
+    assert user_2['auth_user_id'] not in info['all_members']
+
+def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_addowner_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_leave_v1(user_2['token'], public_channel_1)
+    info = channel_details_v1(user_1['token'], public_channel_1)
+    assert user_2['auth_user_id'] not in info['all_members']
+    assert user_2['auth_user_id'] not in info['owner_members']
+
+def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
+    channel_leave_v1(user_1['token'], public_channel_1)
+    info = channel_details_v1(user_1['token'], public_channel_1)
+    assert info['name'] == "John's Channel"
+    assert info['is_public'] == True
+    assert info['owner_members'] == []
+    assert info['all_members'] == []

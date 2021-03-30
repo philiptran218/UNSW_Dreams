@@ -47,6 +47,24 @@ def generate_session_id():
     return new_session_id
 
 def auth_login_v1(email, password):
+    '''
+    Function:
+        Allows existing users to login using their registered email and password.
+        
+    Arguments:
+        email(char) - The email used to sign in
+        password(char) - The password used to sign in
+    
+    Exceptions:
+        InputError when any of:
+            - The email used is not in the form of a real email
+            - The email used has not yet been registered
+            - The password entered is incorrect
+
+    
+    Return Values:
+        This function returns u_id and token of the user    
+    '''
     # invalid email entered
     if not re.search(REGEX, email):
         raise InputError("Invalid Email")
@@ -57,10 +75,10 @@ def auth_login_v1(email, password):
         if user.get('email') == email:
             user_not_found = False
             break
-
+    
     if user_not_found:
         raise InputError("User not found")
-
+    
     incorrect_password = True
     enc_password = hashlib.sha256(password.encode()).hexdigest()
     # Check if enter password matches the password used to register
@@ -71,7 +89,6 @@ def auth_login_v1(email, password):
 
     if incorrect_password:
         raise InputError("Invalid Password")
-
     # Payload for token generation
     payload = {
         'u_id': user['u_id'],
@@ -91,6 +108,27 @@ def auth_login_v1(email, password):
     }
 
 def auth_register_v1(email, password, name_first, name_last):
+    '''
+    Function:
+        Allows new users to register
+        
+    Arguments:
+        email(char) - The email used to sign up
+        password(char) - The password used to sign up
+        name_first - The user's first name
+        name_last - The user's last name
+    
+    Exceptions:
+        InputError when any of:
+            - The email entered is not in the form of a real email
+            - The email entered has been taken
+            - The password entered is invalid
+            - The first name is zero characters or more than 50 characters
+            - The last name is zero characters or more than 50 characters
+
+    Return Values:
+        This function returns u_id and token of the user    
+    '''
     for user in data['users']:
         if user.get("email") == email:
             raise InputError("Email is already taken")

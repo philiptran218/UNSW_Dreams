@@ -7,6 +7,10 @@ from src.other import clear_v1
 def clear_data():
     clear_v1()
 
+################################################################################
+# auth_login_v1 tests                                                          #
+################################################################################
+
 def test_pass(clear_data):
     # Testing if a single user can register and login
     assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest')['auth_user_id'] == 1
@@ -32,6 +36,15 @@ def test_incorrect_pw(clear_data):
     auth_register_v1('validemail@gmail.com', 'abcd1234!', 'Kevin', 'Tran')
     with pytest.raises(InputError):
         auth_login_v1('validemail@gmail.com', 'abc123!')
+
+def test_login_invalid_email(clear_data):
+    # Testing login with invalid email
+    with pytest.raises(InputError):
+        auth_login_v1("wrong_format.com", "password")
+
+################################################################################
+# auth_register_v1 tests                                                       #
+################################################################################
 
 def test_duplicate_email(clear_data):
     # Testing registering with a used email
@@ -67,4 +80,21 @@ def test_long_first_name(clear_data):
 def test_long_last_name(clear_data):
     # Testing last name with > 50 characters
     with pytest.raises(InputError):
-        auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense')  
+        auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense') 
+        
+def test_repeat_long_handle(clear_data):
+    # Creating handles longer than 20 characters, and tests adding multiple users
+    # Also tests multiple users with same name
+    i = 0
+    j = 1
+    while i < 12:
+        user_info = auth_register_v1(str(i) + 'anewemail@gmail.com', 'password', 'John', 'Smith')
+        assert user_info['auth_user_id'] == j
+        i += 1
+        j += 1
+    while i < 14:
+        user_info = auth_register_v1(str(i) + 'anothernewemail@gmail.com', 'password', 'Johnsmithus', 'Smithjohnus')
+        assert user_info['auth_user_id'] == j
+        i += 1
+        j += 1
+        
