@@ -113,8 +113,6 @@ def search_v1(token, query_str):
             user_found = is_already_in_channel(auth_user_id, message['channel_id'])
         else:
             user_found = is_already_in_dm(auth_user_id, message['dm_id'])
-        #print(user_found)
-        #print(is_query_str_in_msg(query_str, message))
         if user_found == True and is_query_str_in_msg(query_str, message):
             search_matches['messages'].append(message)
     return search_matches
