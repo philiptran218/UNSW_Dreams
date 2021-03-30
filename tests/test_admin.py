@@ -68,9 +68,13 @@ def test_admin_user_remove_v1_valid(clear_data, test_user1, test_user2, test_mes
     messages = channel_messages_v1(test_user1["token"], test_channel['channel_id'], 0)
     assert(messages['messages'][0]['message'] == 'Removed User')
 
-def test_admin_user_remove_v1_invalid_u_id(clear_data, test_user1):
+def test_admin_user_remove_v1_invalid_u_id1(clear_data, test_user1):
     with pytest.raises(InputError):
         admin_user_remove_v1(test_user1['token'], INVALID_U_ID)
+
+def test_admin_user_remove_v1_invalid_u_id2(clear_data, test_user1):
+    with pytest.raises(InputError):
+        admin_user_remove_v1(test_user1['token'], 100)
 
 def test_admin_user_remove_v1_invalid_only_owner(clear_data, test_user1):
     with pytest.raises(InputError):

@@ -42,7 +42,7 @@ def admin_user_remove_v1(token, u_id):
         changer_perm = check_permissions(token)
 
         if changer_perm != OWNER:
-            raise AccessError('Only owners can change permissions in Dreams')
+            raise AccessError(description='Only owners can change permissions in Dreams')
 
         user_count = 0
         user_validator = False
@@ -53,9 +53,10 @@ def admin_user_remove_v1(token, u_id):
             user_count += 1
 
         if user_count < 2:
-            raise InputError('Cannot delete as you are only user in Dreams')
-        elif user_validator == False:
-            raise InputError('entered u_id is invalid')
+            raise InputError(description='Cannot delete as you are only user in Dreams')
+        
+        if user_validator == False:
+            raise InputError(description='entered u_id is invalid')
 
         for message in data['messages']:
             print(u_id)
@@ -68,7 +69,7 @@ def admin_user_remove_v1(token, u_id):
                 user['name_first'] = 'Removed'
                 user['name_last'] = 'User'
     else:
-        raise AccessError('Invalid Token')
+        raise AccessError(description='Invalid Token')
 
 def admin_userpermission_change_v1(token, u_id, permission_id):
     """
@@ -106,10 +107,10 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
                         user['perm_id'] = permission_id
 
                 if validator == False:
-                    raise InputError ('Inputted u_id is invalid')
+                    raise InputError (description='Inputted u_id is invalid')
             else:
-                raise AccessError('Only owners can change permissions in Dreams')
+                raise AccessError(description='Only owners can change permissions in Dreams')
         else:
-            raise InputError('Permission id is invalid.')
+            raise InputError(description='Permission id is invalid.')
     else:
-        raise AccessError('Invalid Token')
+        raise AccessError(description='Invalid Token')
