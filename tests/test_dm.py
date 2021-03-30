@@ -70,6 +70,9 @@ def test_dm_invite_invalid_token(clear_data,test_user1_token,test_user2_u_id,tes
     with pytest.raises(AccessError):
         dm_invite_v1(INVALID_TOKEN,test_create_dm,test_user2_u_id['auth_user_id'])
 
+def test_dm_invite_already_in_dm(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    assert(dm_invite_v1(test_user1_token['token'],test_create_dm,test_user2_u_id['auth_user_id']) == {})
+
 #testing a valid case by inviting a user and checking for membership
 def test_dm_invite_valid(clear_data,test_user1_token,test_user2_u_id,test_user4_u_id,test_create_dm):
     dm_invite_v1(test_user1_token['token'],test_create_dm,test_user4_u_id['auth_user_id'])
@@ -95,6 +98,10 @@ def test_dm_remove_v1(clear_data,test_user1_token,test_user2_u_id,test_create_dm
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1_token,test_create_dm):
     with pytest.raises(InputError):
         dm_remove_v1(test_user1_token['token'],INVALID_DM_ID)
+
+def test_dm_remove_v1_invalid_token(clear_data,test_user1_token,test_create_dm):
+    with pytest.raises(AccessError):
+        dm_remove_v1(INVALID_TOKEN,test_create_dm)
 
 
 #testing when user trying to remove is not the original dm creator
@@ -197,5 +204,7 @@ def test_dm_leave(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
                 member_left = False
     assert(member_left)
                 
-
+def test_dm_leave_invalid_token(clear_data,test_user1_token,test_user2_u_id,test_create_dm):
+    with pytest.raises(AccessError):
+        dm_leave_v1(INVALID_TOKEN,test_create_dm)
     

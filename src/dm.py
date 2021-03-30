@@ -281,7 +281,7 @@ def dm_remove_v1(token,dm_id):
     ''' 
     #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise InputError("token is invalid")
+        raise AccessError("token is invalid")
     
     
     u_id = int(helper.detoken(token))
@@ -381,7 +381,7 @@ def dm_leave_v1(token,dm_id):
     this function has no return value 
     '''
     if not helper.is_valid_token(token) :
-        raise InputError("token is invalid")
+        raise AccessError("token is invalid")
 
     u_id = int(helper.detoken(token))
     #checking if user who called fucntion has a valid token
