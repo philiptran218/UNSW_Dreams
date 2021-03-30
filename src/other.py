@@ -78,6 +78,25 @@ def clear_v1():
 
 
 def search_v1(token, query_str):
+    '''
+    Function:
+        Given a query string, return a collection of messages in all of the 
+        channels/DMs that the user has joined that match the query
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        query_str (str) - this is the query that the user is searching for in 
+                          the channels/DMs they are a member of
+        
+    Exceptions:
+        InputError - occurs when the query_str is longer than 1000 characters
+        AccessError - occurs when the user's token is not a valid token
+        
+    Return value:
+        Returns a dictionary with key 'messages', which is a list of
+        dictionaries of type {message}
+    '''
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
@@ -102,21 +121,38 @@ def search_v1(token, query_str):
 
   
 def notifications_get_v1(token):
+    '''
+    Function:
+        Returns the user's most recent 20 notifications
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+                   
+    Exceptions:
+        AccessError - occurs when the user's token is not a valid token
+        
+    Return value:
+        Returns a list of dictionaries containing types {channel_id, dm_id,
+        notification_message}
+    '''
+    # Checks if token is valid
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
     notif_list = list(reversed(data['notifications']))
     recent_notifs = []
-    
+    # Searches for user's notifications in data['notifications']
     for notif in notif_list:
         chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
         if notif['u_id'] == auth_user_id:
+            # If the notification is a tag
             if notif['type'] == TAG:
                 notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
                 notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
+            # Else the notification is an invite (for iteration 2)
             else:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name
-                
+                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name   
             notif_dict = {
                 'channel_id': notif['channel_id'],
                 'dm_id': notif['dm_id'],
