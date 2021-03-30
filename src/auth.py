@@ -46,16 +46,6 @@ def generate_session_id():
     data['session_ids'].append(new_session_id)
     return new_session_id
 
-def generate_session_id():
-    new_session_id = len(data['session_ids']) + 1
-    data['session_ids'].append(new_session_id)
-    return new_session_id
-
-def generate_session_id():
-    new_session_id = len(data['session_ids']) + 1
-    data['session_ids'].append(new_session_id)
-    return new_session_id
-
 def auth_login_v1(email, password):
     # invalid email entered
     if not re.search(REGEX, email):
