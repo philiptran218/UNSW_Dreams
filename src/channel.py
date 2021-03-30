@@ -266,10 +266,7 @@ def channel_messages_v1(token, channel_id, start):
     '''
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
-    auth_user_id = helper.detoken(token)
-     # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid u_id")  
+    auth_user_id = helper.detoken(token)  
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")
@@ -350,9 +347,6 @@ def channel_join_v1(token, channel_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")
     auth_user_id = helper.detoken(token)
-    # Check for valid u_id
-    if not helper.is_valid_uid(auth_user_id):
-        raise AccessError(description="Please enter a valid u_id")
     # Check for valid channel_id
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id") 

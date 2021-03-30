@@ -98,19 +98,19 @@ def channels_create_v1(token, name, is_public):
         'all_members':[
             {
                 'u_id':auth_user_id,
-                'name_first':helper.get_first_name(auth_user_id),
-                'name_last' :helper.get_last_name(auth_user_id),
-                'email': helper.get_email(auth_user_id),
-                'handle_str': helper.get_handle(auth_user_id),
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
         'owner_members':[
             {
                 'u_id':auth_user_id,
-                'name_first':helper.get_first_name(auth_user_id),
-                'name_last' :helper.get_last_name(auth_user_id),
-                'email': helper.get_email(auth_user_id),
-                'handle_str': helper.get_handle(auth_user_id),
+                'name_first':get_first_name(auth_user_id),
+                'name_last' :get_last_name(auth_user_id),
+                'email': get_email(auth_user_id),
+                'handle_str': get_handle(auth_user_id),
             },
         ],
         'is_public': is_public,
