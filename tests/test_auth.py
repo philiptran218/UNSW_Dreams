@@ -48,7 +48,7 @@ def test_login_invalid_email(clear_data):
 
 def test_duplicate_email(clear_data):
     # Testing registering with a used email
-    user = auth_register_v1('validemail@gmail.com', 'abcd1234!', 'James', 'Nguyen')
+    auth_register_v1('validemail@gmail.com', 'abcd1234!', 'James', 'Nguyen')
     with pytest.raises(InputError):
         auth_register_v1('validemail@gmail.com', 'abc123!', 'Jack', 'Tran')
 
