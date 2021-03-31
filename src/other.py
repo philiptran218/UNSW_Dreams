@@ -125,7 +125,7 @@ def search_v1(token, query_str):
             search_matches['messages'].append(message_match)
     return search_matches
 
-  
+
 def notifications_get_v1(token):
     '''
     Function:
