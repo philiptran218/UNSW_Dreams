@@ -59,8 +59,6 @@ def admin_user_remove_v1(token, u_id):
             raise InputError(description='entered u_id is invalid')
 
         for message in data['messages']:
-            print(u_id)
-            print(message['u_id'])
             if message['u_id'] == u_id:
                 message.update({'message': 'Removed User'})
 

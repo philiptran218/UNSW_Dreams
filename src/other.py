@@ -44,14 +44,16 @@ def is_query_str_in_msg(query_str, message):
     return False
     
 def get_channel_dm_name(channel_id, dm_id):
+    name = None
     if channel_id == -1:
-        for dm in data['DM']:   # pragma: no branch
+        for dm in data['DM']:  
             if dm['dm_id'] == dm_id:
-                return dm['dm_name']
+                name = dm['dm_name']
     else:
-        for channel in data['channels']:    # pragma: no branch
+        for channel in data['channels']:
             if channel['channel_id'] == channel_id:
-                return channel['name']
+                name = channel['name']
+    return name
 
 def clear_v1():
     '''
@@ -163,4 +165,5 @@ def notifications_get_v1(token):
                 'notification_message': notif_msg
             }
             recent_notifs.append(notif_dict)
-    return recent_notifs
+    return {'notifications': recent_notifs}
+
