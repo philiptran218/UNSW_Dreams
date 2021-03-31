@@ -62,7 +62,7 @@ def user_profile_setemail_v1(token, email):
    
     for users in data['users']:
         if users.get('u_id') == auth_user_id:
-            data['email'] = email
+            users.update({'email': email})
     return {}
 
 def user_profile_sethandle_v1(token, handle_str):
