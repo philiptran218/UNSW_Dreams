@@ -157,5 +157,5 @@ def notifications_get_v1(token):
                 'notification_message': notif_msg
             }
             recent_notifs.append(notif_dict)
-    return recent_notifs
+    return {'notifications': recent_notifs}
 
