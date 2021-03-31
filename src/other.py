@@ -17,7 +17,6 @@ def is_already_in_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for member in selected_channel['all_members']:
         if member['u_id'] == u_id:
@@ -29,7 +28,6 @@ def is_already_in_dm(u_id, dm_id):
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             selected_dm = dm
-            break
             
     for member in selected_dm['dm_members']:
         if member['u_id'] == u_id:
