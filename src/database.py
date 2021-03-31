@@ -19,6 +19,7 @@ users = [
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
+        'handle_str:
     }
 ]
 
