@@ -315,7 +315,6 @@ def dm_details_v1(token, dm_id):
                             "name":dm["dm_name"],
                             "members": dm["dm_members"],
                         }
-                        #dm_list.append(output)
             if is_already_in_dm(token_u_id, dm_id) == True:
                 return output
             else:
