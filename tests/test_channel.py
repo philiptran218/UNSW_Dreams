@@ -10,6 +10,10 @@ from src.database import data
 
 INVALID_VALUE = -1
 
+################################################################################
+# Fixtures                                                                     #
+################################################################################
+
 @pytest.fixture
 def user_1():
     user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")

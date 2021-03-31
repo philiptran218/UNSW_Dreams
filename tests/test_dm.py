@@ -78,7 +78,7 @@ def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create
     dm_invite_v1(test_user1['token'],test_create_dm,test_user4['auth_user_id'])
     member_check = False
     dm_details = dm_details_v1(test_user1['token'],test_create_dm)
-    members_list = dm_details['dm_members']
+    members_list = dm_details['members']
     for member in members_list:
         if member['u_id'] == test_user4['auth_user_id']:
             member_check = True
@@ -199,13 +199,12 @@ def test_dm_leave_user_not_a_member(clear_data,test_user1,test_user2,test_user3,
 
 #testing if a  member of the dm left it and after calling dm_leave.
 def test_dm_leave(clear_data,test_user1,test_user2,test_create_dm):
-    dm_leave_v1(test_user1['token'],test_create_dm)
+    dm_leave_v1(test_user2['token'],test_create_dm)
     member_left = True
-    dlist = dm_list_v1(test_user1['token'])
-    for dm in dlist['dm']:
-        for member in dm['dm_members']:
-            if member['u_id'] == test_user1['auth_u_id']:
-                member_left = False
+    dlist = dm_details_v1(test_user1['token'], test_create_dm)
+    for member in dlist['members']:
+        if member['u_id'] == test_user2['auth_user_id']:
+            member_left = False
     assert(member_left)
                 
 def test_dm_leave_invalid_token(clear_data,test_user1,test_user2,test_create_dm):
@@ -219,8 +218,8 @@ def test_dm_leave_invalid_token(clear_data,test_user1,test_user2,test_create_dm)
 #Function that shows expected output for dm_details.
 def expected_output_details_v1():
     return {
-        "dm_name": 'dansmith, validnamevalidname',
-        "dm_members": [
+        "name": 'dansmith, validnamevalidname',
+        "members": [
             {
                 'u_id': 1,
                 'name_first': 'validname',

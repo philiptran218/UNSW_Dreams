@@ -4,6 +4,7 @@ from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
 
+INVALID_VALUE = -1
 
 @pytest.fixture
 def clear_data():
@@ -38,8 +39,12 @@ def test_profile_unregistered_user(clear_data):
 def test_profile_invalid_u_id(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "Thisisagoodpassword123", "John", "Smith")
     with pytest.raises(InputError):
-        user_profile_v1(new_user.get('token'), 'invalid_u_id')
+        user_profile_v1(new_user.get('token'), INVALID_VALUE)
 
+def test_user_profile_invalid_token(clear_data):
+    new_user = auth_register_v1("validemail@gmail.com", "Thisisagoodpassword123", "John", "Smith")
+    with pytest.raises(AccessError):
+        user_profile_v1(INVALID_VALUE, new_user['auth_user_id'])
 
 #################################################################################
 #   user_profile_setname_v1 testing functions                                   #
@@ -106,6 +111,10 @@ def test_setemail_pass(clear_data):
     email = user_profile_v1(user_token, new_user.get("auth_user_id")).get("user").get("email")
     assert email == "newemail@gmail.com"
 
+def test_invalid_token(clear_data):
+    with pytest.raises(AccessError):
+        user_profile_setemail_v1(INVALID_VALUE, 'bademail')
+
 def test_invalid_email(clear_data):
     new_user = auth_register_v1("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
     with pytest.raises(InputError):
@@ -117,7 +126,7 @@ def test_sameemail(clear_data):
         user_profile_setemail_v1(new_user.get('token'), 'thisismyemail@gmail.com')
 
 def test_email_taken(clear_data):
-    new_user1 = auth_register_v1("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
+    auth_register_v1("thisismyemail@gmail.com", "Thisisagoodpass12", "Alex", "Knight")
     new_user2 = auth_register_v1("somethingcompletelyrandom@gmail.com", "Thisismyaccount24", "John", "Stone")
 
     with pytest.raises(InputError):
@@ -126,8 +135,6 @@ def test_email_taken(clear_data):
 def test_unregistered_user(clear_data):
     with pytest.raises(AccessError):
         user_profile_v1('invalid_token', 'invalid_u_id')
-
-
 
 #################################################################################
 #   user_profile_sethandle_v1 testing functions                                 #
