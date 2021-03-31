@@ -312,8 +312,8 @@ def dm_details_v1(token, dm_id):
                 for member in dm["dm_members"]:
                     if member["u_id"] == token_u_id:
                         output = {
-                            "dm_name":dm["dm_name"],
-                            "dm_members": dm["dm_members"],
+                            "name":dm["dm_name"],
+                            "members": dm["dm_members"],
                         }
                         #dm_list.append(output)
             if is_already_in_dm(token_u_id, dm_id) == True:

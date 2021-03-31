@@ -1,4 +1,4 @@
-from src.other import clear_v1, search_v1
+from src.other import clear_v1, search_v1, notifications_get_v1
 from src.auth import auth_register_v1, auth_login_v1
 from src.channel import channel_messages_v1, channel_invite_v1
 from src.channels import channels_create_v1, channels_listall_v1
@@ -107,8 +107,6 @@ def test_search_only_DMs(clear_data, user_1, user_1_dm):
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
 
 def test_search_only_channels(clear_data, user_1, public_channel_1):
@@ -116,8 +114,6 @@ def test_search_only_channels(clear_data, user_1, public_channel_1):
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
 
 def test_search_DMs_and_channels(clear_data, user_1, public_channel_1, user_1_dm):
@@ -126,13 +122,9 @@ def test_search_DMs_and_channels(clear_data, user_1, public_channel_1, user_1_dm
     output = search_v1(user_1['token'], MIXED_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_no_query_str_matches(clear_data, user_1, public_channel_1, user_1_dm):
@@ -151,13 +143,9 @@ def test_search_lowercase_query_str(clear_data, user_1, public_channel_1, user_1
     output = search_v1(user_1['token'], LOWER_QUERY_STR)
     assert output['messages'][0]['message_id'] == 3
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == LOWER_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == LOWER_QUERY_STR
 
 def test_search_uppercase_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -170,13 +158,9 @@ def test_search_uppercase_query_str(clear_data, user_1, public_channel_1, user_1
     output = search_v1(user_1['token'], UPPER_QUERY_STR)
     assert output['messages'][0]['message_id'] == 5
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == UPPER_QUERY_STR
     assert output['messages'][1]['message_id'] == 6
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == UPPER_QUERY_STR
 
 def test_search_numeric_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -189,13 +173,9 @@ def test_search_numeric_query_str(clear_data, user_1, public_channel_1, user_1_d
     output = search_v1(user_1['token'], NUMERIC_QUERY_STR)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == NUMERIC_QUERY_STR
     assert output['messages'][1]['message_id'] == 6
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == NUMERIC_QUERY_STR
 
 def test_search_symbols_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -208,13 +188,9 @@ def test_search_symbols_query_str(clear_data, user_1, public_channel_1, user_1_d
     output = search_v1(user_1['token'], SYMBOLS_QUERY_STR)
     assert output['messages'][0]['message_id'] == 2
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == SYMBOLS_QUERY_STR
     assert output['messages'][1]['message_id'] == 5
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == 1
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == SYMBOLS_QUERY_STR
 
 def test_search_empty_query_str(clear_data, user_1, public_channel_1, user_1_dm):
@@ -240,23 +216,15 @@ def test_search_substring(clear_data, user_1, user_2, public_channel_1, user_1_d
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 3
     assert output['messages'][0]['u_id'] == 2
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 1
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
     assert output['messages'][2]['message_id'] == 7
     assert output['messages'][2]['u_id'] == 1
-    assert output['messages'][2]['channel_id'] == 1
-    assert output['messages'][2]['dm_id'] == -1
     assert output['messages'][2]['message'] == LOWER_QUERY_STR
     assert output['messages'][3]['message_id'] == 8
     assert output['messages'][3]['u_id'] == 2
-    assert output['messages'][3]['channel_id'] == -1
-    assert output['messages'][3]['dm_id'] == 1
     assert output['messages'][3]['message'] == LOWER_QUERY_STR
 
 def test_search_multiple_channels(clear_data, user_1, user_2, public_channel_1, public_channel_2):
@@ -266,13 +234,9 @@ def test_search_multiple_channels(clear_data, user_1, user_2, public_channel_1, 
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == 2
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_multiple_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
@@ -281,13 +245,9 @@ def test_search_multiple_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == -1
-    assert output['messages'][0]['dm_id'] == 1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 2
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == -1
-    assert output['messages'][1]['dm_id'] == 2
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
 
 def test_search_multiple_channels_and_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm, public_channel_1, public_channel_2):
@@ -303,23 +263,15 @@ def test_search_multiple_channels_and_dms(clear_data, user_1, user_2, user_1_dm,
     output = search_v1(user_1['token'], SUB_STRING)
     assert output['messages'][0]['message_id'] == 1
     assert output['messages'][0]['u_id'] == 1
-    assert output['messages'][0]['channel_id'] == 1
-    assert output['messages'][0]['dm_id'] == -1
     assert output['messages'][0]['message'] == MIXED_QUERY_STR
     assert output['messages'][1]['message_id'] == 4
     assert output['messages'][1]['u_id'] == 2
-    assert output['messages'][1]['channel_id'] == 2
-    assert output['messages'][1]['dm_id'] == -1
     assert output['messages'][1]['message'] == MIXED_QUERY_STR
     assert output['messages'][2]['message_id'] == 6
     assert output['messages'][2]['u_id'] == 1
-    assert output['messages'][2]['channel_id'] == -1
-    assert output['messages'][2]['dm_id'] == 1
     assert output['messages'][2]['message'] == MIXED_QUERY_STR
     assert output['messages'][3]['message_id'] == 7
     assert output['messages'][3]['u_id'] == 2
-    assert output['messages'][3]['channel_id'] == -1
-    assert output['messages'][3]['dm_id'] == 2
     assert output['messages'][3]['message'] == MIXED_QUERY_STR
 
 def test_search_query_string_with_white_space(clear_data, user_1, public_channel_1, user_1_dm):
@@ -337,3 +289,95 @@ def test_search_user_not_in_dm(clear_data, user_1, user_2, user_3, user_1_dm):
     message_senddm_v1(user_1['token'], user_1_dm, MIXED_QUERY_STR)
     output = search_v1(user_3['token'], MIXED_QUERY_STR)
     assert output['messages'] == []
+
+################################################################################
+# notifications_get_v1 tests                                                   #
+################################################################################
+
+def test_notifications_get_invalid_token(clear_data, user_1):
+    # Raises AccessError since token does not exist
+    with pytest.raises(AccessError):
+        notifications_get_v1(-1)
+        
+def test_notifications_get_empty(clear_data, user_1):
+    # Checks if an empty list is returned for no notifications 
+    assert notifications_get_v1(user_1['token']) == []
+    
+def test_notifications_get_join_channel(clear_data, user_1, user_2, public_channel_1):
+    # Tests notification for when user_2 is invited to join public_channel_1
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    notif = notifications_get_v1(user_2['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == public_channel_1
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "johnsmith added you to John's Channel"
+    
+def test_notifications_get_join_dm(clear_data, user_1, user_2, user_1_dm):
+    # Tests notification for when user_2 is added to user_1_dm
+    notif = notifications_get_v1(user_2['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == -1
+    assert notif[0]['dm_id'] == user_1_dm
+    assert notif[0]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
+    
+def test_notifications_multi_channels(clear_data, user_1, user_2, public_channel_1, public_channel_2):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
+    notif = notifications_get_v1(user_1['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == public_channel_2
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "terrynguyen added you to Terry's Channel"
+    
+def test_notifications_multi_dms(clear_data, user_1, user_2, user_1_dm, user_2_dm):
+    notif = notifications_get_v1(user_1['token'])
+    assert len(notif) == 1
+    assert notif[0]['channel_id'] == -1
+    assert notif[0]['dm_id'] == user_2_dm
+    assert notif[0]['notification_message'] == "terrynguyen added you to johnsmith, terrynguyen"    
+    
+def test_notifications_get_channel_tag(clear_data, user_1, user_2, public_channel_1):
+    # Tests notifications for invite and tag (in a channel)
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    message_send_v1(user_1['token'], public_channel_1, 'Hello @terrynguyen')
+    notif = notifications_get_v1(user_2['token'])
+    assert len(notif) == 2
+    assert notif[0]['channel_id'] == public_channel_1
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: Hello @terrynguyen"
+    assert notif[1]['channel_id'] == public_channel_1
+    assert notif[1]['dm_id'] == -1 
+    assert notif[1]['notification_message'] == "johnsmith added you to John's Channel"
+    
+def test_notifications_get_dm_tag(clear_data, user_1, user_2, user_1_dm):
+    # Tests notifications for invite and tag (in a dm)
+    message_senddm_v1(user_1['token'], user_1_dm, 'Welcome @terrynguyen')
+    notif = notifications_get_v1(user_2['token'])
+    assert len(notif) == 2
+    assert notif[0]['channel_id'] == -1
+    assert notif[0]['dm_id'] == user_1_dm
+    assert notif[0]['notification_message'] == "johnsmith tagged you in johnsmith, terrynguyen: Welcome @terrynguyen"
+    assert notif[1]['channel_id'] == -1
+    assert notif[1]['dm_id'] == user_1_dm
+    assert notif[1]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
+    
+def test_notifications_get_channel_and_dm(clear_data, user_1, user_2, public_channel_1, user_1_dm):
+    # Testing notifications for invite and tag (in both a channel and a dm)
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    message_send_v1(user_1['token'], public_channel_1, "You joined the channel again @terrynguyen")
+    message_senddm_v1(user_1['token'], user_1_dm, "Hey @terrynguyen, welcome to the dm")
+    notif = notifications_get_v1(user_2['token'])
+    assert len(notif) == 4
+    assert notif[0]['channel_id'] == -1
+    assert notif[0]['dm_id'] == user_1_dm
+    assert notif[0]['notification_message'] == "johnsmith tagged you in johnsmith, terrynguyen: Hey @terrynguyen, we"
+    assert notif[1]['channel_id'] == public_channel_1
+    assert notif[1]['dm_id'] == -1
+    assert notif[1]['notification_message'] == "johnsmith tagged you in John's Channel: You joined the chann"
+    assert notif[2]['channel_id'] == public_channel_1
+    assert notif[2]['dm_id'] == -1
+    assert notif[2]['notification_message'] == "johnsmith added you to John's Channel"
+    assert notif[3]['channel_id'] == -1
+    assert notif[3]['dm_id'] == user_1_dm
+    assert notif[3]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
+

@@ -14,7 +14,13 @@ We are assuming:
   in the channel, 
   the function will return an empty 'messages' list.
 - Auth_register will remove newline or tabs from generated handles.
-<<<<<<< HEAD
+- In testing for admin_userpermissions_change, there is only one created test user. Because of this,
+  their id is the only valid id that can be tested. This makes testing easier as it reduced the amount
+  of fixtures that need to be created. 
+- When admin_user_remove is called. The profile is not actually deleted from the database. It is instead 
+  renamed to "removed user." The email and handle_str remain as they need to be accessible when user_profile 
+  is called. This funciton will also replace any messages sent by the deleted user to "removed user." Again
+  it will not actually delete the messages, as per the specification.
 - ### Removing a dm will not delete it from the database
 - Empty channels (When the last member leaves) will not be deleted.
 - When owners of dreams are invited to or join a channel, they will 
@@ -25,7 +31,6 @@ We are assuming:
 - For search_v1(), if the query_string is empty or contains only whitespaces,
   search_v1() will return a dictionary containing an empty list under the key
   'messages'
-
 - removing a dm will not delete it from the database.
 - Owner of a dm dont necessarily have to be a member of that dm.
 - Members of DM are stored in the order they are entered, not alphabetical order.
