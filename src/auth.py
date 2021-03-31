@@ -172,6 +172,7 @@ def auth_register_v1(email, password, name_first, name_last):
     return auth_login_v1(email, password)
 
 def auth_logout(token):
+    
     if not is_valid_token(token):
         raise AccessError(description='Please enter a valid token')
    
