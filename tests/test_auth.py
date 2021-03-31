@@ -1,5 +1,5 @@
-from src.auth import auth_login_v1, auth_register_v1
-from src.error import InputError
+from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
+from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
 
@@ -16,7 +16,7 @@ def test_pass(clear_data):
     assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest')['auth_user_id'] == 1
     assert auth_login_v1('validemail@gmail.com', '123abc!@#')['auth_user_id'] == 1
 
-def test_valid_users(clear_data):
+def test_multiple_valid_users(clear_data):
     # Testing if multiple users can register and login
     assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith')['auth_user_id'] == 1
     assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve')['auth_user_id'] == 2
@@ -80,8 +80,8 @@ def test_long_first_name(clear_data):
 def test_long_last_name(clear_data):
     # Testing last name with > 50 characters
     with pytest.raises(InputError):
-        auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense') 
-        
+        auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense')  
+
 def test_repeat_long_handle(clear_data):
     # Creating handles longer than 20 characters, and tests adding multiple users
     # Also tests multiple users with same name
@@ -97,4 +97,20 @@ def test_repeat_long_handle(clear_data):
         assert user_info['auth_user_id'] == j
         i += 1
         j += 1
+
+#################################################################################
+#   auth_logout_v1 testing functions                                               #
+#################################################################################
+
+def test_valid_logout_token(clear_data):
+    # Testing the logout function when a valid token is used
+    user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    assert auth_logout_v1(user.get('token')).get('is_success') == True
+
+def test_invalid_logout(clear_data):
+    # Testing the logout function when an invalid token is used
+    user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    with pytest.raises(AccessError):
+        auth_logout_v1(user.get('invalid_token')).get('is_success')
         
+

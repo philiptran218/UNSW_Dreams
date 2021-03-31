@@ -1,9 +1,10 @@
-import pytest
-from src.error import InputError
+from src.error import InputError, AccessError
 import re
 from src.database import data
 import hashlib
 import jwt
+from src.helper import is_valid_token
+
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -169,4 +170,29 @@ def auth_register_v1(email, password, name_first, name_last):
     
     data['users'].append(user)
     return auth_login_v1(email, password)
+
+def auth_logout_v1(token):
+    '''
+    Function:
+        Allows logged in users to log out
+        
+    Arguments:
+        token(str) - this is the token of a registered user during their session
     
+    Exceptions:
+        AccessError - When the token is invalid
+
+    Return Values:
+        This function will return "is_sucess" when successful
+    '''
+    
+    if not is_valid_token(token):
+        raise AccessError(description='Please enter a valid token')
+   
+    for sesh in data['sessions']:
+        if sesh.get('token') == token:
+            data['sessions'].remove(sesh)
+
+    return {
+        'is_success': True,
+    }
