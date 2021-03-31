@@ -14,7 +14,7 @@ def user_profile_v1(token, u_id):
         raise AccessError(description="Token invalid")
 
     if is_valid_uid(u_id) == False:
-        raise AccessError(description="Invalid u_id")
+        raise InputError(description="Invalid u_id")
     
     for user in data['users']:
         if user['u_id'] == u_id:
@@ -22,9 +22,9 @@ def user_profile_v1(token, u_id):
                 'user': {
                     'u_id': user.get('u_id'),
                     'email': user.get('email'),
-                    'name_first': user.get('first_name'),
-                    'name_last': user.get('last_name'),
-                    'handle_str': user.get('handle'),
+                    'name_first': user.get('name_first'),
+                    'name_last': user.get('name_last'),
+                    'handle_str': user.get('handle_str'),
                 },
             }
     return user_details
