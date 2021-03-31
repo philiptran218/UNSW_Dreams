@@ -14,9 +14,11 @@ def is_message_empty(message):
     return len(message) == 0
      
 def message_details(message_id):
-    for message in data['messages']:    # pragma: no branch
+    msg_details = None
+    for message in data['messages']:    
         if message['message_id'] == message_id:
-            return message
+            msg_details = message
+    return msg_details
 
 def message_exists(message_id):
     for message in data['messages']:
@@ -25,11 +27,12 @@ def message_exists(message_id):
     return False 
     
 def find_permissions(u_id):
-    for user in data['users']:  # pragma: no branch
+    user_perm = None
+    for user in data['users']: 
         if user['u_id'] == u_id:
-            break
+            user_perm = user
             
-    if user['perm_id'] == OWNER:
+    if user_perm['perm_id'] == OWNER:
         return OWNER
     else:
         return MEMBER
@@ -52,9 +55,11 @@ def is_user_authorised(u_id, message_id):
     return False   
  
 def dm_details(dm_id):
-    for dm in data['DM']:   # pragma: no branch
+    selected_dm = None
+    for dm in data['DM']:  
         if dm['dm_id'] == dm_id:
-            return dm
+            selected_dm = dm
+    return selected_dm
 
 def channel_owners(channel_id):
     list_of_owners = []
@@ -88,10 +93,9 @@ def is_already_in_dm(u_id, dm_id):
     
 def is_already_in_channel(u_id, channel_id):
     selected_channel = None
-    for channel in data['channels']:    # pragma: no branch
+    for channel in data['channels']:   
         if channel['channel_id'] == channel_id:
             selected_channel = channel
-            break
             
     for members in selected_channel['all_members']:
         if members['u_id'] == u_id:
@@ -107,15 +111,13 @@ def is_message_deleted(message):
 def retrieve_members(channel_id, dm_id): 
     members = None
     if channel_id == -1:
-        for dm in data['DM']:   # pragma: no branch
+        for dm in data['DM']:   
             if dm['dm_id'] == dm_id:
                 members = dm['dm_members']
-                break
     else:
-        for channel in data['channels']:    # pragma: no branch   
+        for channel in data['channels']:      
             if channel['channel_id'] == channel_id:
                 members = channel['all_members']
-                break
     return members 
                     
 def add_tag_notification(auth_user_id, channel_id, dm_id, message):
