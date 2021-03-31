@@ -1,4 +1,4 @@
-from src.auth import auth_login_v1, auth_register_v1, auth_logout
+from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
 from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
@@ -7,25 +7,23 @@ from src.other import clear_v1
 def clear_data():
     clear_v1()
 
-#################################################################################
-#                                                                               #
-#                      auth_login testing functions                             #
-#                                                                               #
-#################################################################################
+################################################################################
+# auth_login_v1 tests                                                          #
+################################################################################
 
 def test_pass(clear_data):
     # Testing if a single user can register and login
-    assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest') == {'auth_user_id': 1}
-    assert auth_login_v1('validemail@gmail.com', '123abc!@#') == {'auth_user_id': 1}
+    assert auth_register_v1('validemail@gmail.com', '123abc!@#', 'Hayden', 'Everest')['auth_user_id'] == 1
+    assert auth_login_v1('validemail@gmail.com', '123abc!@#')['auth_user_id'] == 1
 
 def test_multiple_valid_users(clear_data):
     # Testing if multiple users can register and login
-    assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith') == {'auth_user_id': 1}
-    assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve') == {'auth_user_id': 2}
-    assert auth_register_v1('jasonbourne@gmail.com', 'itsjasonbourne', 'Jason', 'Bourne') == {'auth_user_id': 3}
-    assert auth_login_v1('jsmith@gmail.com', 'password') == {'auth_user_id': 1}
-    assert auth_login_v1('anotheremail@gmail.com', 'stevenses') == {'auth_user_id': 2}
-    assert auth_login_v1('jasonbourne@gmail.com', 'itsjasonbourne') == {'auth_user_id': 3}
+    assert auth_register_v1('jsmith@gmail.com', 'password', 'John', 'Smith')['auth_user_id'] == 1
+    assert auth_register_v1('anotheremail@gmail.com', 'stevenses', 'Steve', 'Steve')['auth_user_id'] == 2
+    assert auth_register_v1('jasonbourne@gmail.com', 'itsjasonbourne', 'Jason', 'Bourne')['auth_user_id'] == 3
+    assert auth_login_v1('jsmith@gmail.com', 'password')['auth_user_id'] == 1
+    assert auth_login_v1('anotheremail@gmail.com', 'stevenses')['auth_user_id'] == 2
+    assert auth_login_v1('jasonbourne@gmail.com', 'itsjasonbourne')['auth_user_id'] == 3
 
 def test_unregistered_email(clear_data):
     # Testing login with an unregistered email
@@ -44,12 +42,9 @@ def test_login_invalid_email(clear_data):
     with pytest.raises(InputError):
         auth_login_v1("wrong_format.com", "password")
 
-#################################################################################
-#                                                                               #
-#                      auth_register testing functions                          #
-#                                                                               #
-#################################################################################
-
+################################################################################
+# auth_register_v1 tests                                                       #
+################################################################################
 
 def test_duplicate_email(clear_data):
     # Testing registering with a used email
@@ -87,22 +82,35 @@ def test_long_last_name(clear_data):
     with pytest.raises(InputError):
         auth_register_v1('anewemail@gmail.com', 'password', 'John', 'Smithhasasuperduperreallylongnamethatjustdoesntmakeanysense')  
 
+def test_repeat_long_handle(clear_data):
+    # Creating handles longer than 20 characters, and tests adding multiple users
+    # Also tests multiple users with same name
+    i = 0
+    j = 1
+    while i < 12:
+        user_info = auth_register_v1(str(i) + 'anewemail@gmail.com', 'password', 'John', 'Smith')
+        assert user_info['auth_user_id'] == j
+        i += 1
+        j += 1
+    while i < 14:
+        user_info = auth_register_v1(str(i) + 'anothernewemail@gmail.com', 'password', 'Johnsmithus', 'Smithjohnus')
+        assert user_info['auth_user_id'] == j
+        i += 1
+        j += 1
 
 #################################################################################
-#                                                                               #
-#                      auth_logout testing functions                            #
-#                                                                               #
+#   auth_logout_v1 testing functions                                               #
 #################################################################################
 
 def test_valid_logout_token(clear_data):
     # Testing the logout function when a valid token is used
     user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
-    assert auth_logout(user.get('token')).get('is_success') == True
+    assert auth_logout_v1(user.get('token')).get('is_success') == True
 
 def test_invalid_logout(clear_data):
     # Testing the logout function when an invalid token is used
     user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
     with pytest.raises(AccessError):
-        auth_logout(user.get('invalid_token')).get('is_success')
-
+        auth_logout_v1(user.get('invalid_token')).get('is_success')
+        
 
