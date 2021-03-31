@@ -107,12 +107,12 @@ def is_message_deleted(message):
 def retrieve_members(channel_id, dm_id): 
     members = None
     if channel_id == -1:
-        for dm in data['DM']:
+        for dm in data['DM']:   # pragma: no branch
             if dm['dm_id'] == dm_id:
                 members = dm['dm_members']
                 break
-    elif dm_id == -1:
-        for channel in data['channels']:
+    else:
+        for channel in data['channels']:    # pragma: no branch   
             if channel['channel_id'] == channel_id:
                 members = channel['all_members']
                 break

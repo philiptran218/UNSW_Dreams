@@ -420,6 +420,14 @@ def test_channel_messages_valid_single(clear_data, user_1, public_channel_1):
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
 
+def test_channel_messages_multi_channels(clear_data, user_1, user_2, public_channel_1, public_channel_2):
+    message_send_v1(user_1['token'], public_channel_1, 'Hello World')
+    message_send_v1(user_2['token'], public_channel_2, 'Hiya World!')
+    message_detail = channel_messages_v1(user_1['token'], public_channel_1, 0)
+    assert message_detail['messages'][0]['message_id'] == 1
+    assert message_detail['messages'][0]['u_id'] == user_1['auth_user_id']
+    assert message_detail['messages'][0]['message'] == 'Hello World'
+
 def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
     # Testing for multiple messages, and non-zero start value 
     # Sends 55 messages to channel, the messages are just numbers as strings
@@ -441,7 +449,7 @@ def test_channel_messages_multiple(clear_data, user_1, public_channel_1):
         j += 1 
     assert message_detail['start'] == 2
     assert message_detail['end'] == 52
-    
+      
 ################################################################################
 # channel_join_v1 tests                                                        #
 ################################################################################
@@ -456,7 +464,7 @@ def test_channel_join_invalid_channel(clear_data, user_1, public_channel_1):
     with pytest.raises(InputError):
         channel_join_v1(user_1['token'], INVALID_VALUE) 
         
-def test_channel_join_private_channel(clear_data, user_2, private_channel, user_1):        
+def test_channel_join_private_channel(clear_data, user_2, user_1, public_channel_1, private_channel):        
     # Raises AccessError since user_1 is a member attempting to enter a private
     # channel
     with pytest.raises(AccessError):    
@@ -482,7 +490,6 @@ def test_channel_join_already_joined(clear_data, user_1, public_channel_1, user_
     assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']   
     
 def test_channel_join_valid_multi(clear_data, user_1, user_2, user_3, public_channel_1):
-    # user_3 = auth_register_v1("philiptran@gmail.com", "password", "Philip", "Tran")
     # Testing if multiple members can join a public channel
     channel_join_v1(user_2['token'], public_channel_1)
     channel_join_v1(user_3['token'], public_channel_1)
