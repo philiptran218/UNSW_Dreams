@@ -172,12 +172,12 @@ def auth_register_v1(email, password, name_first, name_last):
     return auth_login_v1(email, password)
 
 def auth_logout(token):
-        '''
+    '''
     Function:
         Allows logged in users to log out
         
     Arguments:
-        token(str)
+        token(str) - this is the token of a registered user during their session
     
     Exceptions:
         AccessError - When the token is invalid
