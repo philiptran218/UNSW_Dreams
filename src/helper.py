@@ -19,6 +19,13 @@ def is_valid_uid(u_id):
             return True           
     return False
 
+def is_valid_channelid(channel_id): 
+    channel_found = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_found = True       
+    return channel_found  
+
 def get_first_name(auth_user_id):
     first_name = None
     for user in data['users']:
@@ -46,6 +53,17 @@ def get_handle(auth_user_id):
         if user['u_id'] == auth_user_id:
             handle = user['handle_str']
     return handle
+
+def find_permissions(u_id):
+    user_found = None
+    for user in data['users']:
+        if user['u_id'] == u_id:
+            user_found = user
+            
+    if user_found['perm_id'] == 1:
+        return 1
+    else:
+        return 2
 
 def add_uid_to_channel(u_id, channel_id):
     new_member = {

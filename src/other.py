@@ -114,7 +114,13 @@ def search_v1(token, query_str):
         else:
             user_found = is_already_in_dm(auth_user_id, message['dm_id'])
         if user_found == True and is_query_str_in_msg(query_str, message):
-            search_matches['messages'].append(message)
+            message_match = {
+                            'message_id': message['message_id'],
+                            'u_id': message['u_id'],
+                            'message': message['message'],
+                            'time_created': message['time_created']
+                        }
+            search_matches['messages'].append(message_match)
     return search_matches
 
   
