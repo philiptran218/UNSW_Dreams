@@ -1,10 +1,30 @@
 from src.database import data
+import jwt
+
+SECRET = 'COMP1531PROJECT'
+
+def detoken(token):
+    payload = jwt.decode(token, SECRET, algorithms=['HS256'])
+    return payload['u_id']
+    
+def is_valid_token(token):
+    for session in data['sessions']:
+        if session['token'] == token:
+            return True
+    return False
 
 def is_valid_uid(u_id): 
     for user in data['users']:
         if user['u_id'] == u_id:
             return True           
     return False
+
+def is_valid_channelid(channel_id): 
+    channel_found = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_found = True       
+    return channel_found  
 
 def get_first_name(auth_user_id):
     first_name = None
@@ -34,6 +54,17 @@ def get_handle(auth_user_id):
             handle = user['handle_str']
     return handle
 
+def find_permissions(u_id):
+    user_found = None
+    for user in data['users']:
+        if user['u_id'] == u_id:
+            user_found = user
+            
+    if user_found['perm_id'] == 1:
+        return 1
+    else:
+        return 2
+
 def add_uid_to_channel(u_id, channel_id):
     new_member = {
                 'u_id': u_id,
@@ -60,4 +91,15 @@ def add_owner_to_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
+            
+def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
+    notification = {
+                    'auth_user_id': auth_user_id,
+                    'u_id': u_id,
+                    'channel_id': channel_id,
+                    'dm_id': dm_id,
+                    'type': 2,
+                    'message': None,     
+                }
+    data['notifications'].append(notification)
 
