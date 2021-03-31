@@ -47,12 +47,13 @@ def test_message(test_user2, test_channel):
 # Expected output for the admin_user_remove function.
 @pytest.fixture
 def expected_output_admin_user_remove():
-    return {
+    return { 'user': {
         'u_id': 2,
         'email': 'dan@gmail.com',
         'name_first': 'Removed',
         'name_last': 'User', 
         'handle_str': "dansmith",
+    }
     }
 
 ################################################################################
