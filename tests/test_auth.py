@@ -1,5 +1,5 @@
-from src.auth import auth_login_v1, auth_register_v1
-from src.error import InputError
+from src.auth import auth_login_v1, auth_register_v1, auth_logout
+from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
 
@@ -95,13 +95,14 @@ def test_long_last_name(clear_data):
 #################################################################################
 
 def test_valid_logout_token(clear_data):
-    # Testing the logout function when a valid toke is used
-    user = auth_register("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    # Testing the logout function when a valid token is used
+    user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
     assert auth_logout(user.get('token')).get('is_success') == True
 
 def test_invalid_logout(clear_data):
     # Testing the logout function when an invalid token is used
-     user = auth_register("test@gmail.com", "validpassword123","Firstname", "Lastname")
-    assert auth_logout(user.get('invalid_token')).get('is_success') == False
+    user = auth_register_v1("test@gmail.com", "validpassword123","Firstname", "Lastname")
+    with pytest.raises(AccessError):
+        auth_logout(user.get('invalid_token')).get('is_success')
 
 
