@@ -10,7 +10,7 @@ def clear_data():
     clear_v1()
 
 #################################################################################
-#   user_profile_v1_v1 testing functions                                        #
+#   user_profile_v1 testing functions                                           #
 #################################################################################
 
 def test_valid_user_profile_v1(clear_data): 
@@ -40,32 +40,28 @@ def test_profile_invalid_u_id(clear_data):
     with pytest.raises(InputError):
         user_profile_v1(new_user.get('token'), 'invalid_u_id')
 
-def test_profile_unregistered_user(clear_data):
-    with pytest.raises(AccessError):
-        user_profile_v1('invalid_token', 'invalid_u_id')
 
 #################################################################################
-#   user_profile_setname_v1_v2 testing functions                                   #
+#   user_profile_setname_v1 testing functions                                   #
 #################################################################################
 
 def test_setname_first_pass(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
-    return_user = user_profile_setname_v1(user_token, "Jake", "Bourne")
-    assert return_user == {}
+    user_profile_setname_v1(user_token, "Jake", "Bourne")
+    new_first_name_check = user_profile_v1(new_user.get('token'), new_user.get('auth_user_id'))
+    assert new_first_name_check['user']['name_first'] == "Jake"
 
 def test_setname_last_pass(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
-    return_user = user_profile_setname_v1(user_token, "Jason", "Smith")
-    assert return_user == {}
+    user_profile_setname_v1(user_token, "Jason", "Smith")
+    new_last_name_check = user_profile_v1(new_user.get('token'), new_user.get('auth_user_id'))
+    assert new_last_name_check['user']['name_last'] == "Smith"
 
 def test_setname_first_too_long(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
     
     with pytest.raises(InputError):
         user_profile_setname_v1(user_token, "Thiscantpossiblybesomeonesnameasitistoolongandhardtoread", "Bourne")
@@ -73,7 +69,6 @@ def test_setname_first_too_long(clear_data):
 def test_setname_first_too_short(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")    
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
     
     with pytest.raises(InputError):
         user_profile_setname_v1(user_token, "", "Bourne")
@@ -81,7 +76,6 @@ def test_setname_first_too_short(clear_data):
 def test_setname_last_too_long(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")    
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
     
     with pytest.raises(InputError):
         user_profile_setname_v1(user_token, "Jason", "Thisisaverylonglonglonglonglonglonglonglonglastname")
@@ -89,13 +83,13 @@ def test_setname_last_too_long(clear_data):
 def test_setname_last_too_short(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")    
     user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
     
     with pytest.raises(InputError):
         user_profile_setname_v1(user_token, "Jason", "")
 
 def test_setname_invalid_token(clear_data):
     auth_register_v1("validemail@gmail.com", "GoodPassword23", "Jason", "Bourne")
+
     with pytest.raises(AccessError):
         user_profile_setname_v1("invalid", "Not", "JasonBourne")
     
@@ -136,18 +130,17 @@ def test_unregistered_user(clear_data):
 
 
 #################################################################################
-#                                                                               #
-#                      user_profile_sethandle_v1_v1 testing functions              #
-#                                                                               #
+#   user_profile_sethandle_v1 testing functions                                 #
 #################################################################################
 
 def test_handle_simple_pass(clear_data):
     new_user = auth_register_v1("myemail@gmail.com", "my12password", "Brad", "Lee")
     new_user_token = new_user.get("token")
-    user_id = new_user.get("u_id")
-    output = user_profile_sethandle_v1(user_token, "MyHandle")
-    handle = details.get('user').get('handle_str')
-    assert handle == "MyHandle"
+
+    user_profile_sethandle_v1(new_user_token, "MyHandle")
+    user = user_profile_v1(new_user.get("token"), new_user.get('auth_user_id'))
+
+    assert user['user']['handle_str'] == "MyHandle"
 
 
 def test_invalid_handle(clear_data):
@@ -155,14 +148,14 @@ def test_invalid_handle(clear_data):
     new_user_token = new_user.get("token")
 
     with pytest.raises(InputError):
-        user.user_profile_sethandle_v1(new_user_token, '')
+        user_profile_sethandle_v1(new_user_token, '')
 
 def test_invalid_long_handle(clear_data):
     new_user = auth_register_v1("validemail@gmail.com", "PaSsWoRd321My", "Ash", "Ketchum")
     new_user_token = new_user.get("token")
 
     with pytest.raises(InputError):
-        user.user_profile_sethandle_v1(new_user_token, 'thisisaverylonghandlethatcantbeused')
+        user_profile_sethandle_v1(new_user_token, 'thisisaverylonghandlethatcantbeused')
 
 def test_handle_taken(clear_data):
     new_user1 = auth_register_v1("validemail@gmail.com", "PaSsWoRd321My", "Ash", "Ketchum")
