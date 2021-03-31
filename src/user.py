@@ -9,6 +9,22 @@ REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 SECRET = 'COMP1531PROJECT'
 
 def user_profile_v1(token, u_id):
+    """
+    Function:
+        This function return information about the user, including their u_id, email, first and last name and their handle 
+
+    Arguments:
+        token(str) - token of the registered user.
+        u_id(int) - u_id of the person whose information is being displayed 
+
+    Exceptions:
+        AccessError - If token is invalid
+                    - If u_id is invalid
+
+    Return Type:
+        Function returns user's u_id, email, first name, last name and handle
+    """
+
     
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
@@ -31,6 +47,23 @@ def user_profile_v1(token, u_id):
 
         
 def user_profile_setname_v1(token, name_first, name_last):
+    """
+    Function:
+        This function allows users to change their first and/or last name
+
+    Arguments:
+        token(str) - token of the registered user.
+        name_first - the first name that the user wants to change to
+        name_last - the last name that the user wants to change to
+
+    Exceptions:
+        AccessError - If token is invalid
+        
+        InputError - If the name/s entered are zero or more than 50 characters long
+
+    Return Type:
+        Function does not return anything
+    """
        
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
@@ -49,6 +82,23 @@ def user_profile_setname_v1(token, name_first, name_last):
         
 
 def user_profile_setemail_v1(token, email):
+    """
+    Function:
+        This function allows users to changed their email
+
+    Arguments:
+        token(str) - token of the registered user.
+        email(str) - the new email
+
+    Exceptions:
+        AccessError - If token is invalid
+
+        InputError - If the email is already taken
+                   - If the email is invalid
+
+    Return Type:
+        Function does not return anything
+    """
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
@@ -60,12 +110,31 @@ def user_profile_setemail_v1(token, email):
     if not re.search(REGEX, email):
         raise InputError(description="Invalid Email")
    
-    for users in data['users']:
-        if users.get('u_id') == auth_user_id:
-            users.update({'email': email})
+    for user in data['users']:
+        if user.get('u_id') == auth_user_id:
+            user.update({'email': email})
     return {}
 
 def user_profile_sethandle_v1(token, handle_str):
+    """
+    Function:
+        This function allows users to change their handle
+
+    Arguments:
+        token(str) - token of the registered user.
+        handle(str) - the new handle the user wants to change to
+
+    Exceptions:
+        AccessError - If token is invalid
+        
+        InputError - If the handle is less than 3 or more than 20 characters
+                   - If the handle is already taken
+
+    Return Type:
+        Function does not return anything
+    """
+
+
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
@@ -78,10 +147,24 @@ def user_profile_sethandle_v1(token, handle_str):
 
     for user in data['users']:
         if user['u_id'] == auth_user_id:
-            user["handle"] = handle_str
+            user.update({'handle_str': handle_str})
     return {}
 
 def user_all_v1(token):
+    """
+    Function:
+        This function displays information about all users
+
+    Arguments:
+        token(str) - token of the registered user.
+
+    Exceptions:
+        AccessError - If token is invalid
+
+    Return Type:
+        Function returns a list of all the users
+    """
+
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
     
