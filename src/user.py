@@ -8,7 +8,7 @@ from src.helper import is_valid_token, is_valid_uid, detoken
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 SECRET = 'COMP1531PROJECT'
 
-def user_profile(token, u_id):
+def user_profile_v1(token, u_id):
     
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
@@ -30,7 +30,7 @@ def user_profile(token, u_id):
     return user_details
 
         
-def user_profile_setname(token, name_first, name_last):
+def user_profile_setname_v1(token, name_first, name_last):
        
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
@@ -48,7 +48,7 @@ def user_profile_setname(token, name_first, name_last):
     return {}
         
 
-def user_profile_setemail_v2(token, email):
+def user_profile_setemail_v1(token, email):
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
@@ -65,7 +65,7 @@ def user_profile_setemail_v2(token, email):
             data['email'] = email
     return {}
 
-def user_profile_sethandle_v2(token, handle_str):
+def user_profile_sethandle_v1(token, handle_str):
     if is_valid_token(token) == False:
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
