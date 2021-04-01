@@ -4,227 +4,109 @@ import json
 from src import config
 
 INVALID_TOKEN = -1
-INVALID_CHANNEL_ID = -1
-INVALID_DM_ID = -1
 INVALID_U_ID = -1
-INVALID_PERM_ID = -1
-
-OWNER = 1
-MEMBER = 2
-
+INVALID_DM_ID = -1
 INPUTERROR = 400
 ACCESSERROR = 403
 
 
 @pytest.fixture
-def user_1():
-    user = requests.post(config.url + 'auth/register/v2', json={
-        'email': 'johnsmith@gmail.com',
-        'password': 'goodpass',
-        'name_first': 'John',
-        'name_last': 'Smith'
-    })
-    return user.json()
-    
-@pytest.fixture
-def user_2():
-    user = requests.post(config.url + 'auth/register/v2', json={
-        'email': 'philtran@gmail.com',
-        'password': 'goodpass',
-        'name_first': 'Philip',
-        'name_last': 'Tran'
-    })
-    return user.json()
-    
-@pytest.fixture
-def channel_1(user_1):
-    channel = requests.post(config.url + 'channels/create/v2', json={
-        'token': user_1['token'],
-        'name': 'Channel1',
-        'is_public': True
-    })
-    channel_info = channel.json()
-    return channel_info['channel_id']
-
-@pytest.fixture
-def priv_channel_1(user_1):
-    channel = requests.post(config.url + 'channels/create/v2', json={
-        'token': user_1['token'],
-        'name': 'Channel1',
-        'is_public': False
-    })
-    channel_info = channel.json()
-    return channel_info['channel_id']
-
-@pytest.fixture
-def channel_2(user_2):
-    channel = requests.post(config.url + 'channels/create/v2', json={
-        'token': user_2['token'],
-        'name': "Phil's Channel",
-        'is_public': True
-    })
-    channel_info = channel.json()
-    return channel_info['channel_id']
-    
-@pytest.fixture
-def dm_1(user_1):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_1['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-    
-@pytest.fixture
-def dm_2(user_2):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_2['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-
-@pytest.fixture 
-def clear_database():
+def clear_data():
     requests.delete(config.url + 'clear')
 
+@pytest.fixture
+def test_user1():
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'validemail@g.com',
+        'password': 'validpass',
+        'name_first': 'validname',
+        'name_last': 'validname'
+    })
+    return user_info.json()
+
+@pytest.fixture
+def test_user2():
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'dan@gmail.com',
+        'password': 'password',
+        'name_first': 'dan',
+        'name_last': 'smith'
+    })
+    return user_info.json()
+
+@pytest.fixture
+def test_user3():
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'danimatt@gmail.com',
+        'password': 'valpassword',
+        'name_first': 'danny',
+        'name_last': 'smithy'
+    })
+    return user_info.json()
+
+@pytest.fixture
+def test_user4():
+    user_info = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'danny@gmail.com',
+        'password': 'password123',
+        'name_first': 'danny',
+        'name_last': 'james'
+    })
+    return user_info.json()
+
+@pytest.fixture
+def test_create_dm(test_user1,test_user2):
+    dm = requests.post(config.url + 'dm/create/v1', json={
+        'token': test_user1['token'],
+        'u_ids': [test_user2['auth_user_id']]
+    })
+    dm_info = dm.json()
+    return dm_info
+
+
 ################################################################################
-# admin_user_remove http tests                                                 #
+# dm_details http tests                                                        #
 ################################################################################
 
-def test_admin_user_remove_invalid_token(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+def test_dm_details_invalid_dm_id(clear_data, test_user1, test_create_dm):
+    dm_det = requests.get(config.url + 'dm/details/v1', json={
+        'token': test_user1['token'],
+        'dm_id': INVALID_DM_ID,
+    })
+    assert dm_det.status_code == INPUTERROR
+
+def test_dm_details_invalid_token(clear_data,test_user1,test_create_dm):
+    dm_det = requests.get(config.url + 'dm/details/v1', json={
         'token': INVALID_TOKEN,
-        'u_id': user_1['u_id'],
+        'dm_id': test_create_dm['dm_id'],
     })
-    assert msg.status_code == ACCESSERROR
+    assert dm_det.status_code == ACCESSERROR
 
-def test_admin_user_remove_invalid_u_id(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
-        'token': user_1['token'],
-        'u_id': INVALID_U_ID,
+def test_dm_details_invalid_not_in_dm(clear_data,test_user3,test_create_dm):
+    dm_det = requests.get(config.url + 'dm/details/v1', json={
+        'token': test_user3['token'],
+        'dm_id': test_create_dm['dm_id'],
     })
-    assert msg.status_code == INPUTERROR
+    assert dm_det.status_code == ACCESSERROR
 
-def test_admin_user_remove_invalid_only_owner(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
-        'token': user_1['token'],
-        'u_id': user_1['u_id'],
+def test_dm_details_valid(clear_data,test_user1,test_create_dm):
+    dm_det = requests.get(config.url + 'dm/details/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
     })
-    assert msg.status_code == INPUTERROR
-
-def test_admin_user_remove_invalid_not_owner(clear_database, user_1, user_2):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
-        'token': user_2['token'],
-        'u_id': user_1['u_id'],
-    })
-    assert msg.status_code == ACCESSERROR
-
-def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
+    dm_info = dm_det.json()
+    assert dm_info['name'] == test_create_dm['name']
+    assert dm_info['members'] == test_create_dm['members']
     
-    #To test this funciton. User 2 needs to first join a channel and send a message.
-    #After funciton is performed: two things must occur:
-    #   1: User's name must be changed to "Removed User" - tested through user/profile
-    #   2: User's messages must be changed to "Removed User"
 
-    requests.post(config.url + 'channel/join/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1
-    })
-
-    channel_msg = requests.post(config.url + 'message/send/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1,
-        'message': 'I just joined!!'
-    })
-  
-    msg_info = channel_msg.json()['messages']
-    
-    requests.post(config.url + 'admin/user/remove/v1', json={
-        'token': user_1['token'],
-        'u_id': user_2['u_id'],
-    })
-
-    users = requests.get(config.url + 'user/profile/v1', json={
-        'token': user_1['token'],
-        'u_id': user_2['u_id'],
-    })
-
-    users_info = users.json()['users']
-    assert users_info[1]['name_first'] == 'Removed'
-    assert users_info[1]['name_last'] == 'User'
-
-    channel_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1,
-        'start': 0
-    }) 
-    assert msg_info[0]['message'] == 'Removed User'
- 
 ################################################################################
-# admin_userpermission_change http tests                                       #
+# dm_list http tests                                                          #
 ################################################################################
 
-def test_admin_userpermission_change_invalid_token(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
-        'token': INVALID_TOKEN,
-        'u_id': user_1['u_id'],
-        'permission_id': OWNER
-    })
-    assert msg.status_code == ACCESSERROR
 
-def test_admin_userpermission_change_invalid_u_id(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
-        'token': user_1['token'],
-        'u_id': INVALID_U_ID,
-        'permission_id': OWNER
-    })
-    assert msg.status_code == INPUTERROR
 
-def test_admin_userpermission_change_invalid_perm_id(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
-        'token': user_1['token'],
-        'u_id': user_1['u_id'],
-        'permission_id': INVALID_PERM_ID
-    })
-    assert msg.status_code == INPUTERROR
 
-def test_admin_userpermission_change_invalid_not_owner(clear_database, user_1, user_2):
-    msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
-        'token': user_2['token'],
-        'u_id': user_1['u_id'],
-        'permission_id': OWNER
-    })
-    assert msg.status_code == ACCESSERROR
+################################################################################
+# dm_create http tests                                                         #
+################################################################################
 
-def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_channel_1):
-    
-    #To test this funciton. User 2 (a member) must try to enter a private channel.
-    #The first time they fail, but after the function is performed, they should succeed.
-
-    msg = requests.post(config.url + 'channel/join/v2', json={
-        'token': user_2['token'],
-        'channel_id': priv_channel_1
-    })
-    assert msg.status_code == ACCESSERROR
-    
-    requests.post(config.url + 'admin/userpermission/change/v1', json={
-        'token': user_1['token'],
-        'u_id': user_2['u_id'],
-        'permission_id': OWNER
-    })
-
-    requests.post(config.url + 'channel/join/v2', json={
-        'token': user_2['token'],
-        'channel_id': priv_channel_1
-    })
-
-    channel = requests.post(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': priv_channel_1
-    })
-    info = channel.json()['all_members']
-    assert info[1]['u_id'] == user_2['u_id']
-    assert info[1]['email'] == user_2['email']
-    assert info[1]['name_first'] == user_2['name_first']
-    assert info[1]['name_last'] == user_2['name_last']
