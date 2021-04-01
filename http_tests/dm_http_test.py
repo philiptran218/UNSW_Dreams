@@ -74,7 +74,7 @@ def test_dm_invite_invalid_dm_id(clear_data,test_user1,test_user2,test_create_dm
         'dm_id': INVALID_DM_ID,
         'u_id': test_user2['auth_user_id']
     })
-    assert dm_inv.status_code == INPUTERROR
+    assert dm_inv.status_code == INPUTERROR #dminvjson()??
 
 def test_dm_invite_invalid_u_id(clear_data,test_user1,test_user2,test_create_dm):
     dm_inv = requests.post(config.url + 'dm/invite/v1', json={
@@ -127,4 +127,43 @@ def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create
     assert(member_check)
 
 
+################################################################################
+# dm_leave_v1 tests                                                            #
+################################################################################
 
+def test_dm_leave_invalid_dm_id(clear_data,test_user1,test_user2,test_create_dm):
+    leave = requests.post(config.url + 'dm/leave/v1', json={
+        'token': test_user1['token'],
+        'dm_id':test_create_dm['dm_id']
+    })
+    assert leave.status_code == INPUTERROR 
+
+def test_dm_leave_user_not_a_member(clear_data,test_user1,test_user2,test_user3,test_create_dm):
+    leave = requests.post(config.url + 'dm/leave/v1', json={
+        'token': test_user3['token'],
+        'dm_id':test_create_dm['dm_id']
+    })
+    assert leave.status_code == ACCESSERROR
+
+def test_dm_leave(clear_data,test_user1,test_user2,test_create_dm):
+    requests.post(config.url + 'dm/leave/v1', json={
+        'token': test_user2['token'],
+        'dm_id':test_create_dm['dm_id']
+    })
+    member_left = True
+    dlist = requests.get(config.url + 'dm/details/v1', json={
+        'token': test_user2['token'],
+        'dm_id': test_create_dm['dm_id']
+    }) 
+    members = dlist.json()['members']
+    for member in members:
+        if member['u_id'] == test_user2['auth_user_id']:
+            member_left = False
+    assert(member_left)
+
+def test_dm_leave_invalid_token(clear_data,test_user1,test_user2,test_create_dm):
+    leave = requests.post(config.url + 'dm/leave/v1', json={
+        'token': INVALID_TOKEN,
+        'dm_id':test_create_dm['dm_id']
+    })
+    assert leave.status_code == ACCESSERROR   
