@@ -77,7 +77,7 @@ def test_message_send_invalid_channel(clear_database, user_1, channel_1):
 def test_message_send_user_not_in_channel(clear_database, user_1, user_2, channel_1):
     
     msg = requests.post(config.url + 'message/send/v2', json={
-        'token': user_2['token']
+        'token': user_2['token'],
         'channel_id': channel_1,
         'message': 'Hiya World!'
     })
