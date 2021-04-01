@@ -65,28 +65,28 @@ def clear_database():
 ################################################################################
 
 def test_admin_user_remove_invalid_token(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': INVALID_TOKEN,
         'u_id': user_1['u_id'],
     })
     assert msg.status_code == ACCESSERROR
 
 def test_admin_user_remove_invalid_u_id(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
         'u_id': INVALID_U_ID,
     })
     assert msg.status_code == INPUTERROR
 
 def test_admin_user_remove_invalid_only_owner(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
         'u_id': user_1['u_id'],
     })
     assert msg.status_code == INPUTERROR
 
 def test_admin_user_remove_invalid_not_owner(clear_database, user_1, user_2):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_2['token'],
         'u_id': user_1['u_id'],
     })
@@ -112,7 +112,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
   
     msg_info = channel_msg.json()['messages']
     
-    requests.post(config.url + 'admin/user/remove/v1', json={
+    requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
         'u_id': user_2['u_id'],
     })
