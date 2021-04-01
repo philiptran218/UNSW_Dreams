@@ -74,7 +74,7 @@ def test_dm_invite_invalid_dm_id(clear_data,test_user1,test_user2,test_create_dm
         'dm_id': INVALID_DM_ID,
         'u_id': test_user2['auth_user_id']
     })
-    assert dm_inv.status_code == INPUTERROR #dminvjson()??
+    assert dm_inv.status_code == INPUTERROR 
 
 def test_dm_invite_invalid_u_id(clear_data,test_user1,test_user2,test_create_dm):
     dm_inv = requests.post(config.url + 'dm/invite/v1', json={
@@ -106,7 +106,7 @@ def test_dm_invite_already_in_dm(clear_data,test_user1,test_user2,test_create_dm
         'dm_id': test_create_dm['dm_id'],
         'u_id': test_user2['auth_user_id']
     })
-    assert dm_inv.json()== {} #.json()?
+    assert dm_inv.json()== {} 
 
 def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create_dm):
     requests.post(config.url + 'dm/invite/v1', json={
