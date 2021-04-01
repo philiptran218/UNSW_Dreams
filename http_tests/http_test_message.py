@@ -68,7 +68,7 @@ def test_message_send_invalid_token(clear_database, user_1, channel_1):
 def test_message_send_invalid_channel(clear_database, user_1, channel_1):
 
     msg = requests.post(config.url + 'message/send/v2', json={
-        'token': user_1['token']
+        'token': user_1['token'],
         'channel_id': INVALID_CHANNEL_ID,
         'message': 'Hello World'
     })
