@@ -97,16 +97,73 @@ def test_dm_details_valid(clear_data,test_user1,test_create_dm):
     dm_info = dm_det.json()
     assert dm_info['name'] == test_create_dm['name']
     assert dm_info['members'] == test_create_dm['members']
-    
 
 ################################################################################
 # dm_list http tests                                                          #
 ################################################################################
 
+#Function that shows expected output for dm_list.
+def expected_output_list_v1():
+    return {
+        'dm': [
+            {
+                "dm_id": 1,
+                "dm_name": "dansmith, validnamevalidname"
+            }
+        ]
+    }
 
+def test_dm_list_invalid_token(clear_data,test_user1,test_create_dm):
+    dm_list = requests.get(config.url + 'dm/list/v1', json={
+        'token': INVALID_TOKEN,
+    })
+    assert dm_list.status_code == ACCESSERROR
 
+def test_dm_list_valid_empty(clear_data,test_user1):
+    dm_list = requests.get(config.url + 'dm/list/v1', json={
+        'token': test_user1['token'],
+    })
+    dm_info = dm_list.json()
+    assert dm_info == {'dm': []}
+
+def test_dm_list_valid(clear_data,test_user1, test_create_dm):
+    dm_list = requests.get(config.url + 'dm/list/v1', json={
+        'token': test_user1['token'],
+    })
+    dm_info = dm_list.json()
+    assert dm_info == expected_output_list_v1
 
 ################################################################################
 # dm_create http tests                                                         #
 ################################################################################
 
+# Function that shows expected output for dm_create. Note it is different from the 
+# output for list, despite looking similar.
+def expected_output_create_v1():
+    return {
+        "dm_id": 1,
+        "dm_name": "dansmith, validnamevalidname"
+    }
+
+def test_dm_create_invalid_token(clear_data,test_user1, test_user2):
+    dm = requests.post(config.url + 'dm/create/v1', json={
+        'token': INVALID_TOKEN,
+        'u_ids': [test_user2['auth_user_id']]
+    })
+    assert dm.status_code == ACCESSERROR
+
+def test_dm_create_invalid_u_id(clear_data,test_user1, test_user2):
+    dm = requests.post(config.url + 'dm/create/v1', json={
+        'token': test_user1['token'],
+        'u_ids': [INVALID_U_ID]
+    })
+    assert dm.status_code == ACCESSERROR
+
+
+def test_dm_create_valid(clear_data,test_user1, test_user2):
+    dm = requests.post(config.url + 'dm/create/v1', json={
+        'token': test_user1['token'],
+        'u_ids': [test_user2['auth_user_id']]
+    })
+    dm_info = dm.json()
+    assert dm_info == expected_output_create_v1
