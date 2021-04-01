@@ -56,34 +56,6 @@ def priv_channel_1(user_1):
     channel_info = channel.json()
     return channel_info['channel_id']
 
-@pytest.fixture
-def channel_2(user_2):
-    channel = requests.post(config.url + 'channels/create/v2', json={
-        'token': user_2['token'],
-        'name': "Phil's Channel",
-        'is_public': True
-    })
-    channel_info = channel.json()
-    return channel_info['channel_id']
-    
-@pytest.fixture
-def dm_1(user_1):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_1['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-    
-@pytest.fixture
-def dm_2(user_2):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_2['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-
 @pytest.fixture 
 def clear_database():
     requests.delete(config.url + 'clear')
@@ -93,30 +65,30 @@ def clear_database():
 ################################################################################
 
 def test_admin_user_remove_invalid_token(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': INVALID_TOKEN,
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
     })
     assert msg.status_code == ACCESSERROR
 
 def test_admin_user_remove_invalid_u_id(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
         'u_id': INVALID_U_ID,
     })
     assert msg.status_code == INPUTERROR
 
 def test_admin_user_remove_invalid_only_owner(clear_database, user_1):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
     })
     assert msg.status_code == INPUTERROR
 
 def test_admin_user_remove_invalid_not_owner(clear_database, user_1, user_2):
-    msg = requests.post(config.url + 'admin/user/remove/v1', json={
+    msg = requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_2['token'],
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
     })
     assert msg.status_code == ACCESSERROR
 
@@ -140,14 +112,14 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
   
     msg_info = channel_msg.json()['messages']
     
-    requests.post(config.url + 'admin/user/remove/v1', json={
+    requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
-        'u_id': user_2['u_id'],
+        'u_id': user_2['auth_user_id'],
     })
 
     users = requests.get(config.url + 'user/profile/v1', json={
         'token': user_1['token'],
-        'u_id': user_2['u_id'],
+        'u_id': user_2['auth_user_id'],
     })
 
     users_info = users.json()['users']
@@ -168,7 +140,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
 def test_admin_userpermission_change_invalid_token(clear_database, user_1):
     msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
         'token': INVALID_TOKEN,
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
         'permission_id': OWNER
     })
     assert msg.status_code == ACCESSERROR
@@ -184,7 +156,7 @@ def test_admin_userpermission_change_invalid_u_id(clear_database, user_1):
 def test_admin_userpermission_change_invalid_perm_id(clear_database, user_1):
     msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
         'token': user_1['token'],
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
         'permission_id': INVALID_PERM_ID
     })
     assert msg.status_code == INPUTERROR
@@ -192,7 +164,7 @@ def test_admin_userpermission_change_invalid_perm_id(clear_database, user_1):
 def test_admin_userpermission_change_invalid_not_owner(clear_database, user_1, user_2):
     msg = requests.post(config.url + 'admin/userpermission/change/v1', json={
         'token': user_2['token'],
-        'u_id': user_1['u_id'],
+        'u_id': user_1['auth_user_id'],
         'permission_id': OWNER
     })
     assert msg.status_code == ACCESSERROR
@@ -210,7 +182,7 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
     
     requests.post(config.url + 'admin/userpermission/change/v1', json={
         'token': user_1['token'],
-        'u_id': user_2['u_id'],
+        'u_id': user_2['auth_user_id'],
         'permission_id': OWNER
     })
 
@@ -224,10 +196,8 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
         'channel_id': priv_channel_1
     })
     info = channel.json()['all_members']
-    assert info[1]['u_id'] == user_2['u_id']
+    assert info[1]['u_id'] == user_2['auth_user_id']
     assert info[1]['email'] == user_2['email']
     assert info[1]['name_first'] == user_2['name_first']
     assert info[1]['name_last'] == user_2['name_last']
-    
-    
     
