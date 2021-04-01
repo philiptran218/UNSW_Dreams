@@ -9,6 +9,7 @@ INVALID_DM_ID = -1
 INPUTERROR = 400
 ACCESSERROR = 403
 
+
 @pytest.fixture
 def user_1():
     user = requests.post(config.url + 'auth/register/v2', json={
