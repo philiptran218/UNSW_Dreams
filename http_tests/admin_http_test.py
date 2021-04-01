@@ -56,34 +56,6 @@ def priv_channel_1(user_1):
     channel_info = channel.json()
     return channel_info['channel_id']
 
-@pytest.fixture
-def channel_2(user_2):
-    channel = requests.post(config.url + 'channels/create/v2', json={
-        'token': user_2['token'],
-        'name': "Phil's Channel",
-        'is_public': True
-    })
-    channel_info = channel.json()
-    return channel_info['channel_id']
-    
-@pytest.fixture
-def dm_1(user_1):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_1['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-    
-@pytest.fixture
-def dm_2(user_2):
-    dm = requests.post(config.url + 'dm/create/v1', json={
-        'token': user_2['token'],
-        'u_ids': []
-    })
-    dm_info = dm.json()
-    return dm_info['dm_id']
-
 @pytest.fixture 
 def clear_database():
     requests.delete(config.url + 'clear')
