@@ -181,7 +181,7 @@ def channel_invite_v1(token, channel_id, u_id):
         # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
     if helper.find_permissions(u_id) == OWNER:
-        helper.add_owner_to_channel(auth_user_id, channel_id)
+        helper.add_owner_to_channel(u_id, channel_id)
     helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
