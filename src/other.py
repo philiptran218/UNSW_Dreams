@@ -76,6 +76,8 @@ def clear_v1():
     delete('sessions')
     delete('session_ids')
 
+    return {}
+
 
 def search_v1(token, query_str):
     '''
