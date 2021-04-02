@@ -123,7 +123,8 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'u_id': user_2['auth_user_id'],
     })
 
-    users_info = users.json()['users']
+    users = users.json()
+    users_info = users['users']
     assert users_info[1]['name_first'] == 'Removed'
     assert users_info[1]['name_last'] == 'User'
 
@@ -179,7 +180,6 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
         'token': user_2['token'],
         'channel_id': priv_channel_1
     })
-    print(msg.json())
     assert msg.status_code == ACCESSERROR
     
     requests.post(config.url + 'admin/userpermission/change/v1', json={
@@ -197,7 +197,8 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
         'token': user_2['token'],
         'channel_id': priv_channel_1
     })
-    info = channel.json()['all_members']
+    channel = channel.json()
+    info = channel['all_members']
     assert info[1]['u_id'] == user_2['auth_user_id']
     assert info[1]['email'] == user_2['email']
     assert info[1]['name_first'] == user_2['name_first']

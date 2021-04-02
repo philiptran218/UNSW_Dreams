@@ -6,10 +6,10 @@ from src.error import InputError
 from src import config
 
 from src.auth import auth_register_v1
-from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1
+from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
-import src.message
-import src.user
+from src.message import message_send_v1
+from src.user import user_profile_v1
 import src.users
 from src.other import clear_v1
 from src.dm import dm_create_v1, dm_details_v1, dm_list_v1
@@ -183,6 +183,36 @@ def dm_list():
 def dm_create():
     create_info = request.get_json()
     output = dm_create_v1(create_info['token'], [create_info['u_ids']])
+    return dumps(output)
+
+################################################################################
+#   channel_join route                                                         #
+################################################################################
+
+@APP.route("/channel/join/v1", methods=['POST'])
+def channel_join():
+    channel = request.get_json()
+    output = channel_join_v1(channel['token'], channel['channel_id'])
+    return dumps(output)
+
+################################################################################
+#   message_send route                                                         #
+################################################################################
+
+@APP.route("/message/send/v2", methods=['POST'])
+def message_send():
+    message = request.get_json()
+    output = message_send_v1(message['token'], message['channel_id'], message['message'])
+    return dumps(output)
+
+################################################################################
+#   user_profile route                                                         #
+################################################################################
+
+@APP.route("/user/profile/v2", methods=['GET'])
+def user_profile():
+    user = request.get_json()
+    output = user_profile_v1(user['token'], user['u_id'])
     return dumps(output)
 
 # Example
