@@ -68,6 +68,29 @@ def test_create_dm(test_user1,test_user2):
 # dm_details http tests                                                        #
 ################################################################################
 
+#Function that shows expected output for dm_details.
+def expected_output_details_v2():
+    return {
+        "name": 'dansmith, validnamevalidname',
+        "members": [
+            {
+                'u_id': 1,
+                'name_first': 'validname',
+                'name_last': 'validname',
+                'email': 'validemail@g.com',
+                'handle_str': 'validnamevalidname'
+            },
+            {
+                'u_id': 2,
+                'name_first': 'dan',
+                'name_last': 'Smith',
+                'email': 'dan@gmail.com',
+                'handle_str': 'dansmith'
+            }
+        ]
+    }
+
+
 def test_dm_details_invalid_dm_id(clear_data, test_user1, test_create_dm):
     dm_det = requests.get(config.url + 'dm/details/v1', json={
         'token': test_user1['token'],
@@ -95,8 +118,7 @@ def test_dm_details_valid(clear_data,test_user1,test_create_dm):
         'dm_id': test_create_dm['dm_id'],
     })
     dm_info = dm_det.json()
-    assert dm_info['name'] == test_create_dm['name']
-    assert dm_info['members'] == test_create_dm['members']
+    assert dm_info == expected_output_details_v2
 
 ################################################################################
 # dm_list http tests                                                          #
