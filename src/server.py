@@ -182,7 +182,7 @@ def dm_list():
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create():
     create_info = request.get_json()
-    output = dm_create_v1(create_info['token'], [create_info['u_ids']])
+    output = dm_create_v1(create_info['token'], create_info['u_ids'])
     return dumps(output)
 
 ################################################################################
