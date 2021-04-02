@@ -12,7 +12,7 @@ ACCESSERROR = 403
 
 @pytest.fixture
 def clear_data():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 @pytest.fixture
 def test_user1():
@@ -55,10 +55,10 @@ def test_user4():
     return user_info.json()
 
 @pytest.fixture
-def test_create_dm(test_user1,test_user2):
+def test_create_dm(test_user1, test_user2):
     dm = requests.post(config.url + 'dm/create/v1', json={
         'token': test_user1['token'],
-        'u_ids': [test_user2['auth_user_id']]
+        'u_ids': [test_user2['auth_user_id']],
     })
     dm_info = dm.json()
     return dm_info
@@ -148,7 +148,7 @@ def test_dm_list_valid_empty(clear_data,test_user1):
     dm_info = dm_list.json()
     assert dm_info == {'dm': []}
 
-def test_dm_list_valid(clear_data,test_user1, test_create_dm):
+def test_dm_list_valid(clear_data, test_user1, test_user2, test_create_dm):
     dm_list = requests.get(config.url + 'dm/list/v1', json={
         'token': test_user1['token'],
     })

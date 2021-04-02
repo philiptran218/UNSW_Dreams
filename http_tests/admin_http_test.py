@@ -58,7 +58,7 @@ def priv_channel_1(user_1):
 
 @pytest.fixture 
 def clear_database():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 ################################################################################
 # admin_user_remove http tests                                                 #
@@ -178,6 +178,7 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
         'token': user_2['token'],
         'channel_id': priv_channel_1
     })
+    print(msg.json())
     assert msg.status_code == ACCESSERROR
     
     requests.post(config.url + 'admin/userpermission/change/v1', json={
