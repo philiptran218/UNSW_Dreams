@@ -74,7 +74,7 @@ def make_user_2_owner_in_channel_1(user_1, user_2, channel_1):
 
 @pytest.fixture 
 def clear_database():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + '/clear/v1')
 
 ################################################################################
 # channel_invite http tests                                                    #
@@ -137,6 +137,7 @@ def test_invite_duplicate_uid(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1
     })
     channel_details = channel_details_json.json()
+    print(channel_details)
 
     assert len(channel_details['owner_members']) == 1
     assert len(channel_details['all_members']) == 2
@@ -228,7 +229,7 @@ def expected_output_details_1():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'email': 'philtran@gmail.com',
-                'handle_str': 'philtran',
+                'handle_str': 'philiptran',
             }
         ]
     }
@@ -243,7 +244,7 @@ def expected_output_details_2():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'email': 'philtran@gmail.com',
-                'handle_str': 'philtran',
+                'handle_str': 'philiptran',
             }
         ],
         'all_members': [
@@ -252,7 +253,7 @@ def expected_output_details_2():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'email': 'philtran@gmail.com',
-                'handle_str': 'philtran',
+                'handle_str': 'philiptran',
             }
         ]
     }
@@ -319,7 +320,7 @@ def test_channel_details_global_owner_allowed(clear_database, user_1, user_2, ch
     })
     channel_details = channel_details_json.json()
 
-    assert channel_details == expected_output_details_1()
+    assert channel_details == expected_output_details_2()
 
 def test_channel_details_new_channel(clear_database, user_1, user_2, channel_2):
     channel_details_json = requests.get(config.url + 'channel/details/v2', json={
@@ -328,7 +329,7 @@ def test_channel_details_new_channel(clear_database, user_1, user_2, channel_2):
     })
     channel_details = channel_details_json.json()
 
-    assert channel_details == expected_output_details_1()
+    assert channel_details == expected_output_details_2()
 
 def test_channel_details_empty_channel(clear_database, user_1, user_2, channel_2):
     requests.post(config.url + 'channel/leave/v1', json={
@@ -386,7 +387,7 @@ def test_channel_addowner_invalid_auth_id(clear_database, user_1, user_2, channe
     })
     addowner = requests.post(config.url + 'channel/addowner/v1', json={
         'token': user_2['token'],
-        'channel_id': INVALID_CHANNEL_ID,
+        'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
 
@@ -406,7 +407,7 @@ def test_channel_addowner_invalid_uid(clear_database, user_1, user_2, channel_1)
 
     assert addowner.status_code == ACCESSERROR
 
-def test_channel_addowner_already_owner(clear_database, user_1, channel_1):
+def test_channel_addowner_already_owner(clear_database, user_1, user_2, channel_1):
     requests.post(config.url + 'channel/invite/v2', json={
         'token': user_1['token'],
         'channel_id': channel_1,
@@ -442,7 +443,7 @@ def test_channel_addowner_global_owner_allowed(clear_database, user_1, user_2, c
     })
     requests.post(config.url + 'channel/addowner/v1', json={
         'token': user_1['token'],
-        'channel_id': channel_1,
+        'channel_id': channel_2,
         'u_id': user_1['auth_user_id']
     })
     channel_details_json = requests.get(config.url + 'channel/details/v2', json={
@@ -506,11 +507,11 @@ def test_channel_removeowner_invalid_auth_id(clear_database, user_1, user_2, cha
     })
     removeowner = requests.post(config.url + 'channel/removeowner/v1', json={
         'token': user_2['token'],
-        'channel_id': INVALID_CHANNEL_ID,
+        'channel_id': channel_1,
         'u_id': user_1['auth_user_id']
     })
 
-    assert removeowner.status_code == ACCESSERROR
+    assert removeowner.status_code == INPUTERROR
 
 def test_channel_removeowner_invalid_uid(clear_database, user_1, user_2, channel_1):
     requests.post(config.url + 'channel/invite/v2', json={
@@ -574,12 +575,12 @@ def test_channel_removeowner_valid_inputs(clear_database, user_1, user_2, channe
         'channel_id': channel_1
     })
     channel_details = channel_details_json.json()
-
+    print(channel_details)
     assert len(channel_details['owner_members']) == 1
     assert channel_details['owner_members'][0]['u_id'] == 1
     assert len(channel_details['all_members']) == 2
-    assert channel_details['all_members'][0]['u_id'] == 2
-    assert channel_details['all_members'][1]['u_id'] == 1
+    assert channel_details['all_members'][0]['u_id'] == 1
+    assert channel_details['all_members'][1]['u_id'] == 2
 
 def test_channel_removeowner_global_owner_allowed(clear_database, user_1, user_2, user_3,channel_2):
     requests.post(config.url + 'channel/invite/v2', json={
@@ -692,7 +693,7 @@ def test_channel_leave_last_user(clear_database, user_1, channel_1):
 
     assert channel_details['name'] == "Channel1"
     assert channel_details['is_public'] == True
-    assert channel_details['owner_members'] = []
+    assert channel_details['owner_members'] == []
     assert channel_details['all_members'] == []
 
     
