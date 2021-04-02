@@ -263,6 +263,55 @@ def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
     assert message_detail['end'] == 52
 
 
+
+################################################################################
+# dm_remove_v1 tests                                                           #
+################################################################################
+
+def test_dm_remove_v1(clear_data,test_user1,test_user2,test_create_dm):
+    dmsdict = requests.get(config.url + 'dm/list/v1', json={
+        'token': test_user1['token']
+    })
+    dmsdict = dmsdict.json()
+
+    requests.delete(config.url +'dm/remove/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id']
+    })
+
+    assert( bool (dmsdict['dm']))
+
+def test_dm_remove_v1_invalid_dm(clear_data,test_user1,test_create_dm):
+    removed_dm = requests.delete(config.url +'dm/remove/v1', json={
+        'token': test_user1['token'],
+        'dm_id': INVALID_DM_ID
+    })
+    assert removed_dm.status_code == INPUTERROR
+
+def test_dm_remove_v1_invalid_token(clear_data,test_user1,test_create_dm):
+    removed_dm = requests.delete(config.url +'dm/remove/v1', json={
+        'token': INVALID_TOKEN,
+        'dm_id': test_create_dm['dm_id']
+    })
+    assert removed_dm.status_code == ACCESSERROR
+
+
+def test_dm_remove_v1_unoriginal(clear_data,test_user1,test_user2,test_user3,test_create_dm):
+    removed_dm = requests.delete(config.url +'dm/remove/v1', json={
+        'token': test_user3['token'],
+        'dm_id': test_create_dm['dm_id']
+    })
+    assert removed_dm.status_code == ACCESSERROR    
+
+def test_dm_remove_v1_inval_dm_id_not_creator(clear_data,test_user1,test_user2,test_user3,test_create_dm):
+    removed_dm = requests.delete(config.url +'dm/remove/v1', json={
+        'token': test_user3['token'],
+        'dm_id': INVALID_DM_ID
+    })
+    assert removed_dm.status_code == INPUTERROR   
+
+
+
     
 
 
