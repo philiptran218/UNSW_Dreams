@@ -110,7 +110,8 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'message': 'I just joined!!'
     })
   
-    msg_info = channel_msg.json()['messages']
+    msg_info = channel_msg.json()
+    msg_messages = msg_info['messages']
     
     requests.delete(config.url + 'admin/user/remove/v1', json={
         'token': user_1['token'],
@@ -131,7 +132,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'start': 0
     }) 
-    assert msg_info[0]['message'] == 'Removed User'
+    assert msg_messages[0]['message'] == 'Removed User'
  
 ################################################################################
 # admin_userpermission_change http tests                                       #
