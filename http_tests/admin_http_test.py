@@ -117,7 +117,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'u_id': user_2['auth_user_id'],
     })
 
-    users = requests.get(config.url + 'user/profile/v1', json={
+    users = requests.get(config.url + 'user/profile/v2', json={
         'token': user_1['token'],
         'u_id': user_2['auth_user_id'],
     })
