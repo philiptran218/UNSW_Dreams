@@ -1,6 +1,8 @@
 import pytest
 import requests
 import json
+import string
+import random
 from src import config
 
 INVALID_TOKEN = -1
@@ -94,35 +96,35 @@ def create_invalid_string():
 
 def send_channel_message(token, channel_id, message):
     requests.post(config.url + 'message/send/v2', json={
-        'token': token
-        'channel_id': channel_id
+        'token': token,
+        'channel_id': channel_id,
         'message': message
     })
 
 def send_dm_message(token, dm_id, message):
     requests.post(config.url + 'message/senddm/v1', json={
-        'token': token
-        'dm_id': dm_id
+        'token': token,
+        'dm_id': dm_id,
         'message': message
     })
 
-def test_other_search_invalid_token(clear_data, user_1):
-    search = requests.get(config.user + 'search/v2', json={
+def test_other_search_invalid_token(clear_database, user_1):
+    search = requests.get(config.url + 'search/v2', json={
         'token': INVALID_TOKEN,
         'query_str': MIXED_QUERY_STR
     })
 
     assert search.status_code == ACCESSERROR
 
-def test_other_search_invalid_query_str(clear_data, user_1):
-    search = requests.get(config.user + 'search/v2', json={
+def test_other_search_invalid_query_str(clear_database, user_1):
+    search = requests.get(config.url + 'search/v2', json={
         'token': INVALID_TOKEN,
         'query_str': create_invalid_string()
     })
 
     assert search.status_code == INPUTERROR
 
-def test_other_search_valid_inputs(clear_data, user_1, user_2, user_3, channel_1, channel_2, dm_1, dm_2):
+def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, channel_1, channel_2, dm_1, dm_2):
     send_channel_message(user_1['token'], channel_1, MIXED_QUERY_STR)
     send_dm_message(user_1['token'], dm_1, MIXED_QUERY_STR)
     send_channel_message(user_1['token'], channel_1, UPPER_CASE_STR)
@@ -130,7 +132,7 @@ def test_other_search_valid_inputs(clear_data, user_1, user_2, user_3, channel_1
     send_dm_message(user_2['token'], dm_2, UPPER_CASE_STR)
     send_dm_message(user_2['token'], dm_2, MIXED_QUERY_STR)
     send_dm_message(user_3['token'], dm_2, MIXED_QUERY_STR)
-    search_json = requests.get(config.user + 'search/v2', json={
+    search_json = requests.get(config.url + 'search/v2', json={
         'token': user_2['token'],
         'query_str': SUB_STR
     })
