@@ -118,7 +118,7 @@ def test_dm_details_valid(clear_data,test_user1,test_create_dm):
         'dm_id': test_create_dm['dm_id'],
     })
     dm_info = dm_det.json()
-    assert dm_info == expected_output_details_v2
+    assert dm_info == expected_output_details_v2()
 
 ################################################################################
 # dm_list http tests                                                          #
@@ -153,7 +153,7 @@ def test_dm_list_valid(clear_data, test_user1, test_user2, test_create_dm):
         'token': test_user1['token'],
     })
     dm_info = dm_list.json()
-    assert dm_info == expected_output_list_v1
+    assert dm_info == expected_output_list_v1()
 
 ################################################################################
 # dm_create http tests                                                         #
@@ -188,4 +188,4 @@ def test_dm_create_valid(clear_data,test_user1, test_user2):
         'u_ids': [test_user2['auth_user_id']]
     })
     dm_info = dm.json()
-    assert dm_info == expected_output_create_v1
+    assert dm_info == expected_output_create_v1()
