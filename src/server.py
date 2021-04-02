@@ -189,7 +189,7 @@ def dm_create():
 #   channel_join route                                                         #
 ################################################################################
 
-@APP.route("/channel/join/v1", methods=['POST'])
+@APP.route("/channel/join/v2", methods=['POST'])
 def channel_join():
     channel = request.get_json()
     output = channel_join_v1(channel['token'], channel['channel_id'])
