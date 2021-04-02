@@ -130,6 +130,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'start': 0
     }) 
+
     msg_info = channel_msg.json()
     assert msg_info['messages'][0]['message'] == 'Removed User'
  

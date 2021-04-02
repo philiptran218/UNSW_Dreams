@@ -6,7 +6,7 @@ from src.error import InputError
 from src import config
 
 from src.auth import auth_register_v1
-from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1
+from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.message import message_send_v1
 from src.user import user_profile_v1
@@ -54,6 +54,16 @@ def auth_register():
 def channel_invite():
     invite_info = request.get_json()
     output = channel_invite_v1(invite_info['token'], invite_info['channel_id'], invite_info['u_id'])
+    return dumps(output)
+
+################################################################################
+#   channel_messages route                                                     #
+################################################################################
+
+@APP.route("/channel/messages/v2", methods=['POST'])
+def channel_messages():
+    message_info = request.get_json()
+    output = channel_messages_v1(message_info['token'], message_info['channel_id'], message_info['start'])
     return dumps(output)
 
 ################################################################################
