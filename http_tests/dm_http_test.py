@@ -167,3 +167,103 @@ def test_dm_leave_invalid_token(clear_data,test_user1,test_user2,test_create_dm)
         'dm_id':test_create_dm['dm_id']
     })
     assert leave.status_code == ACCESSERROR   
+
+
+################################################################################
+# dm_messages_v1 tests                                                         #
+################################################################################
+
+def test_dm_messages_invalid_dm_id(clear_data,test_create_dm,test_user1,test_user2):
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user1['token'],
+        'dm_id': INVALID_DM_ID,
+        'start': 0
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_dm_messages_invalid_token(clear_data,test_create_dm,test_user1,test_user2):
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': INVALID_TOKEN,
+        'dm_id': test_create_dm['dm_id'],
+        'start': 0
+    })
+    assert msg.status_code == ACCESSERROR
+
+def test_dm_messages_invalid_start(clear_data,test_create_dm,test_user1,test_user2):
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'start': 20
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_dm_messages_user_not_member(clear_data,test_create_dm,test_user1,test_user2,test_user3):
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user3['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'start': 0
+    })
+    assert msg.status_code == ACCESSERROR    
+
+def test_dm_messages_start_equal(clear_data,test_create_dm,test_user1,test_user2):
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'start': 0
+    })
+    dms = msg.json()
+    assert(dms == {'messages': [], 'start': 0, 'end': -1})
+
+def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1,test_user2):
+    requests.post(config.url + 'message/senddm/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'message': 'singlemessage'
+    })
+
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'start': 0
+    })
+
+    message_detail = msg.json()
+    assert message_detail['messages'][0]['message_id'] == 1
+    assert message_detail['messages'][0]['u_id'] == test_user1['auth_user_id']
+    assert message_detail['messages'][0]['message'] == 'A new message'
+    assert message_detail['start'] == 0
+    assert message_detail['end'] == -1
+
+def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
+    i = 1
+    while i < 55:
+        requests.post(config.url + 'message/senddm/v1',json={
+            'token':test_user1['token'],
+            'dm_id':test_create_dm['dm_id'],
+            'message':f"{i}"
+        })
+        i += 1
+    msg = requests.get(config.url + 'dm/messages/v1', json={
+        'token': test_user1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'start': 2
+    })
+
+    message_detail = msg.json()
+
+    i = 53
+    j = 0
+    while i >= 4:
+        assert message_detail['messages'][j]['message_id'] == i
+        assert message_detail['messages'][j]['u_id'] == test_user1['auth_user_id']
+        assert message_detail['messages'][j]['message'] == str(i)
+        i -= 1
+        j += 1 
+    assert message_detail['start'] == 2
+    assert message_detail['end'] == 52
+
+
+    
+
+
+
