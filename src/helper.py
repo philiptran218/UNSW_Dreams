@@ -78,9 +78,6 @@ def add_uid_to_channel(u_id, channel_id):
             channel['all_members'].append(new_member)
 
 def add_owner_to_channel(u_id, channel_id):
-    '''
-    This function appends a user to a channel
-    '''
     new_member = {
                 'u_id': u_id,
                 'name_first': get_first_name(u_id),

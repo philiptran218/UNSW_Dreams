@@ -181,7 +181,7 @@ def channel_invite_v1(token, channel_id, u_id):
         # If inputs are valid and u_id is not in channel, append u_id to channel.
         helper.add_uid_to_channel(u_id, channel_id)
     if helper.find_permissions(u_id) == OWNER:
-        helper.add_owner_to_channel(auth_user_id, channel_id)
+        helper.add_owner_to_channel(u_id, channel_id)
     helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
     return {}
 
@@ -303,8 +303,7 @@ def channel_leave_v1(token, channel_id):
     if not is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     remove_user(auth_user_id, channel_id)
-    return {
-    }
+    return {}
 
 def channel_join_v1(token, channel_id):
     '''
