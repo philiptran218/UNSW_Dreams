@@ -303,8 +303,7 @@ def channel_leave_v1(token, channel_id):
     if not is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     remove_user(auth_user_id, channel_id)
-    return {
-    }
+    return {}
 
 def channel_join_v1(token, channel_id):
     '''
