@@ -11,7 +11,7 @@ from src.channels import channels_create_v1
 import src.message
 import src.user
 import src.users
-from src.other import clear_v1
+from src.other import clear_v1, search_v1
 import src.dm
 import src.database
 
@@ -103,6 +103,16 @@ def channel_leave():
 def channels_create():
     create_info = request.get_json()
     output = channels_create_v1(create_info['token'], create_info['name'], create_info['is_public'])
+    return dumps(output)
+
+################################################################################
+#   search route                                                               #
+################################################################################
+
+@APP.route("/search/v2", methods=['GET'])
+def search():
+    search_info = request.get_json()
+    output = search_v1(search_info['token'], search_info['query_str'])
     return dumps(output)
 
 ################################################################################
