@@ -60,7 +60,7 @@ def channel_invite():
 #   channel_messages route                                                     #
 ################################################################################
 
-@APP.route("/channel/messages/v2", methods=['POST'])
+@APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages():
     message_info = request.get_json()
     output = channel_messages_v1(message_info['token'], message_info['channel_id'], message_info['start'])
