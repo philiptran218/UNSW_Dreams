@@ -89,7 +89,7 @@ def clear_database():
 # clear_v1 http tests                                                          # 
 ################################################################################
 
-def test_clear_users(user_1):
+def test_clear_users(clear_database,user_1):
     email = 'johnsmith@gmail.com'
     password = 'goodpass'
     requests.delete(config.url + 'clear')
