@@ -71,6 +71,7 @@ def dm_1(user_1, user_2):
         'u_ids': [user_2['auth_user_id']],
     })
     dm_info = dm.json()
+    print(dm_info)
     return dm_info['dm_id']
 
 @pytest.fixture
@@ -84,7 +85,7 @@ def dm_2(user_2, user_3):
 
 @pytest.fixture 
 def clear_database():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 ################################################################################
 # search_v1() tests                                                            #
@@ -118,7 +119,7 @@ def test_other_search_invalid_token(clear_database, user_1):
 
 def test_other_search_invalid_query_str(clear_database, user_1):
     search = requests.get(config.url + 'search/v2', json={
-        'token': INVALID_TOKEN,
+        'token': user_1['token'],
         'query_str': create_invalid_string()
     })
 
@@ -138,7 +139,7 @@ def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, chann
     })
     search = search_json.json()
     messages = search['messages']
-
+    print(messages)
     assert messages[0]['message_id'] == 2
     assert messages[0]['u_id'] == 1
     assert messages[0]['message'] == MIXED_QUERY_STR
