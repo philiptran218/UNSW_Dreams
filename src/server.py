@@ -10,7 +10,7 @@ from src.channel import channel_invite_v1, channel_details_v1, channel_removeown
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.message import message_send_v1
 from src.user import user_profile_v1
-import src.users
+from src.users import users_all_v1
 from src.other import clear_v1
 from src.dm import dm_create_v1, dm_details_v1, dm_list_v1
 import src.database
@@ -113,7 +113,7 @@ def channels_create():
 @APP.route("/channels/listall/v2", methods=['GET'])
 def channels_listall():
     listall = request.get_json()
-    output = channels_list_v1(listall['token'])
+    output = channels_listall_v1(listall['token'])
     return dumps(output)
 
 ################################################################################
@@ -149,7 +149,7 @@ def admin_user_remove():
 #   admin_userpermission_change route                                          #
 ################################################################################
 
-@APP.route("/admin/userpermission/chnage/v1", methods=['POST'])
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change():
     change_perm = request.get_json()
     output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])

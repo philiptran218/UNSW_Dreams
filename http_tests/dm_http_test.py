@@ -83,7 +83,7 @@ def expected_output_details_v2():
             {
                 'u_id': 2,
                 'name_first': 'dan',
-                'name_last': 'Smith',
+                'name_last': 'smith',
                 'email': 'dan@gmail.com',
                 'handle_str': 'dansmith'
             }

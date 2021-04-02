@@ -88,14 +88,14 @@ def test_channel_listall_valid_empty(clear_database, user_1):
         'token': user_1['token'],
     })
     chan_list = chan.json()
-    assert chan_list == expected_empty_output
+    assert chan_list == expected_empty_output()
 
 def test_channel_listall_valid(clear_database, user_1, user_2, channel_1, channel_2):
     chan = requests.get(config.url + 'channels/listall/v2', json={
         'token': user_1['token'],
     })
     chan_list = chan.json()
-    assert chan_list == expected_output_listall_v2
+    assert chan_list == expected_output_listall_v2()
 
 ################################################################################
 # channels_list http tests                                                     #
@@ -107,7 +107,7 @@ def expected_output_list_v2():
         [
             {
                 "channel_id": 1,
-                "name":"Channel1"
+                "name": "Channel1"
             }
         ]
     }
@@ -119,15 +119,15 @@ def test_channels_list_invalid_token(clear_database, user_1, channel_1):
     assert chan.status_code == ACCESSERROR
 
 def test_channel_list_valid_empty(clear_database, user_1):
-    chan = requests.get(config.url + 'channels/list/v1', json={
+    chan = requests.get(config.url + 'channels/list/v2', json={
         'token': user_1['token'],
     })
     chan_list = chan.json()
-    assert chan_list == expected_empty_output
+    assert chan_list == expected_empty_output()
 
 def test_channel_list_valid(clear_database, user_1, user_2, channel_1, channel_2):
     chan = requests.get(config.url + 'channels/list/v2', json={
         'token': user_1['token'],
     })
     chan_list = chan.json()
-    assert chan_list == expected_output_listall_v2
+    assert chan_list == expected_output_list_v2()
