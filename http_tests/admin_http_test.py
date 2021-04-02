@@ -115,13 +115,12 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
         'u_id': user_2['auth_user_id'],
     })
 
-    users = requests.get(config.url + 'user/profile/v2"', json={
+    users = requests.get(config.url + 'user/profile/v2', json={
         'token': user_1['token'],
         'u_id': user_2['auth_user_id']
     })
 
     users_info = users.json()
-
     assert users_info['user']['name_first'] == 'Removed'
     assert users_info['user']['name_last'] == 'User'
 
@@ -132,6 +131,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
     }) 
 
     msg_info = channel_msg.json()
+    print(msg_info)
     assert msg_info['messages'][0]['message'] == 'Removed User'
  
 ################################################################################
@@ -192,15 +192,20 @@ def test_admin_userpermission_change_valid(clear_database, user_1, user_2, priv_
         'channel_id': priv_channel_1
     })
 
-    channel = requests.post(config.url + 'channel/details/v2', json={
+    channel = requests.get(config.url + 'channel/details/v2', json={
         'token': user_2['token'],
         'channel_id': priv_channel_1
     })
-    
     channel_details = channel.json()
-
-    assert channel_details['all_members'][1]['u_id'] == user_2['auth_user_id']
-    assert channel_details['all_members'][1]['email'] == user_2['email']
-    assert channel_details['all_members'][1]['name_first'] == user_2['name_first']
-    assert channel_details['all_members'][1]['name_last'] == user_2['name_last']
+    user_2_id = channel_details['all_members'][1]['u_id']
+    user_2_profile_json = requests.get(config.url + 'user/profile/v2', json={
+        'token': user_2['token'],
+        'u_id': user_2_id
+    })
+    user_2_profile_info = user_2_profile_json.json()
+    user_2_profile = user_2_profile_info['user']
+    assert channel_details['all_members'][1]['u_id'] == user_2_profile['u_id']
+    assert channel_details['all_members'][1]['email'] == user_2_profile['email']
+    assert channel_details['all_members'][1]['name_first'] == user_2_profile['name_first']
+    assert channel_details['all_members'][1]['name_last'] == user_2_profile['name_last']
     
