@@ -64,9 +64,9 @@ def test_invite_invalid_uid(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(InputError):
         channel_invite_v1(user_1['token'], public_channel_1, INVALID_VALUE)
 
-def test_invite_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
+def test_invite_invalid_auth_id(clear_data, user_1, user_2, user_3, public_channel_1):
     with pytest.raises(AccessError):
-        channel_invite_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
+        channel_invite_v1(user_2['token'], public_channel_1, user_3['auth_user_id'])
 
 def test_invite_duplicate_uid(clear_data, user_1, user_2, public_channel_1):
     channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
@@ -96,12 +96,26 @@ def test_invite_global_owner_allowed(clear_data, user_1, user_2, user_3, public_
             member_found = True
     assert member_found == True
 
+def test_invite_global_owner_invited(clear_data, user_1, user_2, user_3, public_channel_2):
+    channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
+    channel_members = channel_details_v1(user_2['token'], public_channel_2)
+    member_found = False
+    for members in channel_members['owner_members']:
+        if members['u_id'] == user_1['auth_user_id']:
+            member_found = True
+    assert member_found == True
+
+    for members in channel_members['all_members']:
+        if members['u_id'] == user_1['auth_user_id']:
+            member_found = True
+    assert member_found == True
+
 ################################################################################
 # channel_details_v1 tests                                                     #
 ################################################################################
 
 def expected_output_details_1():
-    John_Channel_Details = {
+    return {
         'name': "John's Channel",
         'is_public': True,
         'owner_members': [
@@ -130,10 +144,9 @@ def expected_output_details_1():
             }
         ]
     }
-    return John_Channel_Details
 
 def expected_output_details_2():
-    Terry_Channel_Details = {
+    return {
         'name': "Terry's Channel",
         'is_public': True,
         'owner_members': [
@@ -162,7 +175,31 @@ def expected_output_details_2():
             }
         ]
     }
-    return Terry_Channel_Details
+
+def expected_output_details_3():
+    return {
+        'name': "John's Channel",
+        'is_public': True,
+        'owner_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            }
+        ],
+        'all_members': [
+            {
+                'u_id': 1,
+                'name_first': 'John',
+                'name_last': 'Smith',
+                'email': 'johnsmith@gmail.com',
+                'handle_str': 'johnsmith',
+            }
+        ]
+    }
+
 
 def test_details_invalid_token(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(AccessError):
@@ -176,13 +213,28 @@ def test_details_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
     with pytest.raises(AccessError):
         channel_details_v1(user_2['token'], public_channel_1)
 
-def test_details_valid_inputs(clear_data, user_1, user_2, public_channel_1):
+def test_details_owner_allowed(clear_data, user_1, user_2, public_channel_1):
     channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
     assert channel_details_v1(user_1['token'], public_channel_1) == expected_output_details_1()
+
+def test_details_member_allowed(clear_data, user_1, user_2, public_channel_1):
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    assert channel_details_v1(user_2['token'], public_channel_1) == expected_output_details_1()
 
 def test_details_global_owner_allowed(clear_data, user_1, user_2, user_3, public_channel_2):
     channel_invite_v1(user_2['token'], public_channel_2, user_3['auth_user_id'])
     assert channel_details_v1(user_1['token'], public_channel_2) == expected_output_details_2()
+
+def test_details_new_channel(clear_data, user_1, public_channel_1):
+    assert channel_details_v1(user_1['token'], public_channel_1) == expected_output_details_3()
+
+def test_details_empty_channel(clear_data, user_1, public_channel_1):
+    channel_leave_v1(user_1['token'], public_channel_1)
+    channel_details = channel_details_v1(user_1['token'], public_channel_1)
+    assert channel_details['name'] == "John's Channel"
+    assert channel_details['is_public'] == True
+    assert channel_details['owner_members'] == []
+    assert channel_details['all_members'] == []
 
 ################################################################################
 # channel_addowner_v1 tests                                                    #
@@ -534,10 +586,6 @@ def test_channel_leave_invalid_auth_id(clear_data, user_1, user_2, public_channe
     with pytest.raises(AccessError):
         channel_leave_v1(user_2['token'], public_channel_1)
 
-def test_channel_leave_auth_id_not_in_channel(clear_data, user_1, user_2, public_channel_1):
-    with pytest.raises(AccessError):
-        channel_leave_v1(user_2['token'], public_channel_1)
-
 def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1, public_channel_2):
     channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
     channel_leave_v1(user_1['token'], public_channel_2)
@@ -552,7 +600,7 @@ def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1
     assert user_2['auth_user_id'] not in info['all_members']
     assert user_2['auth_user_id'] not in info['owner_members']
 
-def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
+def test_channel_leave_last_user_leaves(clear_data, user_1, public_channel_1):
     channel_leave_v1(user_1['token'], public_channel_1)
     info = channel_details_v1(user_1['token'], public_channel_1)
     assert info['name'] == "John's Channel"
