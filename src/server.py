@@ -230,7 +230,6 @@ def dm_invite():
 def dm_messages():
     message_info = request.get_json()
     output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
->>>>>>> src/server.py
     return dumps(output)
 
 ################################################################################
