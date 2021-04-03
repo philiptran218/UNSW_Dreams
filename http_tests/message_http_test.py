@@ -603,7 +603,7 @@ def test_message_senddm_user_not_in_dm(clear_database, user_1, user_2, dm_1):
         'dm_id': dm_1,
         'message': 'Greetings dm_1'
     })
-    assert msg.status_code == INPUTERROR
+    assert msg.status_code == ACCESSERROR
     
 def test_message_senddm_invalid_length(clear_database, user_1, dm_1):
     i = 0
