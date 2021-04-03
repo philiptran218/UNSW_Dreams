@@ -348,7 +348,7 @@ def user_profile():
 ################################################################################
 
 @APP.route("/users/all/v1", methods=['GET'])
-def user_profile():
+def users_all():
     profile_info = request.get_json()
     output = users_all_v1(profile_info['token'])
     return dumps(output)
