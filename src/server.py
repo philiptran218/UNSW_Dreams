@@ -36,14 +36,25 @@ APP.register_error_handler(Exception, defaultHandler)
 #def getData():
 #    return database.data
 
+
 ################################################################################
-#   auth_register route                                                       #
+#   auth_register route                                                        #
 ################################################################################
 
 @APP.route("/auth/register/v2", methods=['POST'])
 def auth_register():
     register_info = request.get_json()
     output = auth_register_v1(register_info['email'], register_info['password'], register_info['name_first'], register_info['name_last'])
+    return dumps(output)
+
+################################################################################
+#   auth_login route                                                           #
+################################################################################
+
+@APP.route('/auth/login/v2', methods=['POST'])
+def auth_login():
+    user_info = request.get_json()
+    output = auth_login_v1(user_info['email'],user_info['password'])
     return dumps(output)
 
 ################################################################################
@@ -54,16 +65,6 @@ def auth_register():
 def channel_invite():
     invite_info = request.get_json()
     output = channel_invite_v1(invite_info['token'], invite_info['channel_id'], invite_info['u_id'])
-    return dumps(output)
-
-################################################################################
-#   channel_messages route                                                     #
-################################################################################
-
-@APP.route("/channel/messages/v2", methods=['GET'])
-def channel_messages():
-    message_info = request.get_json()
-    output = channel_messages_v1(message_info['token'], message_info['channel_id'], message_info['start'])
     return dumps(output)
 
 ################################################################################
@@ -105,15 +106,35 @@ def channel_leave():
     leave_info = request.get_json()
     output = channel_leave_v1(leave_info['token'], leave_info['channel_id'])
     return dumps(output)
+    
+################################################################################
+#   channel_join route                                                         #
+################################################################################
+
+@APP.route("/channel/join/v2", methods=['POST'])
+def channel_join():
+    join_info = request.get_json()
+    output = channel_join_v1(join_info['token'], join_info['channel_id'])
+    return dumps(output)
 
 ################################################################################
-#   channels_create route                                                      #
+#   channel_messages route                                                     #
 ################################################################################
 
-@APP.route("/channels/create/v2", methods=['POST'])
-def channels_create():
-    create_info = request.get_json()
-    output = channels_create_v1(create_info['token'], create_info['name'], create_info['is_public'])
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages():
+    messages_info = request.get_json()
+    output = channel_messages_v1(messages_info['token'], messages_info['channel_id'], messages_info['start'])
+    return dumps(output)
+
+################################################################################
+# channels_create_v1 route                                                     #
+################################################################################
+
+@APP.route('/channels/create/v2', methods=['POST'])
+def create_channel():
+    channel_info = request.get_json()
+    output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
     return dumps(output)
 
 ################################################################################
@@ -127,42 +148,23 @@ def channels_listall():
     return dumps(output)
 
 ################################################################################
-#   channels_list route                                                        #
+# dm_remove route                                                              #
 ################################################################################
 
-@APP.route("/channels/list/v2", methods=['GET'])
-def channels_list():
-    list_info = request.get_json()
-    output = channels_list_v1(list_info['token'])
+@APP.route('/dm/remove/v1', methods=['DELETE'])
+def dm_remove():
+    remove_info = request.get_json()
+    output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
     return dumps(output)
 
-################################################################################
-#   clear route                                                                #
-################################################################################
-
-@APP.route("/clear/v1", methods=['DELETE'])
-def clear():
-    output = clear_v1()
-    return output
 
 ################################################################################
-#   admin_user_remove route                                                    #
+# dm_leave route                                                               #
 ################################################################################
-
-@APP.route("/admin/user/remove/v1", methods=['DELETE'])
-def admin_user_remove():
-    user_remove_info = request.get_json()
-    output = admin_user_remove_v1(user_remove_info['token'], user_remove_info['u_id'])
-    return dumps(output)
-
-################################################################################
-#   admin_userpermission_change route                                          #
-################################################################################
-
-@APP.route("/admin/userpermission/change/v1", methods=['POST'])
-def admin_userpermission_change():
-    change_perm = request.get_json()
-    output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
+@APP.route('/dm/leave/v1', methods=['POST'])
+def dm_leave():
+    leave_info = request.get_json()
+    output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
     return dumps(output)
 
 ################################################################################
@@ -194,35 +196,25 @@ def dm_create():
     create_info = request.get_json()
     output = dm_create_v1(create_info['token'], create_info['u_ids'])
     return dumps(output)
-
+    
 ################################################################################
-#   channel_join route                                                         #
-################################################################################
-
-@APP.route("/channel/join/v2", methods=['POST'])
-def channel_join():
-    channel = request.get_json()
-    output = channel_join_v1(channel['token'], channel['channel_id'])
+#   dm_invite route                                                            #
+################################################################################    
+    
+@APP.route("/dm/invite/v1", methods=['POST'])
+def dm_invite():
+    invite_info = request.get_json()
+    output = dm_invite_v1(invite_info['token'], invite_info['dm_id'], invite_info['u_id'])
     return dumps(output)
-
+    
 ################################################################################
-#   message_send route                                                         #
-################################################################################
-
-@APP.route("/message/send/v2", methods=['POST'])
-def message_send():
-    message = request.get_json()
-    output = message_send_v1(message['token'], message['channel_id'], message['message'])
-    return dumps(output)
-
-################################################################################
-#   user_profile route                                                         #
-################################################################################
-
-@APP.route("/user/profile/v2", methods=['GET'])
-def user_profile():
-    user = request.get_json()
-    output = user_profile_v1(user['token'], user['u_id'])
+#   dm_messages route                                                          #
+################################################################################    
+    
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    message_info = request.get_json()
+    output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
     return dumps(output)
 
 ################################################################################
@@ -235,6 +227,42 @@ def message_senddm():
     return dumps(output)
 
 ################################################################################
+#   message_send route                                                       #
+################################################################################
+@APP.route("/message/send/v2", methods=['POST'])
+def message_send():
+    create_info = request.get_json()
+    output = message_send_v1(create_info['token'], create_info['channel_id'], create_info['message'])
+    return dumps(output)
+
+################################################################################
+#   message_edit route                                                         #
+################################################################################
+@APP.route("/message/edit/v2", methods=['PUT'])
+def message_edit():
+    create_info = request.get_json()
+    output = message_edit_v1(create_info['token'], create_info['message_id'], create_info['message'])
+    return dumps(output)
+
+################################################################################
+#   message_remove route                                                       #
+################################################################################
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    create_info = request.get_json()
+    output = message_remove_v1(create_info['token'], create_info['message_id'])
+    return dumps(output)
+
+################################################################################
+#   message_share route                                                        #
+################################################################################
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share():
+    create_info = request.get_json()
+    output = message_share_v1(create_info['token'], create_info['og_message_id'], create_info['message'], create_info['channel_id'], create_info['dm_id'])
+    return dumps(output)
+
+################################################################################
 #   search route                                                               #
 ################################################################################
 
@@ -242,6 +270,24 @@ def message_senddm():
 def search():
     search_info = request.get_json()
     output = search_v1(search_info['token'], search_info['query_str'])
+    return dumps(output)
+
+################################################################################
+#   clear route                                                                #
+################################################################################
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear():
+    return clear_v1()
+   
+################################################################################
+#   notifications_get route                                                    #
+################################################################################
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    notif_info = request.get_json()
+    output = notifications_get_v1(notif_info['token'])
     return dumps(output)
 
 # Example
@@ -254,6 +300,25 @@ def echo():
         'data': data
     })
 
+################################################################################
+#   admin_user_remove route                                                    #
+################################################################################
+
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def admin_user_remove():
+    user_remove_info = request.get_json()
+    output = admin_user_remove_v1(user_remove_info['token'], user_remove_info['u_id'])
+    return dumps(output)
+
+################################################################################
+#   admin_userpermission_change route                                          #
+################################################################################
+
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change():
+    change_perm = request.get_json()
+    output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
+    return dumps(output)
+
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
-
