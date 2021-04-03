@@ -247,7 +247,7 @@ def test_auth_logout_request(clear_database, user_1):
         'token': user_1['token']
     })
     logout = logout_json.json()
-    assert logout_1['is_success'] == True
+    assert logout['is_success'] == True
     
     request = requests.post(config.url + 'channels/create/v2', json={
         'token': user_1['token'],
