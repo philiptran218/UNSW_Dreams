@@ -6,13 +6,15 @@ from src.error import InputError
 from src import config
 
 from src.auth import auth_register_v1
-from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1
+from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
 from src.channels import channels_create_v1
-from src.message import message_senddm_v1, message_send_v1
+
+from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1
 import src.user
 import src.users
-from src.other import clear_v1, search_v1
-from src.dm import dm_create_v1
+from src.other import clear_v1, search_v1, notifications_get_v1
+from src.dm import dm_create_v1, dm_invite_v1, dm_messages_v1
+
 import src.database
 
 def defaultHandler(err):
@@ -34,6 +36,7 @@ APP.register_error_handler(Exception, defaultHandler)
 
 #def getData():
 #    return database.data
+
 
 ################################################################################
 #   auth_register route                                                       #
@@ -94,6 +97,26 @@ def channel_leave():
     leave_info = request.get_json()
     output = channel_leave_v1(leave_info['token'], leave_info['channel_id'])
     return dumps(output)
+    
+################################################################################
+#   channel_join route                                                         #
+################################################################################
+
+@APP.route("/channel/join/v2", methods=['POST'])
+def channel_join():
+    join_info = request.get_json()
+    output = channel_join_v1(join_info['token'], join_info['channel_id'])
+    return dumps(output)
+
+################################################################################
+#   channel_messages route                                                     #
+################################################################################
+
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages():
+    messages_info = request.get_json()
+    output = channel_messages_v1(messages_info['token'], messages_info['channel_id'], messages_info['start'])
+    return dumps(output)
 
 ################################################################################
 #   channels_create route                                                      #
@@ -113,6 +136,26 @@ def channels_create():
 def dm_create():
     create_info = request.get_json()
     output = dm_create_v1(create_info['token'], create_info['u_ids'])
+    return dumps(output)
+    
+################################################################################
+#   dm_invite route                                                            #
+################################################################################    
+    
+@APP.route("/dm/invite/v1", methods=['POST'])
+def dm_invite():
+    invite_info = request.get_json()
+    output = dm_invite_v1(invite_info['token'], invite_info['dm_id'], invite_info['u_id'])
+    return dumps(output)
+    
+################################################################################
+#   dm_messages route                                                          #
+################################################################################    
+    
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    message_info = request.get_json()
+    output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
     return dumps(output)
 
 ################################################################################
@@ -134,6 +177,33 @@ def message_send():
     return dumps(output)
 
 ################################################################################
+#   message_edit route                                                         #
+################################################################################
+@APP.route("/message/edit/v2", methods=['PUT'])
+def message_edit():
+    create_info = request.get_json()
+    output = message_edit_v1(create_info['token'], create_info['message_id'], create_info['message'])
+    return dumps(output)
+
+################################################################################
+#   message_remove route                                                       #
+################################################################################
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    create_info = request.get_json()
+    output = message_remove_v1(create_info['token'], create_info['message_id'])
+    return dumps(output)
+
+################################################################################
+#   message_share route                                                        #
+################################################################################
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share():
+    create_info = request.get_json()
+    output = message_share_v1(create_info['token'], create_info['og_message_id'], create_info['message'], create_info['channel_id'], create_info['dm_id'])
+    return dumps(output)
+
+################################################################################
 #   search route                                                               #
 ################################################################################
 
@@ -150,6 +220,16 @@ def search():
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     return clear_v1()
+   
+################################################################################
+#   notifications_get route                                                    #
+################################################################################
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    notif_info = request.get_json()
+    output = notifications_get_v1(notif_info['token'])
+    return dumps(output)
 
 # Example
 @APP.route("/echo", methods=['GET'])

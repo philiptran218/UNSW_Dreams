@@ -286,7 +286,6 @@ def message_edit_v1(token, message_id, message):
         edit_msg.update({'message': ''})
     else:   
         edit_msg = message_details(message_id)
-        edit_msg.update({'u_id': auth_user_id})
         edit_msg.update({'message': message})
     return {}
 

@@ -155,4 +155,69 @@ def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, chann
     assert messages[3]['message_id'] == 7
     assert messages[3]['u_id'] == 3
     assert messages[3]['message'] == MIXED_QUERY_STR
+    
+################################################################################
+# notifications_get_v1() tests                                                 #
+################################################################################
+
+def test_notifications_get_invalid_token(clear_database, user_1):
+
+    notif = requests.get(config.url + 'notifications/get/v1', json={
+        'token': INVALID_TOKEN
+    })
+    assert notif.status_code == ACCESSERROR
+    
+def test_notifications_get_empty(clear_database, user_1):
+
+    notif = requests.get(config.url + 'notifications/get/v1', json={
+        'token':user_1['token']
+    })
+    notif_info = notif.json()
+    assert notif_info == {'notifications': []}
+
+def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_3, dm_2):
+
+    requests.post(config.url + 'dm/invite/v1', json={
+        'token': user_3['token'],
+        'dm_id': dm_2,
+        'u_id': user_1['auth_user_id']
+    })
+    msg = requests.post(config.url + 'message/senddm/v1', json={
+        'token': user_2['token'],
+        'dm_id': dm_2,
+        'message': 'Hello @johnsmith and @terrancenguyen'
+    })
+    msg_info = msg.json()
+    requests.post(config.url + 'message/share/v1', json={
+        'token': user_2['token'],
+        'og_message_id': msg_info['message_id'],
+        'message': "And I'll tag myself too @philiptran",
+        'channel_id': -1,
+        'dm_id': dm_2
+    })
+    notif_1 = requests.get(config.url + 'notifications/get/v1', json={
+        'token': user_1['token']
+    })
+    notif_1_info = notif_1.json()['notifications']
+    assert len(notif_1_info) == 3
+    assert notif_1_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_1_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_1_info[2]['notification_message'] == 'terrancenguyen added you to philiptran, terrancenguyen'
+    
+    notif_2 = requests.get(config.url + 'notifications/get/v1', json={
+        'token': user_2['token']
+    })
+    notif_2_info = notif_2.json()['notifications']
+    assert len(notif_2_info) == 1
+    assert notif_2_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    
+    notif_3 = requests.get(config.url + 'notifications/get/v1', json={
+        'token': user_3['token']
+    })
+    notif_3_info = notif_3.json()['notifications']
+    assert len(notif_3_info) == 3
+    assert notif_3_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_3_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_3_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
+
 
