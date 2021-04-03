@@ -100,7 +100,7 @@ def test_clear_users(clear_database,user_1):
     })
     assert login.status_code == INPUTERROR
 
-def test_clear_channels(clear_data, user_1, public_channel_1):
+def test_clear_channels(clear_database, user_1,channel_1):
     requests.delete(config.url + 'clear/v1')
 
     user_info = requests.post(config.url + 'auth/register/v2', json={
@@ -111,7 +111,7 @@ def test_clear_channels(clear_data, user_1, public_channel_1):
     })
     user_token= user_info.json()['token']
 
-    chan = requests.get(config.url + 'channel/listall/v2', json={
+    chan = requests.get(config.url + 'channels/listall/v2', json={
         'token': user_token
     })
     chan_list = chan.json()['channels']
