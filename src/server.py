@@ -39,7 +39,7 @@ APP.register_error_handler(Exception, defaultHandler)
 
 
 ################################################################################
-#   auth_register route                                                       #
+#   auth_register route                                                        #
 ################################################################################
 
 @APP.route("/auth/register/v2", methods=['POST'])
@@ -48,83 +48,15 @@ def auth_register():
     output = auth_register_v1(register_info['email'], register_info['password'], register_info['name_first'], register_info['name_last'])
     return dumps(output)
 
-
 ################################################################################
-# dm_remove route                                                              #
-################################################################################
-
-@APP.route('/dm/remove/v1', methods=['DELETE'])
-def dm_remove():
-    remove_info = request.get_json()
-    output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
-    return dumps(output)
-
-################################################################################
-# dm_invite route                                                              #
-################################################################################
-@APP.route('/dm/invite/v1', methods=['POST'])
-def dm_invite():
-    invite_info = request.get_json()
-    output = dm_invite_v1(invite_info['token'],invite_info['dm_id'],invite_info['u_id'])
-    return dumps(output)
-
-################################################################################
-# dm_leave route                                                               #
-################################################################################
-@APP.route('/dm/leave/v1', methods=['POST'])
-def dm_leave():
-    leave_info = request.get_json()
-    output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
-    return dumps(output)
-
-################################################################################
-# dm_messages_v1 route                                                         #
-################################################################################
-@APP.route('/dm/messages/v1', methods=['GET'])
-def dm_messages():
-    message_info = request.get_json()
-    output = dm_messages_v1(message_info['token'],message_info['dm_id'],message_info['start'])
-    return dumps(output)
-
-################################################################################
-# channel_create_v1 route                                                      #
-################################################################################
-@APP.route('/channels/create/v2', methods=['POST'])
-def create_channel():
-    channel_info = request.get_json()
-    output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
-    return dumps(output)
-
-
-################################################################################
-#   clear route                                                                #
+#   auth_login route                                                           #
 ################################################################################
 
-@APP.route("/clear/v1", methods=['DELETE'])
-def clear():
-    return clear_v1()
+@APP.route('/auth/login/v2', methods=['POST'])
+def auth_login():
+    user_info = request.get_json()
+    output = auth_login_v1(user_info['email'],user_info['password'])
 
-
-
-################################################################################
-#   dm_details route                                                           #
-################################################################################
-
-@APP.route("/dm/details/v1", methods=['GET'])
-def dm_details():
-    details = request.get_json()
-    output = dm_details_v1(details['token'], details['dm_id'])
-    return dumps(output)
-
-################################################################################
-#   dm_list route                                                              #
-################################################################################
-
-@APP.route("/dm/list/v1", methods=['GET'])
-def dm_list():
-    list_info = request.get_json()
-    output = dm_list_v1(list_info['token'])
-    
 ################################################################################
 #   channel_invite route                                                       #
 ################################################################################
@@ -196,23 +128,13 @@ def channel_messages():
     return dumps(output)
 
 ################################################################################
-#   channels_create route                                                      #
+# channels_create_v1 route                                                     #
 ################################################################################
 
-@APP.route("/channels/create/v2", methods=['POST'])
-def channels_create():
-    create_info = request.get_json()
-    output = channels_create_v1(create_info['token'], create_info['name'], create_info['is_public'])
-    return dumps(output)
-
-################################################################################
-#   dm_create route                                                            #
-################################################################################
-
-@APP.route("/dm/create/v1", methods=['POST'])
-def dm_create():
-    create_info = request.get_json()
-    output = dm_create_v1(create_info['token'], create_info['u_ids'])
+@APP.route('/channels/create/v2', methods=['POST'])
+def create_channel():
+    channel_info = request.get_json()
+    output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
     return dumps(output)
 
 ################################################################################
@@ -223,6 +145,72 @@ def dm_create():
 def channels_listall():
     listall = request.get_json()
     output = channels_listall_v1(listall['token'])
+
+################################################################################
+# dm_remove route                                                              #
+################################################################################
+
+@APP.route('/dm/remove/v1', methods=['DELETE'])
+def dm_remove():
+    remove_info = request.get_json()
+    output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
+    return dumps(output)
+
+################################################################################
+# dm_invite route                                                              #
+################################################################################
+@APP.route('/dm/invite/v1', methods=['POST'])
+def dm_invite():
+    invite_info = request.get_json()
+    output = dm_invite_v1(invite_info['token'],invite_info['dm_id'],invite_info['u_id'])
+    return dumps(output)
+
+################################################################################
+# dm_leave route                                                               #
+################################################################################
+@APP.route('/dm/leave/v1', methods=['POST'])
+def dm_leave():
+    leave_info = request.get_json()
+    output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
+    return dumps(output)
+
+################################################################################
+# dm_messages_v1 route                                                         #
+################################################################################
+@APP.route('/dm/messages/v1', methods=['GET'])
+def dm_messages():
+    message_info = request.get_json()
+    output = dm_messages_v1(message_info['token'],message_info['dm_id'],message_info['start'])
+    return dumps(output)
+
+################################################################################
+#   dm_details route                                                           #
+################################################################################
+
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details():
+    details = request.get_json()
+    output = dm_details_v1(details['token'], details['dm_id'])
+    return dumps(output)
+
+################################################################################
+#   dm_list route                                                              #
+################################################################################
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    list_info = request.get_json()
+    output = dm_list_v1(list_info['token'])
+
+################################################################################
+#   dm_create route                                                            #
+################################################################################
+
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    create_info = request.get_json()
+    output = dm_create_v1(create_info['token'], create_info['u_ids'])
+    return dumps(output)
     
 ################################################################################
 #   dm_invite route                                                            #
@@ -253,14 +241,6 @@ def message_senddm():
     create_info = request.get_json()
     output = message_senddm_v1(create_info['token'], create_info['dm_id'], create_info['message'])
     return dumps(output)
-
-################################################################################
-#   auth_login route                                                           #
-################################################################################
-@APP.route('/auth/login/v2', methods=['POST'])
-def auth_login():
-    user_info = request.get_json()
-    output = auth_login_v1(user_info['email'],user_info['password'])
 
 ################################################################################
 #   message_send route                                                       #
