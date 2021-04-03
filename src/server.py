@@ -144,6 +144,16 @@ def dm_invite():
     invite_info = request.get_json()
     output = dm_invite_v1(invite_info['token'], invite_info['dm_id'], invite_info['u_id'])
     return dumps(output)
+    
+################################################################################
+#   dm_messages route                                                          #
+################################################################################    
+    
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    message_info = request.get_json()
+    output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
+    return dumps(output)
 
 ################################################################################
 #   message_senddm route                                                       #
