@@ -98,7 +98,7 @@ def test_clear_users(clear_database,user_1):
         'email': email,
         'password': password
     })
-    assert login.status_code == INPUTERROR
+    assert login.status_code == ACCESSERROR
 
 def test_clear_channels(clear_data, user_1, public_channel_1):
     requests.delete(config.url + 'clear')
