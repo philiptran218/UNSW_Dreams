@@ -121,6 +121,7 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
     })
 
     users_info = users.json()
+    print(users_info)
     assert users_info['user']['name_first'] == 'Removed'
     assert users_info['user']['name_last'] == 'User'
 
