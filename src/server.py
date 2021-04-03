@@ -217,9 +217,8 @@ def search():
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
-    output = clear_v1()
-    return output
-
+    return clear_v1()
+   
 ################################################################################
 #   notifications_get route                                                    #
 ################################################################################
