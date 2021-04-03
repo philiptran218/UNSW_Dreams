@@ -32,8 +32,8 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
-def getData():
-    return database.data
+#def getData():
+#    return database.data
 
 ################################################################################
 #   auth_register route                                                       #
@@ -149,8 +149,8 @@ def search():
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
-    output = clear_v1()
-    return output
+    return clear_v1()
+    
 
 # Example
 @APP.route("/echo", methods=['GET'])
