@@ -749,8 +749,8 @@ def test_channel_join_global_private(clear_database, user_2, user_1, channel_3):
     assert len(channels['owner_members']) == 2
     assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
     assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
-    assert channels['owner_members'][0]['u_id'] == user_1['auth_user_id']
-    assert channels['owner_members'][1]['u_id'] == user_2['auth_user_id']
+    assert channels['owner_members'][0]['u_id'] == 2
+    assert channels['owner_members'][1]['u_id'] == 1
     
 def test_channel_join_already_joined(clear_database, user_1, user_2, channel_1):
 
