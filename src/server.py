@@ -9,6 +9,7 @@ from src.channels import channels_create_v1, channels_listall_v1,channels_list_v
 from src.auth import auth_register_v1
 import src.database
 from src.other import clear_v1
+from src.message import message_senddm_v1
 
 
 def defaultHandler(err):
@@ -137,6 +138,15 @@ def dm_create():
 def channels_listall():
     listall = request.get_json()
     output = channels_list_v1(listall['token'])
+    return dumps(output)
+
+################################################################################
+#   message_senddm route                                                       #
+################################################################################
+@APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    create_info = request.get_json()
+    output = message_senddm_v1(create_info['token'], create_info['dm_id'], create_info['message'])
     return dumps(output)
 
 # Example
