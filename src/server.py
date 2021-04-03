@@ -32,8 +32,9 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
-def getData():
-    return database.data
+#def getData():
+#    return database.data
+
 
 ################################################################################
 #   auth_register route                                                       #
