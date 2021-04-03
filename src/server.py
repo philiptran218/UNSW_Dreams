@@ -194,7 +194,7 @@ def message_remove():
 ################################################################################
 #   message_share route                                                        #
 ################################################################################
-@APP.route("/message/remove/v1", methods=['DELETE'])
+@APP.route("/message/share/v1", methods=['DELETE'])
 def message_share():
     create_info = request.get_json()
     output = message_share_v1(create_info['token'], create_info['og_message_id'], create_info['message'], create_info['channel_id'], create_info['dm_id'])
