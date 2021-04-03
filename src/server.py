@@ -8,6 +8,7 @@ from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1
 from src.channels import channels_create_v1
 from src.auth import auth_register_v1
 import src.database
+from src.other import clear_v1
 
 def defaultHandler(err):
     response = err.get_response()
