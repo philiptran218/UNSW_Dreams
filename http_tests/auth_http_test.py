@@ -28,16 +28,6 @@ def user_2():
     })
     return user.json()
 
-@pytest.fixture
-def user_3():
-    user = requests.post(config.url + 'auth/register/v2', json={
-        'email': 'terrynguyen@gmail.com',
-        'password': 'goodpass',
-        'name_first': 'Terrance',
-        'name_last': 'Nguyen'
-    })
-    return user.json()
-
 @pytest.fixture 
 def clear_database():
     requests.delete(config.url + 'clear/v1')
@@ -55,7 +45,7 @@ def test_register_invalid_email(clear_database):
     })
     assert user.status_code == INPUTERROR
 
-def test_register_invalid_first_name(clear_database):
+def test_register_invalid_first_name_1(clear_database):
     user = requests.post(config.url + 'auth/register/v2', json={
         'email': 'johnsmith@gmail.com',
         'password': 'goodpass',
@@ -63,8 +53,26 @@ def test_register_invalid_first_name(clear_database):
         'name_last': 'Smith'
     })
     assert user.status_code == INPUTERROR
+    
+def test_register_invalid_first_name_2(clear_database):
+    user = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'johnsmith@gmail.com',
+        'password': 'goodpass',
+        'name_first': '',
+        'name_last': 'Smith'
+    })
+    assert user.status_code == INPUTERROR
 
-def test_register_invalid_last_name(clear_database):
+def test_register_invalid_last_name_1(clear_database):
+    user = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'johnsmith@gmail.com',
+        'password': 'goodpass',
+        'name_first': 'John',
+        'name_last': 'Thisisaveryveryveryverylongfirstnameitrunsinthefamily'
+    })
+    assert user.status_code == INPUTERROR
+
+def test_register_invalid_last_name_2(clear_database):
     user = requests.post(config.url + 'auth/register/v2', json={
         'email': 'johnsmith@gmail.com',
         'password': 'goodpass',
@@ -82,6 +90,37 @@ def test_register_invalid_password(clear_database):
     })
     assert user.status_code == INPUTERROR
     
+def test_register_duplicate_email(clear_database, user_1):
+    user = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'johnsmith@gmail.com',
+        'password': 'agreatpassword',
+        'name_first': 'Smith',
+        'name_last': 'John'
+    })
+    assert user.status_code == INPUTERROR
+    
+def test_register_multiple_users(clear_database):
+    user_json = requests.post(config.url + 'auth/register/v2', json={
+        'email': 'el_barto@gmail.com',
+        'password': 'agreatpassword',
+        'name_first': 'Bartholomew',
+        'name_last': 'Simpson-Cartwright'
+    })
+    requests.post(config.url + 'auth/register/v2', json={
+        'email': 'elbarto@gmail.com',
+        'password': 'agreatpassword',
+        'name_first': 'Bartholomew',
+        'name_last': 'Simpson-Cartwright'
+    })
+    user = user_json.json()
+    
+    users_info_json = requests.get(config.url + 'users/all/v1', json={
+        'token': user['token']
+    })
+    users_info = users_info_json.json()['users']
+    assert len(users_info) == 2
+    assert users_info[0]['handle_str'] == 'bartholomewsimpson-c'
+    assert users_info[1]['handle_str'] == 'bartholomewsimpson-0'
 
 ################################################################################
 # auth_login http tests                                                        #
@@ -111,35 +150,109 @@ def test_login_unregistered_email(clear_database, user_1):
     })
 
     assert user.status_code == INPUTERROR
+    
+def test_login_invalid_email(clear_database, user_1):
+    user = requests.post(config.url + 'auth/login/v2', json={
+        'email': 'johns@',
+        'password': 'goodpass',
+        'name_first': 'John',
+        'name_last': 'Smith'
+    })
+    assert user.status_code == INPUTERROR
 
 def test_mix(clear_database, user_1, user_2):
-    user1 = requests.post(config.url + 'auth/login/v2', json={
+    user1_login = requests.post(config.url + 'auth/login/v2', json={
         'email': 'johnsmith@gmail.com',
         'password': 'goodpass',
     })
-
-    user1 = user1.json()
+    user1 = user1_login.json()
    
-    user3 = requests.post(config.url + 'auth/register/v2', json={
-        'email': 'terrynguyen@gmail.com',
-        'password': 'goodpass',
-        'name_first': 'Terrance',
-        'name_last': 'Nguyen'
-    })
-    user3 = user3.json()
-
     user2_login = requests.post(config.url + 'auth/login/v2', json={
         'email': 'philtran@gmail.com',
         'password': 'goodpass',
     })
-
     user2 = user2_login.json()
 
-    user3_login = requests.post(config.url + 'auth/login/v2', json={
-        'email': 'terrynguyen@gmail.com',
-        'password': 'goodpass',
+    # These users should be able to logout if login worked
+    user_1_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
     })
+    user_1_logout = user_1_json.json()
+    assert user_1_logout['is_success'] == True
+    
+    user_2_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_2['token']
+    })
+    user_2_logout = user_2_json.json()
+    assert user_2_logout['is_success'] == True
+    
+    user1_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user1['token']
+    })
+    user1_logout = user1_json.json()
+    assert user1_logout['is_success'] == True
+    
+    user2_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user2['token']
+    })
+    user2_logout = user2_json.json()
+    assert user2_logout['is_success'] == True
+    
+################################################################################
+# auth_logout http tests                                                       #
+################################################################################
 
-    user3 = user3_login.json()
+def test_auth_logout_invalid_token(clear_database, user_1):
+    user = requests.post(config.url + 'auth/logout/v1', json={
+        'token': INVALID_TOKEN
+    })
+    assert user.status_code == ACCESSERROR
+ 
+def test_auth_logout_again(clear_database, user_1):
+    requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
+    })
+    user = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
+    })
+    assert user.status_code == ACCESSERROR
+  
+def test_auth_logout_valid_simple(clear_database, user_1):
+    logout_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
+    })
+    logout = logout_json.json()
+    assert logout['is_success'] == True  
+  
+def test_auth_logout_multi_sessions(clear_database, user_1):
+    session_json = requests.post(config.url + 'auth/login/v2', json={
+        'email': 'johnsmith@gmail.com',
+        'password': 'goodpass'
+    })
+    session = session_json.json()
+    logout_1_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
+    })
+    logout_1 = logout_1_json.json()
+    assert logout_1['is_success'] == True
+    
+    logout_2_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': session['token']
+    })
+    logout_2 = logout_2_json.json()
+    assert logout_2['is_success'] == True
+    
+def test_auth_logout_request(clear_database, user_1):
+    logout_json = requests.post(config.url + 'auth/logout/v1', json={
+        'token': user_1['token']
+    })
+    logout = logout_json.json()
+    assert logout_1['is_success'] == True
+    
+    request = requests.post(config.url + 'channels/create/v2', json={
+        'token': user_1['token'],
+        'name': 'Channel 1',
+        'is_public': True
+    })
+    assert request.status_code == ACCESSERROR
 
-    assert {}
