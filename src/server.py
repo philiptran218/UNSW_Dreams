@@ -56,6 +56,7 @@ def auth_register():
 def auth_login():
     user_info = request.get_json()
     output = auth_login_v1(user_info['email'],user_info['password'])
+    return dumps(output)
 
 ################################################################################
 #   channel_invite route                                                       #
@@ -145,6 +146,7 @@ def create_channel():
 def channels_listall():
     listall = request.get_json()
     output = channels_listall_v1(listall['token'])
+    return dumps(output)
 
 ################################################################################
 # dm_remove route                                                              #
@@ -156,14 +158,6 @@ def dm_remove():
     output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
     return dumps(output)
 
-################################################################################
-# dm_invite route                                                              #
-################################################################################
-@APP.route('/dm/invite/v1', methods=['POST'])
-def dm_invite():
-    invite_info = request.get_json()
-    output = dm_invite_v1(invite_info['token'],invite_info['dm_id'],invite_info['u_id'])
-    return dumps(output)
 
 ################################################################################
 # dm_leave route                                                               #
@@ -172,15 +166,6 @@ def dm_invite():
 def dm_leave():
     leave_info = request.get_json()
     output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
-    return dumps(output)
-
-################################################################################
-# dm_messages_v1 route                                                         #
-################################################################################
-@APP.route('/dm/messages/v1', methods=['GET'])
-def dm_messages():
-    message_info = request.get_json()
-    output = dm_messages_v1(message_info['token'],message_info['dm_id'],message_info['start'])
     return dumps(output)
 
 ################################################################################
@@ -201,6 +186,7 @@ def dm_details():
 def dm_list():
     list_info = request.get_json()
     output = dm_list_v1(list_info['token'])
+    return dumps(output)
 
 ################################################################################
 #   dm_create route                                                            #
