@@ -8,11 +8,11 @@ from src import config
 from src.auth import auth_register_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1
 from src.channels import channels_create_v1
-import src.message
+from src.message import message_senddm_v1, message_send_v1
 import src.user
 import src.users
-from src.other import clear_v1
-import src.dm
+from src.other import clear_v1, search_v1
+from src.dm import dm_create_v1
 import src.database
 
 def defaultHandler(err):
@@ -106,13 +106,50 @@ def channels_create():
     return dumps(output)
 
 ################################################################################
+#   dm_create route                                                            #
+################################################################################
+
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    create_info = request.get_json()
+    output = dm_create_v1(create_info['token'], create_info['u_ids'])
+    return dumps(output)
+
+################################################################################
+#   message_senddm route                                                       #
+################################################################################
+@APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    create_info = request.get_json()
+    output = message_senddm_v1(create_info['token'], create_info['dm_id'], create_info['message'])
+    return dumps(output)
+
+################################################################################
+#   message_send route                                                       #
+################################################################################
+@APP.route("/message/send/v2", methods=['POST'])
+def message_send():
+    create_info = request.get_json()
+    output = message_send_v1(create_info['token'], create_info['channel_id'], create_info['message'])
+    return dumps(output)
+
+################################################################################
+#   search route                                                               #
+################################################################################
+
+@APP.route("/search/v2", methods=['GET'])
+def search():
+    search_info = request.get_json()
+    output = search_v1(search_info['token'], search_info['query_str'])
+    return dumps(output)
+
+################################################################################
 #   clear route                                                                #
 ################################################################################
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     return clear_v1()
-     
 
 # Example
 @APP.route("/echo", methods=['GET'])
