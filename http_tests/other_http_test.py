@@ -71,6 +71,7 @@ def dm_1(user_1, user_2):
         'u_ids': [user_2['auth_user_id']],
     })
     dm_info = dm.json()
+    print(dm_info)
     return dm_info['dm_id']
 
 @pytest.fixture
@@ -154,4 +155,5 @@ def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, chann
     assert messages[3]['message_id'] == 7
     assert messages[3]['u_id'] == 3
     assert messages[3]['message'] == MIXED_QUERY_STR
+
 
