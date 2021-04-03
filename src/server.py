@@ -235,15 +235,6 @@ def message_senddm():
     return dumps(output)
 
 ################################################################################
-#   message_send route                                                         #
-################################################################################
-@APP.route("/message/send/v2", methods=['POST'])
-def message_send():
-    create_info = request.get_json()
-    output = message_send_v1(create_info['token'], create_info['channel_id'], create_info['message'])
-    return dumps(output)
-
-################################################################################
 #   search route                                                               #
 ################################################################################
 
@@ -253,14 +244,6 @@ def search():
     output = search_v1(search_info['token'], search_info['query_str'])
     return dumps(output)
 
-################################################################################
-#   clear route                                                                #
-################################################################################
-
-@APP.route("/clear/v1", methods=['DELETE'])
-def clear():
-    return clear_v1()
-    
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
