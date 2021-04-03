@@ -32,7 +32,7 @@ def getData():
 # dm_remove route                                                              #
 ################################################################################
 
-@APP.route('dm/remove/v1', methods=['DELETE'])
+@APP.route('/dm/remove/v1', methods=['DELETE'])
 def dm_remove():
     remove_info = request.get_json()
     output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
@@ -41,7 +41,7 @@ def dm_remove():
 ################################################################################
 # dm_invite route                                                              #
 ################################################################################
-@APP.route('dm/invite/v1', methods=['POST'])
+@APP.route('/dm/invite/v1', methods=['POST'])
 def dm_invite():
     invite_info = request.get_json()
     output = dm_invite_v1(invite_info['token'],invite_info['dm_id'],invite_info['u_id'])
@@ -50,7 +50,7 @@ def dm_invite():
 ################################################################################
 # dm_leave route                                                               #
 ################################################################################
-@APP.route('dm/leave/v1', methods=['POST'])
+@APP.route('/dm/leave/v1', methods=['POST'])
 def dm_leave():
     leave_info = request.get_json()
     output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
@@ -59,7 +59,7 @@ def dm_leave():
 ################################################################################
 # dm_messages_v1 route                                                         #
 ################################################################################
-@APP.route('dm/messages/v1', methods=['GET'])
+@APP.route('/dm/messages/v1', methods=['GET'])
 def dm_messages():
     message_info = request.get_json()
     output = dm_messages_v1(message_info['token'],message_info['dm_id'],message_info['start'])
@@ -68,7 +68,7 @@ def dm_messages():
 ################################################################################
 # channel_create_v1 route                                                      #
 ################################################################################
-@APP.route('channels/create/v2', methods=['POST'])
+@APP.route('/channels/create/v2', methods=['POST'])
 def create_channel():
     channel_info = request.get_json()
     output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
