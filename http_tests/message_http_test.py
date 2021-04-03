@@ -122,7 +122,7 @@ def test_message_send_user_not_in_channel(clear_database, user_1, user_2, channe
         'channel_id': channel_1,
         'message': 'Hiya World!'
     })
-    assert msg.status_code == INPUTERROR
+    assert msg.status_code == ACCESSERROR
     
 def test_message_send_invalid_length(clear_database, user_1, channel_1):
     i = 0
