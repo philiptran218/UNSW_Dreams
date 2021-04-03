@@ -189,7 +189,7 @@ def test_dm_create_valid(clear_data,test_user1, test_user2):
     })
     dm_info = dm.json()
     assert dm_info == expected_output_create_v1()
-=======
+################################################################################
 # dm_invite_v1 https tests                                                     #
 ################################################################################
 
