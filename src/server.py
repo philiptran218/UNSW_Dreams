@@ -70,11 +70,10 @@ def auth_logout():
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
-    output = clear_v1()
-    return output
-
+    return clear_v1()
+    
 ################################################################################
-#   user_profile route                                                              #
+#   user_profile route                                                         #
 ################################################################################
 
 @APP.route("/user/profile/v2", methods=['GET'])
@@ -84,7 +83,7 @@ def user_profile():
     return dumps(output)
 
 ################################################################################
-#   user_set_name route                                                              #
+#   user_set_name route                                                        #
 ################################################################################
 
 @APP.route("/user/profile/setname/v2", methods=['PUT'])
@@ -94,7 +93,7 @@ def profile_setname():
     return dumps(output)
 
 ################################################################################
-#   user_set_email route                                                              #
+#   user_set_email route                                                       #
 ################################################################################
 
 @APP.route("/user/profile/setemail/v2", methods=['PUT'])
@@ -104,7 +103,7 @@ def profile_setemail():
     return dumps(output)
 
 ################################################################################
-#   user_set_handle route                                                              #
+#   user_set_handle route                                                      #
 ################################################################################
 
 @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
@@ -114,7 +113,7 @@ def profile_sethandle():
     return dumps(output)
 
 ################################################################################
-#   users_all route                                                              #
+#   users_all route                                                             #
 ################################################################################
 
 @APP.route("/users/all/v1", methods=['GET'])
