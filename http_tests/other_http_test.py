@@ -198,7 +198,8 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     notif_1 = requests.get(config.url + 'notifications/get/v1', json={
         'token': user_1['token']
     })
-    notif_1_info = notif_1.json()['notifications']
+    notif_1_info = notif_1.json()
+    notif_1_info = notif_1_info['notifications']
     assert len(notif_1_info) == 3
     assert notif_1_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_1_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
@@ -207,14 +208,16 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     notif_2 = requests.get(config.url + 'notifications/get/v1', json={
         'token': user_2['token']
     })
-    notif_2_info = notif_2.json()['notifications']
+    notif_2_info = notif_2.json()
+    notif_2_info = notif_2_info['notifications']
     assert len(notif_2_info) == 1
     assert notif_2_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     
     notif_3 = requests.get(config.url + 'notifications/get/v1', json={
         'token': user_3['token']
     })
-    notif_3_info = notif_3.json()['notifications']
+    notif_3_info = notif_3.json()
+    notif_3_info = notif_3_info['notifications']
     assert len(notif_3_info) == 3
     assert notif_1_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_1_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
