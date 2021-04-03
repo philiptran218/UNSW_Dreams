@@ -58,7 +58,17 @@ def channel_2(user_2):
     })
     channel_info = channel.json()
     return channel_info['channel_id']
-
+    
+@pytest.fixture
+def channel_3(user_1):
+    channel = requests.post(config.url + 'channels/create/v2', json={
+        'token': user_1['token'],
+        'name': 'The private channel',
+        'is_public': False
+    })
+    channel_info = channel.json()
+    return channel_info['channel_id']
+        
 @pytest.fixture
 def make_user_2_owner_in_channel_1(user_1, user_2, channel_1):
     requests.post(config.url + 'channel/invite/v2', json={
@@ -696,5 +706,148 @@ def test_channel_leave_last_user(clear_database, user_1, channel_1):
     assert channel_details['owner_members'] == []
     assert channel_details['all_members'] == []
 
+################################################################################
+# channel_join http tests                                                      #
+################################################################################
+
+def test_channel_join_invalid_token(clear_database, user_1, channel_1):
+
+    chan = requests.post(config.url + 'channel/join/v2', json={
+        'token': INVALID_TOKEN,
+        'channel_id': channel_1
+    })
+    assert chan.status_code == ACCESSERROR
     
+def test_channel_join_invalid_channel(clear_database, user_1, channel_1):
+
+    chan = requests.post(config.url + 'channel/join/v2', json={
+        'token': user_1['token'],
+        'channel_id': INVALID_CHANNEL_ID
+    })
+    assert chan.status_code == INPUTERROR
     
+def test_channel_join_accesserror(clear_database, user_1, user_2, channel_3):
+
+    chan = requests.post(config.url + 'channel/join/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_3
+    })
+    assert chan.status_code == ACCESSERROR
+    
+def test_channel_join_global_private(clear_database, user_2, user_1, channel_3):
+
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_3
+    })
+    chan_info = requests.get(config.url + 'channel/details/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_3
+    })
+    channels = chan_info.json()
+    assert len(channels['all_members']) == 2
+    assert len(channels['owner_members']) == 2
+    assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
+    assert channels['all_members'][1]['u_id'] == user_2['auth_user_id']
+    assert channels['owner_members'][0]['u_id'] == user_1['auth_user_id']
+    assert channels['owner_members'][1]['u_id'] == user_2['auth_user_id']
+    
+def test_channel_join_already_joined(clear_database, user_1, user_2, channel_1):
+
+    requests.post(config.url + 'channel/invite/v2', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'u_id': user_2['auth_user_id']
+    })
+    chan = requests.post(config.url + 'channel/join/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1
+    })
+    channels = chan.json()
+    assert channels == {}
+    
+    chan_details = requests.get(config.url + 'channel/details/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1
+    })
+    chan_info = chan_details.json()
+    assert len(chan_info['all_members']) == 2
+    assert chan_info['all_members'][0]['u_id'] == user_1['auth_user_id'] 
+    assert chan_info['all_members'][1]['u_id'] == user_2['auth_user_id']
+    assert len(chan_info['owner_members']) == 1
+    assert chan_info['owner_members'][0]['u_id'] == user_1['auth_user_id']
+
+################################################################################
+# channel_messages http tests                                                  #
+################################################################################
+
+def test_channel_messages_invalid_token(clear_database, user_1, channel_1):
+
+    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
+        'token': INVALID_TOKEN,
+        'channel_id': channel_1,
+        'start': 0
+    })
+    assert chan_msg.status_code == ACCESSERROR
+    
+def test_channel_messages_invalid_channel(clear_database, user_1, channel_1):
+
+    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
+        'token': user_1['token'],
+        'channel_id': INVALID_CHANNEL_ID,
+        'start': 0
+    })
+    assert chan_msg.status_code == INPUTERROR
+    
+def test_channel_messages_start_error(clear_database, user_1, channel_1):
+
+    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'start': 10
+    })
+    assert chan_msg.status_code == INPUTERROR
+    
+def test_channel_messages_accesserror(clear_database, user_1, user_2, channel_1):
+
+    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+        'start': 0
+    })
+    assert chan_msg.status_code == ACCESSERROR
+    
+def test_channel_messages_start_equal(clear_database, user_1, channel_1):
+
+    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'start': 0
+    })
+    chan_info = chan_msg.json()
+    assert chan_info == {'messages': [], 'start': 0, 'end': -1}
+    
+def test_channel_messages_join(clear_database, user_1, user_2, channel_1):
+
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+    })
+    requests.post(config.url + 'message/send/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+        'message': "I'm now in the channel."
+    })
+    chan = requests.get(config.url + 'channel/messages/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+        'start': 0
+    })
+    chan_info = chan.json()
+    assert len(chan_info['messages']) == 1
+    assert chan_info['messages'][0]['message_id'] == 1
+    assert chan_info['messages'][0]['u_id'] == user_2['auth_user_id']
+    assert chan_info['messages'][0]['message'] == "I'm now in the channel."
+    assert chan_info['start'] == 0
+    assert chan_info['end'] == -1
+
