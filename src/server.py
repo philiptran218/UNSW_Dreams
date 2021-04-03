@@ -301,5 +301,25 @@ def echo():
         'data': data
     })
 
+################################################################################
+#   admin_user_remove route                                                    #
+################################################################################
+
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def admin_user_remove():
+    user_remove_info = request.get_json()
+    output = admin_user_remove_v1(user_remove_info['token'], user_remove_info['u_id'])
+    return dumps(output)
+
+################################################################################
+#   admin_userpermission_change route                                          #
+################################################################################
+
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change():
+    change_perm = request.get_json()
+    output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
+    return dumps(output)
+
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
