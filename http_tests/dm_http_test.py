@@ -228,15 +228,16 @@ def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1,test_user
     })
 
     message_detail = msg.json()
+    print(message_detail)
     assert message_detail['messages'][0]['message_id'] == 1
     assert message_detail['messages'][0]['u_id'] == test_user1['auth_user_id']
-    assert message_detail['messages'][0]['message'] == 'A new message'
+    assert message_detail['messages'][0]['message'] == 'singlemessage'
     assert message_detail['start'] == 0
     assert message_detail['end'] == -1
 
 def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
     i = 1
-    while i < 55:
+    while i <= 55:
         requests.post(config.url + 'message/senddm/v1',json={
             'token':test_user1['token'],
             'dm_id':test_create_dm['dm_id'],
