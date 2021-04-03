@@ -11,11 +11,13 @@ from src.auth import auth_register_v1, auth_login_v1
 from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
 from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1
-import src.user
-import src.users
+from src.user import user_profile_v1
+from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
+from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
 import src.database
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -146,6 +148,16 @@ def create_channel():
 def channels_listall():
     listall = request.get_json()
     output = channels_listall_v1(listall['token'])
+    return dumps(output)
+
+################################################################################
+#   channels_list route                                                        #
+################################################################################
+
+@APP.route("/channels/list/v2", methods=['GET'])
+def channels_list():
+    listall = request.get_json()
+    output = channels_list_v1(listall['token'])
     return dumps(output)
 
 ################################################################################
@@ -319,6 +331,16 @@ def admin_user_remove():
 def admin_userpermission_change():
     change_perm = request.get_json()
     output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
+    return dumps(output)
+
+################################################################################
+#   user_profile route                                                         #
+################################################################################
+
+@APP.route("/user/profile/v2", methods=['GET'])
+def user_profile():
+    profile_info = request.get_json()
+    output = user_profile_v1(profile_info['token'], profile_info['u_id'])
     return dumps(output)
 
 if __name__ == "__main__":

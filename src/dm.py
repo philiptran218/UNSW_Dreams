@@ -375,6 +375,7 @@ def dm_create_v1(token, u_ids):
         A dictionary is returned with the name and list of members inside dm.
     ''' 
     validator = helper.is_valid_token(token)
+    
     if validator == True:
         
         token_u_id = helper.detoken(token)

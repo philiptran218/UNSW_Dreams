@@ -59,6 +59,78 @@ def clear_database():
 def expected_empty_output():
     return {'channels': []}
 
+################################################################################
+# channels_listall http tests                                                  #
+################################################################################
+
+def expected_output_listall_v2():
+    return {
+        'channels': [
+            {
+                "channel_id": 1,
+                "name":"Channel1"
+            },
+            {
+                "channel_id": 2,
+                "name":"Channel2"
+            }
+        ]
+    }
+
+def test_channels_listall_invalid_token(clear_database, user_1, channel_1):
+    chan = requests.get(config.url + 'channels/listall/v2', json={
+        'token': INVALID_TOKEN,
+    })
+    assert chan.status_code == ACCESSERROR
+
+def test_channel_listall_valid_empty(clear_database, user_1):
+    chan = requests.get(config.url + 'channels/listall/v2', json={
+        'token': user_1['token'],
+    })
+    chan_list = chan.json()
+    assert chan_list == expected_empty_output()
+
+def test_channel_listall_valid(clear_database, user_1, user_2, channel_1, channel_2):
+    chan = requests.get(config.url + 'channels/listall/v2', json={
+        'token': user_1['token'],
+    })
+    chan_list = chan.json()
+    assert chan_list == expected_output_listall_v2()
+
+################################################################################
+# channels_list http tests                                                     #
+################################################################################
+ 
+def expected_output_list_v2():
+    return {
+        'channels':
+        [
+            {
+                "channel_id": 1,
+                "name": "Channel1"
+            }
+        ]
+    }
+
+def test_channels_list_invalid_token(clear_database, user_1, channel_1):
+    chan = requests.get(config.url + 'channels/list/v2', json={
+        'token': INVALID_TOKEN,
+    })
+    assert chan.status_code == ACCESSERROR
+
+def test_channel_list_valid_empty(clear_database, user_1):
+    chan = requests.get(config.url + 'channels/list/v2', json={
+        'token': user_1['token'],
+    })
+    chan_list = chan.json()
+    assert chan_list == expected_empty_output()
+
+def test_channel_list_valid(clear_database, user_1, user_2, channel_1, channel_2):
+    chan = requests.get(config.url + 'channels/list/v2', json={
+        'token': user_1['token'],
+    })
+    chan_list = chan.json()
+    assert chan_list == expected_output_list_v2()
 
 ################################################################################
 # channel_create_v1 http tests                                                 #
@@ -122,6 +194,3 @@ def test_invalid_user(clear_database):
        'is_public': True
     })
     assert chan.status_code == ACCESSERROR
-
-    
-    
