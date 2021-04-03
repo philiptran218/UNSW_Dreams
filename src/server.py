@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1
+from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1, dm_create_v1, dm_details_v1, dm_list_v1
 from src.channels import channels_create_v1
 from src.auth import auth_register_v1
 import src.database
@@ -96,6 +96,37 @@ def create_channel():
 def clear():
     return clear_v1()
 
+
+
+################################################################################
+#   dm_details route                                                           #
+################################################################################
+
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details():
+    details = request.get_json()
+    output = dm_details_v1(details['token'], details['dm_id'])
+    return dumps(output)
+
+################################################################################
+#   dm_list route                                                              #
+################################################################################
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    list_info = request.get_json()
+    output = dm_list_v1(list_info['token'])
+    return dumps(output)
+
+################################################################################
+#   dm_create route                                                            #
+################################################################################
+
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    create_info = request.get_json()
+    output = dm_create_v1(create_info['token'], create_info['u_ids'])
+    return dumps(output)
 
 # Example
 @APP.route("/echo", methods=['GET'])
