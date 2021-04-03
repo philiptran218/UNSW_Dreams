@@ -148,6 +148,16 @@ def channels_listall():
     return dumps(output)
 
 ################################################################################
+#   channels_list route                                                        #
+################################################################################
+
+@APP.route("/channels/list/v2", methods=['GET'])
+def channels_list():
+    listall = request.get_json()
+    output = channels_list_v1(listall['token'])
+    return dumps(output)
+
+################################################################################
 # dm_remove route                                                              #
 ################################################################################
 
@@ -318,6 +328,16 @@ def admin_user_remove():
 def admin_userpermission_change():
     change_perm = request.get_json()
     output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
+    return dumps(output)
+
+################################################################################
+#   user_profile route                                                         #
+################################################################################
+
+@APP.route("/user/profile/v2", methods=['GET'])
+def user_profile():
+    profile_info = request.get_json()
+    output = user_profile_v1(profile_info['token'], profile_info['u_id'])
     return dumps(output)
 
 if __name__ == "__main__":
