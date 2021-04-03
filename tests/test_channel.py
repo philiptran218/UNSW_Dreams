@@ -586,10 +586,6 @@ def test_channel_leave_invalid_auth_id(clear_data, user_1, user_2, public_channe
     with pytest.raises(AccessError):
         channel_leave_v1(user_2['token'], public_channel_1)
 
-def test_channel_leave_auth_id_not_in_channel(clear_data, user_1, user_2, public_channel_1):
-    with pytest.raises(AccessError):
-        channel_leave_v1(user_2['token'], public_channel_1)
-
 def test_channel_leave_valid_inputs(clear_data, user_1, user_2, public_channel_1, public_channel_2):
     channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
     channel_leave_v1(user_1['token'], public_channel_2)
@@ -604,7 +600,7 @@ def test_channel_leave_owner_leaves(clear_data, user_1, user_2, public_channel_1
     assert user_2['auth_user_id'] not in info['all_members']
     assert user_2['auth_user_id'] not in info['owner_members']
 
-def test_channel_leave_last_member_leaves(clear_data, user_1, public_channel_1):
+def test_channel_leave_last_user_leaves(clear_data, user_1, public_channel_1):
     channel_leave_v1(user_1['token'], public_channel_1)
     info = channel_details_v1(user_1['token'], public_channel_1)
     assert info['name'] == "John's Channel"

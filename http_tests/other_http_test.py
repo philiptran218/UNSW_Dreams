@@ -220,3 +220,4 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     assert notif_3_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_3_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
 
+
