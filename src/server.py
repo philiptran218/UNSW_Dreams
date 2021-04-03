@@ -342,6 +342,16 @@ def user_profile():
     profile_info = request.get_json()
     output = user_profile_v1(profile_info['token'], profile_info['u_id'])
     return dumps(output)
+    
+################################################################################
+#   users_all route                                                            #
+################################################################################
+
+@APP.route("/users/all/v1", methods=['GET'])
+def user_profile():
+    profile_info = request.get_json()
+    output = users_all_v1(profile_info['token'])
+    return dumps(output)
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
