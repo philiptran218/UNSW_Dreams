@@ -5,10 +5,11 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1, dm_create_v1, dm_details_v1, dm_list_v1
-from src.channels import channels_create_v1
+from src.channels import channels_create_v1, channels_listall_v1,channels_list_v1
 from src.auth import auth_register_v1
 import src.database
 from src.other import clear_v1
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -126,6 +127,16 @@ def dm_list():
 def dm_create():
     create_info = request.get_json()
     output = dm_create_v1(create_info['token'], create_info['u_ids'])
+    return dumps(output)
+
+################################################################################
+#   channels_listall route                                                     #
+################################################################################
+
+@APP.route("/channels/listall/v2", methods=['GET'])
+def channels_listall():
+    listall = request.get_json()
+    output = channels_list_v1(listall['token'])
     return dumps(output)
 
 # Example
