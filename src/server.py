@@ -6,7 +6,7 @@ from src.error import InputError
 from src import config
 from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1
 from src.channels import channels_create_v1
-import database
+import src.database
 
 def defaultHandler(err):
     response = err.get_response()
@@ -26,7 +26,7 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 def getData():
-    return database.data
+    return src.database.data
 
 ################################################################################
 # dm_remove route                                                              #
@@ -63,6 +63,15 @@ def dm_leave():
 def dm_messages():
     message_info = request.get_json()
     output = dm_messages_v1(message_info['token'],message_info['dm_id'],message_info['start'])
+    return dumps(output)
+
+################################################################################
+# channel_create_v1 route                                                      #
+################################################################################
+@APP.route('channels/create/v2', methods=['POST'])
+def create_channel():
+    channel_info = request.get_json()
+    output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
     return dumps(output)
 
 
