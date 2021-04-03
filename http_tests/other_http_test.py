@@ -216,7 +216,7 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     })
     notif_3_info = notif_3.json()['notifications']
     assert len(notif_3_info) == 3
-    assert notif_1_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
-    assert notif_1_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
-    assert notif_1_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
+    assert notif_3_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_3_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
+    assert notif_3_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
 
