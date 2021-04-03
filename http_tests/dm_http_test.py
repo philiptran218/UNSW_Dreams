@@ -12,7 +12,7 @@ ACCESSERROR = 403
 
 @pytest.fixture
 def clear_data():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 @pytest.fixture
 def test_user1():
