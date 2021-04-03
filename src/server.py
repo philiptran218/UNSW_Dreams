@@ -260,8 +260,7 @@ def search():
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     return clear_v1()
-
->>>>>>> master
+    
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
