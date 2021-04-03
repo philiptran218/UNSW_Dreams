@@ -82,7 +82,7 @@ def dm_2(user_2, user_3):
 
 @pytest.fixture 
 def clear_database():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 
 ################################################################################
@@ -92,7 +92,7 @@ def clear_database():
 def test_clear_users(clear_database,user_1):
     email = 'johnsmith@gmail.com'
     password = 'goodpass'
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
     login = requests.post(config.url + 'auth/login/v2', json={
         'email': email,
@@ -101,7 +101,7 @@ def test_clear_users(clear_database,user_1):
     assert login.status_code == ACCESSERROR
 
 def test_clear_channels(clear_data, user_1, public_channel_1):
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
     user_info = requests.post(config.url + 'auth/register/v2', json={
         'email': "terrynguyen@gmail.com",
