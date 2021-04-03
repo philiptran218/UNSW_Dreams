@@ -58,7 +58,17 @@ def channel_2(user_2):
     })
     channel_info = channel.json()
     return channel_info['channel_id']
-
+    
+@pytest.fixture
+def channel_3(user_1):
+    channel = requests.post(config.url + 'channels/create/v2', json={
+        'token': user_1['token'],
+        'name': 'The private channel',
+        'is_public': False
+    })
+    channel_info = channel.json()
+    return channel_info['channel_id']
+        
 @pytest.fixture
 def make_user_2_owner_in_channel_1(user_1, user_2, channel_1):
     requests.post(config.url + 'channel/invite/v2', json={
