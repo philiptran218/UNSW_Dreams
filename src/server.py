@@ -29,6 +29,17 @@ def getData():
     return src.database.data
 
 ################################################################################
+#   auth_register route                                                       #
+################################################################################
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def auth_register():
+    register_info = request.get_json()
+    output = auth_register_v1(register_info['email'], register_info['password'], register_info['name_first'], register_info['name_last'])
+    return dumps(output)
+
+
+################################################################################
 # dm_remove route                                                              #
 ################################################################################
 
