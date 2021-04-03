@@ -312,7 +312,7 @@ def test_message_edit_valid_owner(clear_database, user_1, user_2, channel_2):
     chan_msg_info = chan_msg.json()['messages']
     assert len(chan_msg_info) == 1
     assert chan_msg_info[0]['message'] == 'Edited by owner'
-    assert chan_msg_info[0]['u_id'] == user_2['auth_user_id']
+    assert chan_msg_info[0]['u_id'] == user_1['auth_user_id']
     
 def test_message_edit_valid_author(clear_database, user_1, user_2, dm_1):
 
