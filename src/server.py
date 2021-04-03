@@ -12,7 +12,7 @@ from src.message import message_senddm_v1, message_send_v1, message_edit_v1, mes
 import src.user
 import src.users
 from src.other import clear_v1, search_v1, notifications_get_v1
-from src.dm import dm_create_v1
+from src.dm import dm_create_v1, dm_invite_v1, dm_messages_v1
 import src.database
 
 def defaultHandler(err):
