@@ -134,7 +134,7 @@ def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create
 def test_dm_leave_invalid_dm_id(clear_data,test_user1,test_user2,test_create_dm):
     leave = requests.post(config.url + 'dm/leave/v1', json={
         'token': test_user1['token'],
-        'dm_id':test_create_dm['dm_id']
+        'dm_id':INVALID_DM_ID
     })
     assert leave.status_code == INPUTERROR 
 
@@ -152,7 +152,7 @@ def test_dm_leave(clear_data,test_user1,test_user2,test_create_dm):
     })
     member_left = True
     dlist = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user2['token'],
+        'token': test_user1['token'],
         'dm_id': test_create_dm['dm_id']
     }) 
     members = dlist.json()['members']
