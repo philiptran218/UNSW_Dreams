@@ -54,7 +54,7 @@ def channel_2(user_2):
 
 @pytest.fixture 
 def clear_database():
-    requests.delete(config.url + 'clear')
+    requests.delete(config.url + 'clear/v1')
 
 def expected_empty_output():
     return {'channels': []}
