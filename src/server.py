@@ -47,7 +47,7 @@ def save_and_return(output):
         file.write(dumps(data))
     with open('src/database.py', 'w+') as old_data, open('src/persitent_data.json', 'r+') as new_data:
         json_data = new_data.read()
-        old_data.write(f"data = {loads(json_data)}")
+        old_data.write(f"data = {json_data}")
     return output
 
 
@@ -80,7 +80,7 @@ def auth_login():
 def auth_logout():
     logout_info = request.get_json()
     output = auth_logout_v1(logout_info['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_invite route                                                       #
