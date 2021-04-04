@@ -34,21 +34,20 @@ CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
-"""
+
 try: 
     with open('src/database.py', 'r') as file:
         pass
 except FileNotFoundError:
     with open('src/database.py', 'w+') as file:
         file.write(dumps("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}"))
-"""
+
 def save_and_return(output):
     with open('src/persitent_data.json', 'w+') as file:
         file.write(dumps(data))
     with open('src/database.py', 'w+') as old_data, open('src/persitent_data.json', 'r+') as new_data:
         json_data = new_data.read()
-        old_data.write("data =")
-        old_data.write(json_data)
+        old_data.write(f"data = {loads(json_data)}")
     return output
 
 
@@ -99,8 +98,8 @@ def channel_invite():
 
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
-    details_info = request.get_json()
-    output = channel_details_v1(details_info['token'], details_info['channel_id'])
+    details_info = request.args
+    output = channel_details_v1(details_info['token'], int(details_info['channel_id']))
     return save_and_return(output)
 
 ################################################################################
@@ -149,8 +148,8 @@ def channel_join():
 
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages():
-    messages_info = request.get_json()
-    output = channel_messages_v1(messages_info['token'], messages_info['channel_id'], messages_info['start'])
+    messages_info = request.args
+    output = channel_messages_v1(messages_info['token'], int(messages_info['channel_id']), int(messages_info['start']))
     return save_and_return(output)
 
 ################################################################################
@@ -169,7 +168,7 @@ def create_channel():
 
 @APP.route("/channels/listall/v2", methods=['GET'])
 def channels_listall():
-    listall = request.get_json()
+    listall = request.args
     output = channels_listall_v1(listall['token'])
     return save_and_return(output)
 
@@ -179,7 +178,7 @@ def channels_listall():
 
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list():
-    listall = request.get_json()
+    listall = request.args
     output = channels_list_v1(listall['token'])
     return save_and_return(output)
 
@@ -210,8 +209,8 @@ def dm_leave():
 
 @APP.route("/dm/details/v1", methods=['GET'])
 def dm_details():
-    details = request.get_json()
-    output = dm_details_v1(details['token'], details['dm_id'])
+    details = request.args
+    output = dm_details_v1(details['token'], int(details['dm_id']))
     return save_and_return(output)
 
 ################################################################################
@@ -220,7 +219,7 @@ def dm_details():
 
 @APP.route("/dm/list/v1", methods=['GET'])
 def dm_list():
-    list_info = request.get_json()
+    list_info = request.args
     output = dm_list_v1(list_info['token'])
     return save_and_return(output)
 
@@ -250,8 +249,8 @@ def dm_invite():
     
 @APP.route("/dm/messages/v1", methods=['GET'])
 def dm_messages():
-    message_info = request.get_json()
-    output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
+    message_info = request.args
+    output = dm_messages_v1(message_info['token'], int(message_info['dm_id']), int(message_info['start']))
     return save_and_return(output)
 
 ################################################################################
@@ -310,7 +309,7 @@ def message_share():
 
 @APP.route("/search/v2", methods=['GET'])
 def search():
-    search_info = request.get_json()
+    search_info = request.args
     output = search_v1(search_info['token'], search_info['query_str'])
     return save_and_return(output)
 
@@ -328,7 +327,7 @@ def clear():
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get():
-    notif_info = request.get_json()
+    notif_info = request.args
     output = notifications_get_v1(notif_info['token'])
     return save_and_return(output)
 
@@ -358,8 +357,8 @@ def admin_userpermission_change():
 
 @APP.route("/user/profile/v2", methods=['GET'])
 def user_profile():
-    profile_info = request.get_json()
-    output = user_profile_v1(profile_info['token'], profile_info['u_id'])
+    profile_info = request.args
+    output = user_profile_v1(profile_info['token'], int(profile_info['u_id']))
     return save_and_return(output)
 
 ################################################################################
@@ -398,7 +397,7 @@ def profile_sethandle():
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
-    userall_info = request.get_json()
+    userall_info = request.args
     output = users_all_v1(userall_info['token'])
     return save_and_return(output)
     
@@ -415,4 +414,5 @@ def echo():
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
+
 

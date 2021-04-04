@@ -114,9 +114,7 @@ def test_clear_channels(clear_database, user_1,channel_1):
     })
     user_token= user_info.json()['token']
 
-    chan = requests.get(config.url + 'channels/listall/v2', json={
-        'token': user_token
-    })
+    chan = requests.get(f"{config.url}channels/listall/v2?token={user_token}")
     chan_list = chan.json()['channels']
     assert(not bool(chan_list))
 
@@ -125,7 +123,7 @@ def test_clear_channels(clear_database, user_1,channel_1):
 ################################################################################
 
 def create_invalid_string():
-    chars = string.ascii_letters + string.digits + string.punctuation
+    chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
 
 def send_channel_message(token, channel_id, message):
@@ -143,19 +141,13 @@ def send_dm_message(token, dm_id, message):
     })
 
 def test_other_search_invalid_token(clear_database, user_1):
-    search = requests.get(config.url + 'search/v2', json={
-        'token': INVALID_TOKEN,
-        'query_str': MIXED_QUERY_STR
-    })
-
+    search = requests.get(f"{config.url}search/v2?token={INVALID_TOKEN}&query_str={MIXED_QUERY_STR}")
     assert search.status_code == ACCESSERROR
 
 def test_other_search_invalid_query_str(clear_database, user_1):
-    search = requests.get(config.url + 'search/v2', json={
-        'token': user_1['token'],
-        'query_str': create_invalid_string()
-    })
-
+    string = create_invalid_string()
+    print(len(string))
+    search = requests.get(f"{config.url}search/v2?token={user_1['token']}&query_str={string}")
     assert search.status_code == INPUTERROR
 
 def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, channel_1, channel_2, dm_1, dm_2):
@@ -166,13 +158,9 @@ def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, chann
     send_dm_message(user_2['token'], dm_2, UPPER_CASE_STR)
     send_dm_message(user_2['token'], dm_2, MIXED_QUERY_STR)
     send_dm_message(user_3['token'], dm_2, MIXED_QUERY_STR)
-    search_json = requests.get(config.url + 'search/v2', json={
-        'token': user_2['token'],
-        'query_str': SUB_STR
-    })
+    search_json = requests.get(f"{config.url}search/v2?token={user_2['token']}&query_str={SUB_STR}")
     search = search_json.json()
     messages = search['messages']
-    print(messages)
     assert messages[0]['message_id'] == 2
     assert messages[0]['u_id'] == 1
     assert messages[0]['message'] == MIXED_QUERY_STR
@@ -195,16 +183,12 @@ def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, chann
 
 def test_notifications_get_invalid_token(clear_database, user_1):
 
-    notif = requests.get(config.url + 'notifications/get/v1', json={
-        'token': INVALID_TOKEN
-    })
+    notif = requests.get(f"{config.url}notifications/get/v1?token={INVALID_TOKEN}")
     assert notif.status_code == ACCESSERROR
     
 def test_notifications_get_empty(clear_database, user_1):
 
-    notif = requests.get(config.url + 'notifications/get/v1', json={
-        'token':user_1['token']
-    })
+    notif = requests.get(f"{config.url}notifications/get/v1?token={user_1['token']}")
     notif_info = notif.json()
     assert notif_info == {'notifications': []}
 
@@ -228,25 +212,19 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
         'channel_id': -1,
         'dm_id': dm_2
     })
-    notif_1 = requests.get(config.url + 'notifications/get/v1', json={
-        'token': user_1['token']
-    })
+    notif_1 = requests.get(f"{config.url}notifications/get/v1?token={user_1['token']}")
     notif_1_info = notif_1.json()['notifications']
     assert len(notif_1_info) == 3
     assert notif_1_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_1_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_1_info[2]['notification_message'] == 'terrancenguyen added you to philiptran, terrancenguyen'
     
-    notif_2 = requests.get(config.url + 'notifications/get/v1', json={
-        'token': user_2['token']
-    })
+    notif_2 = requests.get(f"{config.url}notifications/get/v1?token={user_2['token']}")
     notif_2_info = notif_2.json()['notifications']
     assert len(notif_2_info) == 1
     assert notif_2_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     
-    notif_3 = requests.get(config.url + 'notifications/get/v1', json={
-        'token': user_3['token']
-    })
+    notif_3 = requests.get(f"{config.url}notifications/get/v1?token={user_3['token']}")
     notif_3_info = notif_3.json()['notifications']
     assert len(notif_3_info) == 3
     assert notif_3_info[0]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
