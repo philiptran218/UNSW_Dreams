@@ -72,29 +72,17 @@ def expected_output_user1_profilev2():
     }
 
 def test_simple_profile(clear_database, user_1):
-    profile_json = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_1['token'],
-        'u_id': user_1['auth_user_id'],
-    })
+    profile_json = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")  
     profile = profile_json.json()
-    print(profile)
     assert profile == expected_output_user1_profile()
 
 def test_profile_invalid_token(clear_database, user_1):
-    profile = requests.get(config.url + 'user/profile/v2', json={
-        'token': INVALID_TOKEN,
-        'u_id': user_1['auth_user_id'],
-    })
+    profile = requests.get(f"{config.url}user/profile/v2?token={INVALID_TOKEN}&u_id={user_1['auth_user_id']}")
     assert profile.status_code == ACCESSERROR
 
-
 def test_profile_invalid_u_id(clear_database, user_1):
-    profile = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_1['token'],
-        'u_id': INVALID_UID,
-    })
+    profile = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={INVALID_UID}")
     assert profile.status_code == INPUTERROR
-
 
 ################################################################################
 # user_set_email http tests                                                    #
@@ -105,13 +93,9 @@ def test_set_email(clear_database, user_1):
         'token': user_1['token'],
         'email': "newemail@gmail.com",
     })
-    profile = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_1['token'],
-        'u_id': user_1['auth_user_id'],
-    })
+    profile = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
     user_1_profile = profile.json() 
 
-    print (user_1_profile)
     assert user_1_profile['user']['email'] == "newemail@gmail.com"
 
 def test_invalid_email(clear_database, user_1):
@@ -225,10 +209,7 @@ def test_user_func(clear_database, user_1):
     set_name(user_1['token'], "Daniel", "Nguyen")
     set_handle(user_1['token'], "totallyoriginalhandl")
     
-    profile_json = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_1['token'],
-        'u_id': user_1['auth_user_id'],
-    })
+    profile_json = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
     profile = profile_json.json()
     assert profile == expected_output_user1_profilev2()
 
@@ -239,25 +220,13 @@ def test_multi_user(clear_database, user_1, user_2, user_3):
     set_name(user_2['token'], "Dark", "Soul")
     set_handle(user_3['token'], "gamer")
 
-    profile_1 = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_1['token'],
-        'u_id': user_1['auth_user_id'],
-    })
-
+    profile_1 = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
     user_1_profile = profile_1.json() 
 
-    profile_2 = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_2['token'],
-        'u_id': user_2['auth_user_id'],
-    })
-
+    profile_2 = requests.get(f"{config.url}user/profile/v2?token={user_2['token']}&u_id={user_2['auth_user_id']}")
     user_2_profile = profile_2.json()
 
-    profile_3 = requests.get(config.url + 'user/profile/v2', json={
-        'token': user_3['token'],
-        'u_id': user_3['auth_user_id'],
-    })
-
+    profile_3 = requests.get(f"{config.url}user/profile/v2?token={user_3['token']}&u_id={user_3['auth_user_id']}")
     user_3_profile = profile_3.json()  
 
     assert user_1_profile['user']['handle_str'] == "dropout"
