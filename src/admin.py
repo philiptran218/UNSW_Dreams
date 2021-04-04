@@ -71,6 +71,8 @@ def admin_user_remove_v1(token, u_id):
         
     return {}
 
+    return {}
+
 def admin_userpermission_change_v1(token, u_id, permission_id):
     """
     Function:
@@ -114,5 +116,4 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
             raise InputError(description='Permission id is invalid.')
     else:
         raise AccessError(description='Invalid Token')
-        
     return {}

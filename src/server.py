@@ -64,7 +64,7 @@ def auth_login():
 #   auth_logout route                                                          #
 ################################################################################
 
-@APP.route("/auth/logout/v1", methods=['POST'])
+@APP.route('/auth/logout/v1', methods=['POST'])
 def auth_logout():
     logout_info = request.get_json()
     output = auth_logout_v1(logout_info['token'])
@@ -141,7 +141,7 @@ def channel_messages():
     return dumps(output)
 
 ################################################################################
-# channels_create_v1 route                                                     #
+#   channels_create route                                                      #
 ################################################################################
 
 @APP.route('/channels/create/v2', methods=['POST'])
@@ -171,7 +171,7 @@ def channels_list():
     return dumps(output)
 
 ################################################################################
-# dm_remove route                                                              #
+#   dm_remove route                                                            #
 ################################################################################
 
 @APP.route('/dm/remove/v1', methods=['DELETE'])
@@ -182,8 +182,9 @@ def dm_remove():
 
 
 ################################################################################
-# dm_leave route                                                               #
+#   dm_leave route                                                             #
 ################################################################################
+
 @APP.route('/dm/leave/v1', methods=['POST'])
 def dm_leave():
     leave_info = request.get_json()
@@ -243,6 +244,7 @@ def dm_messages():
 ################################################################################
 #   message_senddm route                                                       #
 ################################################################################
+
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
     create_info = request.get_json()
@@ -250,8 +252,9 @@ def message_senddm():
     return dumps(output)
 
 ################################################################################
-#   message_send route                                                       #
+#   message_send route                                                         #
 ################################################################################
+
 @APP.route("/message/send/v2", methods=['POST'])
 def message_send():
     create_info = request.get_json()
@@ -261,6 +264,7 @@ def message_send():
 ################################################################################
 #   message_edit route                                                         #
 ################################################################################
+
 @APP.route("/message/edit/v2", methods=['PUT'])
 def message_edit():
     create_info = request.get_json()
@@ -270,6 +274,7 @@ def message_edit():
 ################################################################################
 #   message_remove route                                                       #
 ################################################################################
+
 @APP.route("/message/remove/v1", methods=['DELETE'])
 def message_remove():
     create_info = request.get_json()
@@ -279,6 +284,7 @@ def message_remove():
 ################################################################################
 #   message_share route                                                        #
 ################################################################################
+
 @APP.route("/message/share/v1", methods=['POST'])
 def message_share():
     create_info = request.get_json()
@@ -312,16 +318,6 @@ def notifications_get():
     notif_info = request.get_json()
     output = notifications_get_v1(notif_info['token'])
     return dumps(output)
-
-# Example
-@APP.route("/echo", methods=['GET'])
-def echo():
-    data = request.args.get('data')
-    if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
-    return dumps({
-        'data': data
-    })
 
 ################################################################################
 #   admin_user_remove route                                                    #
@@ -392,6 +388,17 @@ def users_all():
     userall_info = request.get_json()
     output = users_all_v1(userall_info['token'])
     return dumps(output)
+    
+################################################################################
+# Example
+@APP.route("/echo", methods=['GET'])
+def echo():
+    data = request.args.get('data')
+    if data == 'echo':
+   	    raise InputError(description='Cannot echo "echo"')
+    return dumps({
+        'data': data
+    })
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port

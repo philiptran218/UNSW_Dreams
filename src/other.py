@@ -76,6 +76,8 @@ def clear_v1():
     delete('sessions')
     delete('session_ids')
 
+    return {}
+
 
 def search_v1(token, query_str):
     '''
@@ -108,6 +110,7 @@ def search_v1(token, query_str):
     if query_str.isspace() or query_str == "":
         return search_matches
     for message in data['messages']:
+        print(message)
         user_found = False
         if message['channel_id'] != -1:
             user_found = is_already_in_channel(auth_user_id, message['channel_id'])
