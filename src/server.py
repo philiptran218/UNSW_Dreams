@@ -1,5 +1,5 @@
 import sys
-from json import dumps
+from json import dumps, loads
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
@@ -16,8 +16,7 @@ from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
-import src.database
-
+from src.database import data
 
 def defaultHandler(err):
     response = err.get_response()
@@ -35,9 +34,22 @@ CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
-
-#def getData():
-#    return database.data
+"""
+try: 
+    with open('src/database.py', 'r') as file:
+        pass
+except FileNotFoundError:
+    with open('src/database.py', 'w+') as file:
+        file.write(dumps("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}"))
+"""
+def save_and_return(output):
+    with open('src/persitent_data.json', 'w+') as file:
+        file.write(dumps(data))
+    with open('src/database.py', 'w+') as old_data, open('src/persitent_data.json', 'r+') as new_data:
+        json_data = new_data.read()
+        old_data.write("data =")
+        old_data.write(json_data)
+    return output
 
 
 ################################################################################
@@ -48,7 +60,7 @@ APP.register_error_handler(Exception, defaultHandler)
 def auth_register():
     register_info = request.get_json()
     output = auth_register_v1(register_info['email'], register_info['password'], register_info['name_first'], register_info['name_last'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   auth_login route                                                           #
@@ -58,7 +70,8 @@ def auth_register():
 def auth_login():
     user_info = request.get_json()
     output = auth_login_v1(user_info['email'],user_info['password'])
-    return dumps(output)
+
+    return save_and_return(output)
     
 ################################################################################
 #   auth_logout route                                                          #
@@ -78,7 +91,7 @@ def auth_logout():
 def channel_invite():
     invite_info = request.get_json()
     output = channel_invite_v1(invite_info['token'], invite_info['channel_id'], invite_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_details route                                                      #
@@ -88,7 +101,7 @@ def channel_invite():
 def channel_details():
     details_info = request.get_json()
     output = channel_details_v1(details_info['token'], details_info['channel_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_addowner route                                                     #
@@ -98,7 +111,7 @@ def channel_details():
 def channel_addowner():
     addowner_info = request.get_json()
     output = channel_addowner_v1(addowner_info['token'], addowner_info['channel_id'], addowner_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_removeowner route                                                  #
@@ -108,7 +121,7 @@ def channel_addowner():
 def channel_removeowner():
     removeowner_info = request.get_json()
     output = channel_removeowner_v1(removeowner_info['token'], removeowner_info['channel_id'], removeowner_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_leave route                                                        #
@@ -118,7 +131,7 @@ def channel_removeowner():
 def channel_leave():
     leave_info = request.get_json()
     output = channel_leave_v1(leave_info['token'], leave_info['channel_id'])
-    return dumps(output)
+    return save_and_return(output)
     
 ################################################################################
 #   channel_join route                                                         #
@@ -128,7 +141,7 @@ def channel_leave():
 def channel_join():
     join_info = request.get_json()
     output = channel_join_v1(join_info['token'], join_info['channel_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_messages route                                                     #
@@ -138,7 +151,7 @@ def channel_join():
 def channel_messages():
     messages_info = request.get_json()
     output = channel_messages_v1(messages_info['token'], messages_info['channel_id'], messages_info['start'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channels_create route                                                      #
@@ -148,7 +161,7 @@ def channel_messages():
 def create_channel():
     channel_info = request.get_json()
     output = channels_create_v1(channel_info['token'],channel_info['name'],channel_info['is_public'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channels_listall route                                                     #
@@ -158,7 +171,7 @@ def create_channel():
 def channels_listall():
     listall = request.get_json()
     output = channels_listall_v1(listall['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channels_list route                                                        #
@@ -168,7 +181,7 @@ def channels_listall():
 def channels_list():
     listall = request.get_json()
     output = channels_list_v1(listall['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   dm_remove route                                                            #
@@ -178,7 +191,7 @@ def channels_list():
 def dm_remove():
     remove_info = request.get_json()
     output = dm_remove_v1(remove_info['token'],remove_info['dm_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 
 ################################################################################
@@ -189,7 +202,7 @@ def dm_remove():
 def dm_leave():
     leave_info = request.get_json()
     output = dm_leave_v1(leave_info['token'],leave_info['dm_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   dm_details route                                                           #
@@ -199,7 +212,7 @@ def dm_leave():
 def dm_details():
     details = request.get_json()
     output = dm_details_v1(details['token'], details['dm_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   dm_list route                                                              #
@@ -209,7 +222,7 @@ def dm_details():
 def dm_list():
     list_info = request.get_json()
     output = dm_list_v1(list_info['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   dm_create route                                                            #
@@ -219,7 +232,7 @@ def dm_list():
 def dm_create():
     create_info = request.get_json()
     output = dm_create_v1(create_info['token'], create_info['u_ids'])
-    return dumps(output)
+    return save_and_return(output)
     
 ################################################################################
 #   dm_invite route                                                            #
@@ -229,7 +242,7 @@ def dm_create():
 def dm_invite():
     invite_info = request.get_json()
     output = dm_invite_v1(invite_info['token'], invite_info['dm_id'], invite_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
     
 ################################################################################
 #   dm_messages route                                                          #
@@ -239,7 +252,7 @@ def dm_invite():
 def dm_messages():
     message_info = request.get_json()
     output = dm_messages_v1(message_info['token'], message_info['dm_id'], message_info['start'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   message_senddm route                                                       #
@@ -249,7 +262,7 @@ def dm_messages():
 def message_senddm():
     create_info = request.get_json()
     output = message_senddm_v1(create_info['token'], create_info['dm_id'], create_info['message'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   message_send route                                                         #
@@ -259,7 +272,7 @@ def message_senddm():
 def message_send():
     create_info = request.get_json()
     output = message_send_v1(create_info['token'], create_info['channel_id'], create_info['message'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   message_edit route                                                         #
@@ -269,7 +282,7 @@ def message_send():
 def message_edit():
     create_info = request.get_json()
     output = message_edit_v1(create_info['token'], create_info['message_id'], create_info['message'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   message_remove route                                                       #
@@ -279,7 +292,7 @@ def message_edit():
 def message_remove():
     create_info = request.get_json()
     output = message_remove_v1(create_info['token'], create_info['message_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   message_share route                                                        #
@@ -289,7 +302,7 @@ def message_remove():
 def message_share():
     create_info = request.get_json()
     output = message_share_v1(create_info['token'], create_info['og_message_id'], create_info['message'], create_info['channel_id'], create_info['dm_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   search route                                                               #
@@ -299,7 +312,7 @@ def message_share():
 def search():
     search_info = request.get_json()
     output = search_v1(search_info['token'], search_info['query_str'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   clear route                                                                #
@@ -317,7 +330,7 @@ def clear():
 def notifications_get():
     notif_info = request.get_json()
     output = notifications_get_v1(notif_info['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   admin_user_remove route                                                    #
@@ -327,7 +340,7 @@ def notifications_get():
 def admin_user_remove():
     user_remove_info = request.get_json()
     output = admin_user_remove_v1(user_remove_info['token'], user_remove_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   admin_userpermission_change route                                          #
@@ -337,7 +350,7 @@ def admin_user_remove():
 def admin_userpermission_change():
     change_perm = request.get_json()
     output = admin_userpermission_change_v1(change_perm['token'], change_perm['u_id'], change_perm['permission_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   user_profile route                                                         #
@@ -347,7 +360,7 @@ def admin_userpermission_change():
 def user_profile():
     profile_info = request.get_json()
     output = user_profile_v1(profile_info['token'], profile_info['u_id'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   user_set_name route                                                        #
@@ -357,7 +370,7 @@ def user_profile():
 def profile_setname():
     setname_info = request.get_json()
     output = user_profile_setname_v1(setname_info['token'], setname_info['name_first'], setname_info['name_last'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   user_set_email route                                                       #
@@ -367,7 +380,7 @@ def profile_setname():
 def profile_setemail():
     setemail_info = request.get_json()
     output = user_profile_setemail_v1(setemail_info['token'], setemail_info['email'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   user_set_handle route                                                      #
@@ -377,7 +390,7 @@ def profile_setemail():
 def profile_sethandle():
     sethandle_info = request.get_json()
     output = user_profile_sethandle_v1(sethandle_info['token'], sethandle_info['handle_str'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   users_all route                                                            #
@@ -387,7 +400,7 @@ def profile_sethandle():
 def users_all():
     userall_info = request.get_json()
     output = users_all_v1(userall_info['token'])
-    return dumps(output)
+    return save_and_return(output)
     
 ################################################################################
 # Example

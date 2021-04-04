@@ -96,7 +96,7 @@ def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
                     'channel_id': channel_id,
                     'dm_id': dm_id,
                     'type': 2,
-                    'message': None,     
+                    'message': "",     
                 }
     data['notifications'].append(notification)
 
