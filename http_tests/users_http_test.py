@@ -75,16 +75,11 @@ def expected_output_all_users():
 
 def test_all_invalid_token(clear_database, user_1, user_2, user_3):
 
-    all_profiles = requests.get(config.url + 'users/all/v1', json={
-        'token': INVALID_TOKEN
-    })
-
+    all_profiles = requests.get(f"{config.url}users/all/v1?token={INVALID_TOKEN}")
     assert all_profiles.status_code == ACCESSERROR
 
 def test_all_valid(clear_database, user_1, user_2, user_3):
-    all_profiles_json = requests.get(config.url + 'users/all/v1', json={
-        'token': user_1['token']
-    })
+    all_profiles_json = requests.get(f"{config.url}users/all/v1?token={user_1['token']}")
     all_profiles = all_profiles_json.json()
 
     assert all_profiles == expected_output_all_users()

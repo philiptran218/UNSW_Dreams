@@ -99,7 +99,6 @@ def channel_invite():
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
     details_info = request.args
-    print(details_info)
     output = channel_details_v1(details_info['token'], int(details_info['channel_id']))
     return save_and_return(output)
 
@@ -415,4 +414,5 @@ def echo():
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
+
 

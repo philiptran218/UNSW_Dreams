@@ -114,9 +114,7 @@ def test_register_multiple_users(clear_database):
     })
     user = user_json.json()
     
-    users_info_json = requests.get(config.url + 'users/all/v1', json={
-        'token': user['token']
-    })
+    users_info_json = requests.get(f"{config.url}users/all/v1?token={user['token']}")
     users_info = users_info_json.json()['users']
     assert len(users_info) == 2
     assert users_info[0]['handle_str'] == 'bartholomewsimpson-c'
