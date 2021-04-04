@@ -310,9 +310,6 @@ def message_share():
 @APP.route("/search/v2", methods=['GET'])
 def search():
     search_info = request.args
-    print(len(search_info['query_str']))
-    print(search_info['query_str'])
-    print('\n')
     output = search_v1(search_info['token'], search_info['query_str'])
     return save_and_return(output)
 
