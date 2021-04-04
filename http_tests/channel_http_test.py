@@ -86,6 +86,11 @@ def make_user_2_owner_in_channel_1(user_1, user_2, channel_1):
 def clear_database():
     requests.delete(config.url + '/clear/v1')
 
+def get_channel_details(token, channel_id):
+    return requests.get(f"{config.url}channel/details/v2?token={token}&channel_id={channel_id}")
+
+def get_channel_messages(token, channel_id, start):
+    return requests.get(f"{config.url}channel/messages/v2?token={token}&channel_id={channel_id}&start={start}")
 ################################################################################
 # channel_invite http tests                                                    #
 ################################################################################
@@ -142,10 +147,8 @@ def test_invite_duplicate_uid(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'],channel_1)
+
     channel_details = channel_details_json.json()
     print(channel_details)
 
@@ -161,11 +164,9 @@ def test_invite_valid_inputs(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
+
 
     assert len(channel_details['owner_members']) == 1
     assert len(channel_details['all_members']) == 2
@@ -179,10 +180,7 @@ def test_invite_global_owner_allowed(clear_database, user_1, user_2, user_3, cha
         'channel_id': channel_2,
         'u_id': user_3['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_2['token'],channel_2)
     channel_details = channel_details_json.json()
 
     assert len(channel_details['owner_members']) == 1
@@ -196,10 +194,8 @@ def test_invite_global_owner_invited(clear_database, user_1, user_2, channel_2):
         'channel_id': channel_2,
         'u_id': user_1['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_2)
+    
     channel_details = channel_details_json.json()
 
     assert len(channel_details['owner_members']) == 2
@@ -269,29 +265,17 @@ def expected_output_details_2():
     }
 
 def test_channel_details_invalid_token(clear_database, user_1, channel_1):
-    
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': INVALID_TOKEN,
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(INVALID_TOKEN, channel_1)
 
     assert channel_details_json.status_code == ACCESSERROR
 
 def test_channel_details_invalid_channel(clear_database, user_1, channel_1):
-    
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': INVALID_CHANNEL_ID
-    })
+    channel_details_json = get_channel_details(user_1['token'], INVALID_CHANNEL_ID)
 
     assert channel_details_json.status_code == INPUTERROR
 
 def test_channel_details_invalid_auth_id(clear_database, user_1, user_2, channel_1):
-    
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_1)
 
     assert channel_details_json.status_code == ACCESSERROR
 
@@ -301,10 +285,7 @@ def test_channel_details_owner_allowed(clear_database, user_1, user_2, channel_1
         'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details == expected_output_details_1()
@@ -315,28 +296,19 @@ def test_channel_details_member_allowed(clear_database, user_1, user_2, channel_
         'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details == expected_output_details_1()
 
 def test_channel_details_global_owner_allowed(clear_database, user_1, user_2, channel_2):
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_2)
     channel_details = channel_details_json.json()
 
     assert channel_details == expected_output_details_2()
 
 def test_channel_details_new_channel(clear_database, user_1, user_2, channel_2):
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_2)
     channel_details = channel_details_json.json()
 
     assert channel_details == expected_output_details_2()
@@ -346,10 +318,7 @@ def test_channel_details_empty_channel(clear_database, user_1, user_2, channel_2
         'token': user_2['token'],
         'channel_id': channel_2
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_2)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Phil's Channel"
@@ -456,10 +425,7 @@ def test_channel_addowner_global_owner_allowed(clear_database, user_1, user_2, c
         'channel_id': channel_2,
         'u_id': user_1['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_2)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Phil's Channel"
@@ -472,10 +438,7 @@ def test_channel_addowner_global_owner_allowed(clear_database, user_1, user_2, c
     assert channel_details['all_members'][1]['u_id'] == 1
 
 def test_channel_addowner_valid_inputs(clear_database, user_1, user_2, channel_1, make_user_2_owner_in_channel_1):
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Channel1"
@@ -580,12 +543,9 @@ def test_channel_removeowner_valid_inputs(clear_database, user_1, user_2, channe
         'channel_id': channel_1,
         'u_id': user_2['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
-    print(channel_details)
+
     assert len(channel_details['owner_members']) == 1
     assert channel_details['owner_members'][0]['u_id'] == 1
     assert len(channel_details['all_members']) == 2
@@ -608,10 +568,7 @@ def test_channel_removeowner_global_owner_allowed(clear_database, user_1, user_2
         'channel_id': channel_2,
         'u_id': user_3['auth_user_id']
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_2
-    })
+    channel_details_json = get_channel_details(user_2['token'], channel_2)
     channel_details = channel_details_json.json()
 
     assert len(channel_details['owner_members']) == 1
@@ -659,10 +616,7 @@ def test_channel_leave_member(clear_database, user_1, user_2, channel_1):
         'token': user_2['token'],
         'channel_id': channel_1,
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Channel1"
@@ -677,10 +631,7 @@ def test_channel_leave_owner(clear_database, user_1, user_2, channel_1, make_use
         'token': user_2['token'],
         'channel_id': channel_1,
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Channel1"
@@ -695,10 +646,7 @@ def test_channel_leave_last_user(clear_database, user_1, channel_1):
         'token': user_1['token'],
         'channel_id': channel_1,
     })
-    channel_details_json = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1
-    })
+    channel_details_json = get_channel_details(user_1['token'], channel_1)
     channel_details = channel_details_json.json()
 
     assert channel_details['name'] == "Channel1"
@@ -740,10 +688,7 @@ def test_channel_join_global_private(clear_database, user_2, user_1, channel_3):
         'token': user_2['token'],
         'channel_id': channel_3
     })
-    chan_info = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_3
-    })
+    chan_info = get_channel_details(user_2['token'], channel_3)
     channels = chan_info.json()
     assert len(channels['all_members']) == 2
     assert len(channels['owner_members']) == 2
@@ -766,10 +711,7 @@ def test_channel_join_already_joined(clear_database, user_1, user_2, channel_1):
     channels = chan.json()
     assert channels == {}
     
-    chan_details = requests.get(config.url + 'channel/details/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1
-    })
+    chan_details = get_channel_details(user_2['token'], channel_1)
     chan_info = chan_details.json()
     assert len(chan_info['all_members']) == 2
     assert chan_info['all_members'][0]['u_id'] == user_1['auth_user_id'] 
@@ -783,48 +725,33 @@ def test_channel_join_already_joined(clear_database, user_1, user_2, channel_1):
 
 def test_channel_messages_invalid_token(clear_database, user_1, channel_1):
 
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': INVALID_TOKEN,
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan_msg = get_channel_messages(INVALID_TOKEN, channel_1, 0)
+    
     assert chan_msg.status_code == ACCESSERROR
     
 def test_channel_messages_invalid_channel(clear_database, user_1, channel_1):
 
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': INVALID_CHANNEL_ID,
-        'start': 0
-    })
+    chan_msg = get_channel_messages(user_1['token'], INVALID_CHANNEL_ID, 0)
+
     assert chan_msg.status_code == INPUTERROR
     
 def test_channel_messages_start_error(clear_database, user_1, channel_1):
 
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1,
-        'start': 10
-    })
+    chan_msg = get_channel_messages(user_1['token'], channel_1, 10)
+
     assert chan_msg.status_code == INPUTERROR
     
 def test_channel_messages_accesserror(clear_database, user_1, user_2, channel_1):
 
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan_msg = get_channel_messages(user_2['token'], channel_1, 0)
+    
     assert chan_msg.status_code == ACCESSERROR
     
 def test_channel_messages_start_equal(clear_database, user_1, channel_1):
 
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan_msg = get_channel_messages(user_1['token'], channel_1, 0)
     chan_info = chan_msg.json()
+
     assert chan_info == {'messages': [], 'start': 0, 'end': -1}
     
 def test_channel_messages_join(clear_database, user_1, user_2, channel_1):
@@ -838,11 +765,8 @@ def test_channel_messages_join(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'message': "I'm now in the channel."
     })
-    chan = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan = get_channel_messages(user_2['token'], channel_1, 0)
+
     chan_info = chan.json()
     assert len(chan_info['messages']) == 1
     assert chan_info['messages'][0]['message_id'] == 1
@@ -850,4 +774,3 @@ def test_channel_messages_join(clear_database, user_1, user_2, channel_1):
     assert chan_info['messages'][0]['message'] == "I'm now in the channel."
     assert chan_info['start'] == 0
     assert chan_info['end'] == -1
-
