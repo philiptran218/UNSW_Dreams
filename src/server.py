@@ -34,7 +34,14 @@ CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
-
+"""
+try: 
+    with open('src/database.py', 'r') as file:
+        pass
+except FileNotFoundError:
+    with open('src/database.py', 'w+') as file:
+        file.write(dumps("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}"))
+"""
 def save_and_return(output):
     with open('src/persitent_data.json', 'w+') as file:
         file.write(dumps(data))
@@ -238,6 +245,7 @@ def dm_messages():
 ################################################################################
 #   message_senddm route                                                       #
 ################################################################################
+
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
     create_info = request.get_json()
@@ -245,8 +253,9 @@ def message_senddm():
     return save_and_return(output)
 
 ################################################################################
-#   message_send route                                                       #
+#   message_send route                                                         #
 ################################################################################
+
 @APP.route("/message/send/v2", methods=['POST'])
 def message_send():
     create_info = request.get_json()
@@ -256,6 +265,7 @@ def message_send():
 ################################################################################
 #   message_edit route                                                         #
 ################################################################################
+
 @APP.route("/message/edit/v2", methods=['PUT'])
 def message_edit():
     create_info = request.get_json()
@@ -265,6 +275,7 @@ def message_edit():
 ################################################################################
 #   message_remove route                                                       #
 ################################################################################
+
 @APP.route("/message/remove/v1", methods=['DELETE'])
 def message_remove():
     create_info = request.get_json()
@@ -274,6 +285,7 @@ def message_remove():
 ################################################################################
 #   message_share route                                                        #
 ################################################################################
+
 @APP.route("/message/share/v1", methods=['POST'])
 def message_share():
     create_info = request.get_json()
