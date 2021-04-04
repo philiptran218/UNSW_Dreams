@@ -123,7 +123,7 @@ def test_clear_channels(clear_database, user_1,channel_1):
 ################################################################################
 
 def create_invalid_string():
-    chars = string.ascii_letters + string.digits + string.punctuation
+    chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for counter in range(INVALID_STRING_LENGTH))
 
 def send_channel_message(token, channel_id, message):
