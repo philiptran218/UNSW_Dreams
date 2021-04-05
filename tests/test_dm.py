@@ -262,7 +262,7 @@ def expected_output_list_v1():
         'dm': [
             {
                 "dm_id": 1,
-                "dm_name": "dansmith, validnamevalidname"
+                "name": "dansmith, validnamevalidname"
             }
         ]
     }
