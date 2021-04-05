@@ -351,10 +351,10 @@ def dm_list_v1(token):
                 if member["u_id"]== token_u_id:
                     output = {
                         "dm_id": dm["dm_id"],
-                        "dm_name": dm["dm_name"]
+                        "name": dm["dm_name"]
                     }
                     dm_list.append(output)
-        return {'dm': dm_list}
+        return {'dms': dm_list}
     else:
         raise AccessError('Invalid Token')
 
