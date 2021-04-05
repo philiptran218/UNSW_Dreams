@@ -1,5 +1,5 @@
 from src.error import InputError, AccessError
-from src.database import data
+from src.database import data, update_data
 from src.helper import is_valid_uid,get_first_name, get_last_name, get_email, get_handle, detoken, is_valid_token, add_to_notifications
 
 def channels_listall_v1(token):
@@ -20,7 +20,7 @@ def channels_listall_v1(token):
     """ 
     validator = is_valid_token(token)
     channel_list = []
-    if validator == True:
+    if validator:
         for channel in data["channels"]:
             output = {
                 "channel_id": channel["channel_id"],
@@ -51,7 +51,7 @@ def channels_list_v1(token):
     """ 
     channel_list = []
     validator = is_valid_token(token)
-    if validator == True:
+    if validator:
         token_u_id = detoken(token)
         for channel in data["channels"]:
             for member in channel["all_members"]:
@@ -116,6 +116,7 @@ def channels_create_v1(token, name, is_public):
         'is_public': is_public,
     }
     data['channels'].append(new_chan)
+    update_data()
     return {
         'channel_id': channel_id,
     }

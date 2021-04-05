@@ -92,31 +92,19 @@ def expected_output_details_v2():
 
 
 def test_dm_details_invalid_dm_id(clear_data, test_user1, test_create_dm):
-    dm_det = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user1['token'],
-        'dm_id': INVALID_DM_ID,
-    })
+    dm_det = requests.get(f"{config.url}dm/details/v1?token={test_user1['token']}&dm_id={INVALID_DM_ID}")
     assert dm_det.status_code == INPUTERROR
 
 def test_dm_details_invalid_token(clear_data,test_user1,test_create_dm):
-    dm_det = requests.get(config.url + 'dm/details/v1', json={
-        'token': INVALID_TOKEN,
-        'dm_id': test_create_dm['dm_id'],
-    })
+    dm_det = requests.get(f"{config.url}dm/details/v1?token={INVALID_TOKEN}&dm_id={test_create_dm['dm_id']}")
     assert dm_det.status_code == ACCESSERROR
 
 def test_dm_details_invalid_not_in_dm(clear_data,test_user3,test_create_dm):
-    dm_det = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user3['token'],
-        'dm_id': test_create_dm['dm_id'],
-    })
+    dm_det = requests.get(f"{config.url}dm/details/v1?token={test_user3['token']}&dm_id={test_create_dm['dm_id']}")
     assert dm_det.status_code == ACCESSERROR
 
 def test_dm_details_valid(clear_data,test_user1,test_create_dm):
-    dm_det = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id'],
-    })
+    dm_det = requests.get(f"{config.url}dm/details/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}")
     dm_info = dm_det.json()
     assert dm_info == expected_output_details_v2()
 
@@ -127,31 +115,25 @@ def test_dm_details_valid(clear_data,test_user1,test_create_dm):
 #Function that shows expected output for dm_list.
 def expected_output_list_v1():
     return {
-        'dm': [
+        'dms': [
             {
                 "dm_id": 1,
-                "dm_name": "dansmith, validnamevalidname"
+                "name": "dansmith, validnamevalidname"
             }
         ]
     }
 
 def test_dm_list_invalid_token(clear_data,test_user1,test_create_dm):
-    dm_list = requests.get(config.url + 'dm/list/v1', json={
-        'token': INVALID_TOKEN,
-    })
+    dm_list = requests.get(f"{config.url}dm/list/v1?token={INVALID_TOKEN}")
     assert dm_list.status_code == ACCESSERROR
 
 def test_dm_list_valid_empty(clear_data,test_user1):
-    dm_list = requests.get(config.url + 'dm/list/v1', json={
-        'token': test_user1['token'],
-    })
+    dm_list = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
     dm_info = dm_list.json()
-    assert dm_info == {'dm': []}
+    assert dm_info == {'dms': []}
 
 def test_dm_list_valid(clear_data, test_user1, test_user2, test_create_dm):
-    dm_list = requests.get(config.url + 'dm/list/v1', json={
-        'token': test_user1['token'],
-    })
+    dm_list = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
     dm_info = dm_list.json()
     assert dm_info == expected_output_list_v1()
 
@@ -241,10 +223,7 @@ def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create
     })
     
     member_check = False
-    dm_deets = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id']
-    }) 
+    dm_deets = requests.get(f"{config.url}dm/details/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}")
     members_list = dm_deets.json()['members']
     for member in members_list:
         if member['u_id'] == test_user4['auth_user_id']:
@@ -276,10 +255,7 @@ def test_dm_leave(clear_data,test_user1,test_user2,test_create_dm):
         'dm_id':test_create_dm['dm_id']
     })
     member_left = True
-    dlist = requests.get(config.url + 'dm/details/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id']
-    }) 
+    dlist = requests.get(f"{config.url}dm/details/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}") 
     members = dlist.json()['members']
     for member in members:
         if member['u_id'] == test_user2['auth_user_id']:
@@ -299,43 +275,23 @@ def test_dm_leave_invalid_token(clear_data,test_user1,test_user2,test_create_dm)
 ################################################################################
 
 def test_dm_messages_invalid_dm_id(clear_data,test_create_dm,test_user1,test_user2):
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user1['token'],
-        'dm_id': INVALID_DM_ID,
-        'start': 0
-    })
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={INVALID_DM_ID}&start=0")
     assert msg.status_code == INPUTERROR
 
 def test_dm_messages_invalid_token(clear_data,test_create_dm,test_user1,test_user2):
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': INVALID_TOKEN,
-        'dm_id': test_create_dm['dm_id'],
-        'start': 0
-    })
+    msg = requests.get(f"{config.url}dm/messages/v1?token={INVALID_TOKEN}&dm_id={test_create_dm['dm_id']}&start=0")
     assert msg.status_code == ACCESSERROR
 
 def test_dm_messages_invalid_start(clear_data,test_create_dm,test_user1,test_user2):
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id'],
-        'start': 20
-    })
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=20")
     assert msg.status_code == INPUTERROR
 
 def test_dm_messages_user_not_member(clear_data,test_create_dm,test_user1,test_user2,test_user3):
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user3['token'],
-        'dm_id': test_create_dm['dm_id'],
-        'start': 0
-    })
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user3['token']}&dm_id={test_create_dm['dm_id']}&start=0")
     assert msg.status_code == ACCESSERROR    
 
 def test_dm_messages_start_equal(clear_data,test_create_dm,test_user1,test_user2):
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id'],
-        'start': 0
-    })
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=0")
     dms = msg.json()
     assert(dms == {'messages': [], 'start': 0, 'end': -1})
 
@@ -346,12 +302,7 @@ def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1,test_user
         'message': 'singlemessage'
     })
 
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id'],
-        'start': 0
-    })
-
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=0")
     message_detail = msg.json()
     print(message_detail)
     assert message_detail['messages'][0]['message_id'] == 1
@@ -369,12 +320,7 @@ def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
             'message':f"{i}"
         })
         i += 1
-    msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': test_user1['token'],
-        'dm_id': test_create_dm['dm_id'],
-        'start': 2
-    })
-
+    msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=2")
     message_detail = msg.json()
 
     i = 53
@@ -395,9 +341,7 @@ def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
 ################################################################################
 
 def test_dm_remove_v1(clear_data,test_user1,test_user2,test_create_dm):
-    dmsdict = requests.get(config.url + 'dm/list/v1', json={
-        'token': test_user1['token']
-    })
+    dmsdict = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
     dmsdict = dmsdict.json()
 
     requests.delete(config.url +'dm/remove/v1', json={
@@ -405,7 +349,7 @@ def test_dm_remove_v1(clear_data,test_user1,test_user2,test_create_dm):
         'dm_id': test_create_dm['dm_id']
     })
 
-    assert( bool (dmsdict['dm']))
+    assert( bool (dmsdict['dms']))
 
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1,test_create_dm):
     removed_dm = requests.delete(config.url +'dm/remove/v1', json={

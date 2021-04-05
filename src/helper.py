@@ -26,6 +26,25 @@ def is_valid_channelid(channel_id):
             channel_found = True       
     return channel_found  
 
+def is_already_in_channel(u_id, channel_id):
+    selected_channel = None
+    for channel in data['channels']:   
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            
+    for members in selected_channel['all_members']:
+        if members['u_id'] == u_id:
+            return True
+    return False
+
+def is_valid_dm_id(dm_id):
+    if dm_id < 1:
+        return False
+    for dm in data['DM']:
+        if dm['dm_id'] == dm_id:
+            return True
+    return False
+
 def get_first_name(auth_user_id):
     first_name = None
     for user in data['users']:
@@ -96,7 +115,7 @@ def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
                     'channel_id': channel_id,
                     'dm_id': dm_id,
                     'type': 2,
-                    'message': None,     
+                    'message': "",     
                 }
     data['notifications'].append(notification)
 

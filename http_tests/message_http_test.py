@@ -154,11 +154,7 @@ def test_message_send_single(clear_database, user_1, channel_1):
         'channel_id': channel_1,
         'message': 'Hi Channel'
     })
-    channel_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_1}&start=0")
     msg_info = channel_msg.json()['messages']
     assert len(msg_info) == 1
     assert msg_info[0]['message_id'] == 1
@@ -176,11 +172,7 @@ def test_message_send_joined_user(clear_database, user_1, user_2, channel_1):
         'channel_id': channel_1,
         'message': 'I just joined!!'
     })
-    channel_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_2['token'],
-        'channel_id': channel_1,
-        'start': 0
-    }) 
+    channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_2['token']}&channel_id={channel_1}&start=0")
     msg_info = channel_msg.json()['messages']
     assert len(msg_info) == 1
     assert msg_info[0]['message_id'] == 1
@@ -262,11 +254,7 @@ def test_message_edit_empty(clear_database, user_1, dm_1, message_2):
         'message_id': message_2,
         'message': '      '
     })
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_1['token'],
-        'dm_id': dm_1,
-        'start': 0
-    })
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
     msg_list = dm_msg.json()
     assert msg_list == {'messages': [], 'start': 0, 'end': -1}
 
@@ -277,11 +265,7 @@ def test_message_edit_valid_global(clear_database, user_1, channel_1, message_1)
         'message_id': message_1,
         'message': 'This has been edited'
     })
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_1}&start=0")
     msg_info = chan_msg.json()['messages']
     assert len(msg_info) == 1
     assert msg_info[0]['message'] == 'This has been edited'
@@ -304,11 +288,7 @@ def test_message_edit_valid_owner(clear_database, user_1, user_2, channel_2):
         'message_id': msg_info['message_id'],
         'message': 'Edited by owner'
     })
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_2,
-        'start': 0
-    })
+    chan_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_2}&start=0") 
     chan_msg_info = chan_msg.json()['messages']
     assert len(chan_msg_info) == 1
     assert chan_msg_info[0]['message'] == 'Edited by owner'
@@ -332,11 +312,7 @@ def test_message_edit_valid_author(clear_database, user_1, user_2, dm_1):
         'message_id': msg_info['message_id'],
         'message': 'Edited by author'
     })
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_2['token'],
-        'dm_id': dm_1,
-        'start': 0
-    })
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_2['token']}&dm_id={dm_1}&start=0")
     dm_msg_info = dm_msg.json()['messages']
     assert len(dm_msg_info) == 1
     assert dm_msg_info[0]['message'] == 'Edited by author'
@@ -396,11 +372,7 @@ def test_message_remove_valid_global(clear_database, user_2, user_1, channel_1, 
         'token': user_2['token'],
         'message_id': message_1,
     })
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_1,
-        'start': 0
-    })
+    chan_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_1}&start=0") 
     msg_info = chan_msg.json()
     assert msg_info == {'messages': [], 'start': 0, 'end': -1}
     
@@ -420,11 +392,7 @@ def test_message_remove_valid_owner(clear_database, user_1, user_2, channel_2):
         'token': user_2['token'],
         'message_id': msg_info['message_id'],
     })
-    chan_msg = requests.get(config.url + 'channel/messages/v2', json={
-        'token': user_1['token'],
-        'channel_id': channel_2,
-        'start': 0
-    })
+    chan_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_2}&start=0")
     chan_msg_info = chan_msg.json()
     assert chan_msg_info == {'messages': [], 'start': 0, 'end': -1}
     
@@ -445,11 +413,7 @@ def test_message_remove_valid_author(clear_database, user_1, user_2, dm_1):
         'token': user_2['token'],
         'message_id': msg_info['message_id'],
     })
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_2['token'],
-        'dm_id': dm_1,
-        'start': 0
-    })
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_2['token']}&dm_id={dm_1}&start=0")
     dm_msg_info = dm_msg.json()
     assert dm_msg_info == {'messages': [], 'start': 0, 'end': -1}
 
@@ -564,11 +528,7 @@ def test_message_share_simple_optional(clear_database, user_1, channel_1, dm_1, 
         'channel_id': -1,
         'dm_id': dm_1
     })
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_1['token'],
-        'dm_id': dm_1,
-        'start': 0
-    })
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
     dm_msg_info = dm_msg.json()['messages']
     assert len(dm_msg_info) == 1
     assert dm_msg_info[0]['message'] == 'Hello World Hi everyone!!!'
@@ -635,11 +595,7 @@ def test_message_senddm_single(clear_database, user_1, dm_1):
         'dm_id': dm_1,
         'message': 'Hi dm!!!'
     })
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_1['token'],
-        'dm_id': dm_1,
-        'start': 0
-    })
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
     msg_info = dm_msg.json()['messages']
     assert len(msg_info) == 1
     assert msg_info[0]['message_id'] == 1
@@ -663,11 +619,7 @@ def test_message_senddm_invited_user(clear_database, user_1, user_2, dm_1, dm_2)
         'dm_id': dm_2,
         'message': 'No worries mate!'
     })   
-    dm_msg = requests.get(config.url + 'dm/messages/v1', json={
-        'token': user_1['token'],
-        'dm_id': dm_2,
-        'start': 0
-    }) 
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_2}&start=0")
     msg_info = dm_msg.json()['messages']
     assert len(msg_info) == 2
     assert msg_info[0]['message_id'] == 2

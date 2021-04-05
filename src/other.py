@@ -1,4 +1,4 @@
-from src.database import data
+from src.database import data, update_data
 from src.error import InputError, AccessError
 import src.helper as helper
 
@@ -13,17 +13,6 @@ INVITE = 2
 # Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
-
-def is_already_in_channel(u_id, channel_id):
-    selected_channel = None
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            selected_channel = channel
-            
-    for member in selected_channel['all_members']:
-        if member['u_id'] == u_id:
-            return True
-    return False
     
 def is_already_in_dm(u_id, dm_id):
     selected_dm = None
@@ -75,7 +64,7 @@ def clear_v1():
     delete('notifications')
     delete('sessions')
     delete('session_ids')
-
+    update_data()
     return {}
 
 
@@ -113,10 +102,10 @@ def search_v1(token, query_str):
         print(message)
         user_found = False
         if message['channel_id'] != -1:
-            user_found = is_already_in_channel(auth_user_id, message['channel_id'])
+            user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
         else:
             user_found = is_already_in_dm(auth_user_id, message['dm_id'])
-        if user_found == True and is_query_str_in_msg(query_str, message):
+        if user_found and is_query_str_in_msg(query_str, message):
             message_match = {
                             'message_id': message['message_id'],
                             'u_id': message['u_id'],

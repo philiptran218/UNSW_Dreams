@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 import re
-from src.database import data
+from src.database import data, update_data
 import hashlib
 import jwt
 from src.helper import is_valid_token
@@ -102,7 +102,8 @@ def auth_login_v1(email, password):
         'token': token,
     }
     # Append the session information to sessions list in data
-    data['sessions'].append(session)    
+    data['sessions'].append(session) 
+    update_data()   
     return {
         'token': token,
         'auth_user_id': user['u_id']
@@ -169,6 +170,7 @@ def auth_register_v1(email, password, name_first, name_last):
     }
     
     data['users'].append(user)
+    update_data()
     return auth_login_v1(email, password)
 
 def auth_logout_v1(token):
@@ -192,7 +194,7 @@ def auth_logout_v1(token):
     for sesh in data['sessions']:
         if sesh.get('token') == token:
             data['sessions'].remove(sesh)
-
+    update_data()
     return {
         'is_success': True,
     }
