@@ -1,6 +1,6 @@
 import src.helper as helper
 from src.error import AccessError, InputError
-from src.database import data
+from src.database import data, update_data
 from datetime import datetime, timezone
 
 #helper fucntion that checks if a user in a given dm is the creator of it
@@ -130,6 +130,7 @@ def dm_invite_v1(token, dm_id, u_id):
         if dm['dm_id'] == dm_id:
             dm['dm_members'].append(invited_member)
             helper.add_to_notifications(token_u_id,u_id,-1,dm_id)
+            update_data()
             return{}
 
 
@@ -172,6 +173,7 @@ def dm_remove_v1(token,dm_id):
             dm.update({'dm_id' : -1})
             dm.update({'dm_name':''})
             dm.update({'dm_members':[]})
+    update_data()
     return {}
     
 
@@ -273,6 +275,7 @@ def dm_leave_v1(token,dm_id):
             for member in dm['dm_members']:
                 if member['u_id'] == u_id:
                     dm['dm_members'].remove(member)
+    update_data()
     return{}
 
 def dm_details_v1(token, dm_id):

@@ -1,4 +1,4 @@
-from src.database import data
+from src.database import data, update_data
 from src.error import InputError, AccessError
 import src.helper as helper
 
@@ -64,7 +64,7 @@ def clear_v1():
     delete('notifications')
     delete('sessions')
     delete('session_ids')
-
+    update_data()
     return {}
 
 
