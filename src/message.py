@@ -180,7 +180,7 @@ def message_send_v1(token, channel_id, message):
         raise InputError(description="Message is longer than 1000 characters")
     
     message_id = len(data['messages']) + 1   
-    time = datetime.today()
+    time = datetime.now()
     time = time.replace(tzinfo=timezone.utc).timestamp()
     message_info = {
         'message_id': message_id,

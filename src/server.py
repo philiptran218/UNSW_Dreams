@@ -35,6 +35,9 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
+
+
+'''
 try: 
     with open('src/database.py', 'r') as file:
         pass
@@ -47,9 +50,24 @@ def save_and_return(output):
         file.write(dumps(data))
     with open('src/database.py', 'w+') as old_data, open('src/persitent_data.json', 'r+') as new_data:
         json_data = new_data.read()
-        old_data.write(f"data = {json_data}")
+        old_data.write(f"data = {loads(json_data)}")
     return output
+'''
 
+with open('src/store_data.json', 'r') as fp:
+    global data
+    data = loads(fp.read())
+
+def get_data():
+    global data 
+    return data
+
+def save_and_return(output):
+    data = get_data()
+    with open('src/store_data.json', 'w') as fp:
+        fp.write(dumps(data))
+    return dumps(output)
+    
 
 ################################################################################
 #   auth_register route                                                        #
