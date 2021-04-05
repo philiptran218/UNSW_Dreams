@@ -102,19 +102,19 @@ def dm_invite_v1(token, dm_id, u_id):
         This function doesn't return any data.
     ''' 
     if not helper.is_valid_token(token) :
-        raise AccessError("token is invalid")
+        raise AccessError(description="token is invalid")
 
     token_u_id = int(helper.detoken(token))
     #checking if user who called fucntion has a valid token    
 
     if not helper.is_valid_uid(u_id):
-        raise InputError('u_id is not valid')
+        raise InputError(description='u_id is not valid')
     #checking if the dm  has a valid dm_id
     if not helper.is_valid_dm_id(dm_id) :
-        raise InputError("dm_id does not refer to an existing dm")
+        raise InputError(description="dm_id does not refer to an existing dm")
     #checking if the user is a member of the dm
     if not is_already_in_dm(token_u_id, dm_id):
-        raise AccessError("Authorised user is not a member of the dm")
+        raise AccessError(description="Authorised user is not a member of the dm")
     #checking if the user is in the dm, if they are , nothing is done.
     if is_already_in_dm(u_id, dm_id):
         return {}
@@ -155,7 +155,7 @@ def dm_remove_v1(token,dm_id):
     ''' 
     #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise AccessError("token is invalid")
+        raise AccessError(description="token is invalid")
     
     
     u_id = int(helper.detoken(token))
@@ -163,10 +163,10 @@ def dm_remove_v1(token,dm_id):
 
     #checking if the dm to be removed has a valid dm_id
     if not helper.is_valid_dm_id(dm_id):
-        raise InputError('dm_id is invalid')
+        raise InputError(description='dm_id is invalid')
     #checking if the user who called the fucntion is the original dm creator
     if not is_dm_creator(u_id,dm_id):
-        raise AccessError('user is not original dm creator')
+        raise AccessError(description='user is not original dm creator')
     
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
@@ -205,20 +205,20 @@ def dm_messages_v1(token, dm_id, start):
     '''
     #checking if user who called fucntion has a valid token
     if not helper.is_valid_token(token):
-        raise AccessError("token is invalid")  
+        raise AccessError(description="token is invalid")  
     
     u_id = int(helper.detoken(token))
     
 
     # Check for valid dm id 
     if not helper.is_valid_dm_id(dm_id): 
-        raise InputError("Please enter a valid channel_id")
+        raise InputError(description="Please enter a valid channel_id")
     # Check if user is a member of the dm
     if not is_already_in_dm(u_id, dm_id): 
-        raise AccessError("User is not a member of this dm")
+        raise AccessError(description="User is not a member of this dm")
     # Check if start is greater than number of messages
     if start > get_len_messages(dm_id):  
-        raise InputError("Start is greater than the number of messages in the dm")    
+        raise InputError(description="Start is greater than the number of messages in the dm")    
     # If start is equal to number of messages
     if start == get_len_messages(dm_id) :
         return {'messages': [], 'start': start, 'end': -1}
@@ -256,17 +256,17 @@ def dm_leave_v1(token,dm_id):
     this function has no return value 
     '''
     if not helper.is_valid_token(token) :
-        raise AccessError("token is invalid")
+        raise AccessError(description="token is invalid")
 
     u_id = int(helper.detoken(token))
     #checking if user who called fucntion has a valid token
 
     # Check for valid dm id 
     if not helper.is_valid_dm_id(dm_id) :
-        raise InputError("dm_id does not refer to an existing dm")
+        raise InputError(description="dm_id does not refer to an existing dm")
     #checking if user wanting to leave is part of the dm 
     if not is_already_in_dm(u_id, dm_id):
-        raise AccessError("Authorised user is not a member of the dm")
+        raise AccessError(description="Authorised user is not a member of the dm")
 
     
     
@@ -313,11 +313,11 @@ def dm_details_v1(token, dm_id):
             if is_already_in_dm(token_u_id, dm_id):
                 return output
             else:
-                raise AccessError("Not in DM")
+                raise AccessError(description="Not in DM")
         else:
-            raise InputError("Please enter a valid dm id")
+            raise InputError(description="Please enter a valid dm id")
     else:
-        raise AccessError('Invalid Token')
+        raise AccessError(description='Invalid Token')
 
 def dm_list_v1(token):
     '''
@@ -350,7 +350,7 @@ def dm_list_v1(token):
                     dm_list.append(output)
         return {'dms': dm_list}
     else:
-        raise AccessError('Invalid Token')
+        raise AccessError(description='Invalid Token')
 
 def dm_create_v1(token, u_ids):
     '''
@@ -376,7 +376,7 @@ def dm_create_v1(token, u_ids):
         
         for user in u_ids:
             if not helper.is_valid_uid(user):
-                raise AccessError('user_id is invalid')
+                raise AccessError(description='user_id is invalid')
 
         #This section grabs the handle of the person and appends it to the inputted list of u_id's
         #It assumes token works, as testing occurs after this point. Code places owners u_id first
@@ -414,5 +414,5 @@ def dm_create_v1(token, u_ids):
             'dm_name': dm_name
         }
     else: 
-        raise AccessError('Invalid Token')
+        raise AccessError(description='Invalid Token')
 
