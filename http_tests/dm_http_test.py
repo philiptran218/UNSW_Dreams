@@ -115,10 +115,10 @@ def test_dm_details_valid(clear_data,test_user1,test_create_dm):
 #Function that shows expected output for dm_list.
 def expected_output_list_v1():
     return {
-        'dm': [
+        'dms': [
             {
                 "dm_id": 1,
-                "dm_name": "dansmith, validnamevalidname"
+                "name": "dansmith, validnamevalidname"
             }
         ]
     }
@@ -130,7 +130,7 @@ def test_dm_list_invalid_token(clear_data,test_user1,test_create_dm):
 def test_dm_list_valid_empty(clear_data,test_user1):
     dm_list = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
     dm_info = dm_list.json()
-    assert dm_info == {'dm': []}
+    assert dm_info == {'dms': []}
 
 def test_dm_list_valid(clear_data, test_user1, test_user2, test_create_dm):
     dm_list = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
@@ -349,7 +349,7 @@ def test_dm_remove_v1(clear_data,test_user1,test_user2,test_create_dm):
         'dm_id': test_create_dm['dm_id']
     })
 
-    assert( bool (dmsdict['dm']))
+    assert( bool (dmsdict['dms']))
 
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1,test_create_dm):
     removed_dm = requests.delete(config.url +'dm/remove/v1', json={

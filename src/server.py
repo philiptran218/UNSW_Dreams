@@ -80,7 +80,7 @@ def auth_login():
 def auth_logout():
     logout_info = request.get_json()
     output = auth_logout_v1(logout_info['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_invite route                                                       #

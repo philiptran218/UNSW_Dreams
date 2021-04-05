@@ -92,7 +92,7 @@ def test_dm_invite_valid(clear_data,test_user1,test_user2,test_user4,test_create
 def test_dm_remove_v1(clear_data,test_user1,test_user2,test_create_dm):
     dmsdict =  dm_list_v1(test_user1['token'])
     dm_remove_v1(test_user1['token'],test_create_dm) 
-    assert( bool (dmsdict['dm']))
+    assert( bool (dmsdict['dms']))
 
 #testing when dm_id is invalid -> InputError is raised
 def test_dm_remove_v1_invalid_dm(clear_data,test_user1,test_create_dm):
@@ -259,7 +259,7 @@ def test_dm_details_v1_invalid_token(clear_data, test_create_dm):
 #Function that shows expected output for dm_list.
 def expected_output_list_v1():
     return {
-        'dm': [
+        'dms': [
             {
                 "dm_id": 1,
                 "name": "dansmith, validnamevalidname"
@@ -268,7 +268,7 @@ def expected_output_list_v1():
     }
 
 def test_dm_list_v1_valid_empty(clear_data, test_user1):
-    assert(dm_list_v1(test_user1['token']) == {'dm': []})
+    assert(dm_list_v1(test_user1['token']) == {'dms': []})
 
 def test_dm_list_v1_valid(clear_data, test_user1, test_user2, test_create_dm):
     assert(dm_list_v1(test_user1['token']) == expected_output_list_v1())
