@@ -35,20 +35,11 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
-try: 
-    with open('src/database.py', 'r') as datafile:
-        datafile.close()
-        pass
-except FileNotFoundError:
-    with open('src/database.py', 'w+') as file:
-        file.write("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}")
-        file.close()
-
 def save_and_return(output):
-    with open('src/database.py', 'w+') as old_data:
-        old_data.write(f"data = {data}")
-        old_data.close()
-    return output
+    with open('src/persitent_data.json', 'w') as file:
+        file.write(dumps(data))
+    return dumps(output)
+
 
 
 ################################################################################
