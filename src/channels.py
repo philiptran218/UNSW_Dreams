@@ -84,11 +84,11 @@ def channels_create_v1(token, name, is_public):
         Returns <{channel_id}
     '''
     if not is_valid_token(token) :
-        raise AccessError("token is invalid")
+        raise AccessError(description="token is invalid")
     
     auth_user_id = detoken(token)
     if len(name) > 20:
-        raise InputError('channel name must be less than 20 characters')
+        raise InputError(description='channel name must be less than 20 characters')
 
     
     channel_id = len(data['channels']) + 1
