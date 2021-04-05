@@ -137,10 +137,11 @@ def notifications_get_v1(token):
     auth_user_id = helper.detoken(token)
     notif_list = list(reversed(data['notifications']))
     recent_notifs = []
+    notif_count = 0
     # Searches for user's notifications in data['notifications']
     for notif in notif_list:
         chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
-        if notif['u_id'] == auth_user_id:
+        if notif['u_id'] == auth_user_id and notif_count < 20:
             # If the notification is a tag
             if notif['type'] == TAG:
                 notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
@@ -154,5 +155,6 @@ def notifications_get_v1(token):
                 'notification_message': notif_msg
             }
             recent_notifs.append(notif_dict)
+            notif_count += 1
     return {'notifications': recent_notifs}
 

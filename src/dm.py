@@ -257,7 +257,7 @@ def dm_leave_v1(token,dm_id):
     #checking if user wanting to leave is part of the dm 
     if not is_already_in_dm(u_id, dm_id):
         raise AccessError(description="Authorised user is not a member of the dm")
-    
+
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             for member in dm['dm_members']:
