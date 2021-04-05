@@ -20,7 +20,7 @@ def channels_listall_v1(token):
     """ 
     validator = is_valid_token(token)
     channel_list = []
-    if validator == True:
+    if validator:
         for channel in data["channels"]:
             output = {
                 "channel_id": channel["channel_id"],
@@ -51,7 +51,7 @@ def channels_list_v1(token):
     """ 
     channel_list = []
     validator = is_valid_token(token)
-    if validator == True:
+    if validator:
         token_u_id = detoken(token)
         for channel in data["channels"]:
             for member in channel["all_members"]:

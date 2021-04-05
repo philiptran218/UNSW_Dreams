@@ -75,31 +75,12 @@ def is_valid_channelid(channel_id):
         if channel['channel_id'] == channel_id:
             return True       
     return False
-  
-def is_valid_dm_id(dm_id):
-    if dm_id < 1:
-        return False
-    for dm in data['DM']:
-        if dm['dm_id'] == dm_id:
-            return True
-    return False
     
 def is_already_in_dm(u_id, dm_id):
     for dm in data['DM']:
         for member in dm['dm_members']:
             if member['u_id'] == u_id:
                 return True
-    return False
-    
-def is_already_in_channel(u_id, channel_id):
-    selected_channel = None
-    for channel in data['channels']:   
-        if channel['channel_id'] == channel_id:
-            selected_channel = channel
-            
-    for members in selected_channel['all_members']:
-        if members['u_id'] == u_id:
-            return True
     return False
     
 def is_message_deleted(message):
@@ -170,7 +151,7 @@ def message_send_v1(token, channel_id, message):
     if not is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")       
     # Check if user is not in the channel
-    if not is_already_in_channel(auth_user_id, channel_id):
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not a member in the channel they are sending the message to")
     # Check if message is empty
     if is_message_empty(message):
@@ -328,11 +309,11 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         if not is_valid_channelid(channel_id):
             raise InputError(description="Please enter a valid channel_id")
         # Check if user has joined the channel
-        if not is_already_in_channel(auth_user_id, channel_id):
+        if not helper.is_already_in_channel(auth_user_id, channel_id):
             raise AccessError(description="User is not a member in the channel they are sharing the message to")        
     else:
         # Check for valid dm_id
-        if not is_valid_dm_id(dm_id):
+        if not helper.is_valid_dm_id(dm_id):
             raise InputError(description="Please enter a valid dm_id")
         # Check if user has joined the DM
         if not is_already_in_dm(auth_user_id, dm_id):
@@ -399,7 +380,7 @@ def message_senddm_v1(token, dm_id, message):
         raise AccessError(description="Please enter a valid token") 
     auth_user_id = helper.detoken(token) 
     # Check for valid dm_id
-    if not is_valid_dm_id(dm_id):
+    if not helper.is_valid_dm_id(dm_id):
         raise InputError(description="Please enter a valid dm_id")       
     # Check if user is not in the DM
     if not is_already_in_dm(auth_user_id, dm_id):
