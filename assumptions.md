@@ -30,6 +30,7 @@ We are assuming:
 - message_edit_v1 treats an empty string as a string filled with only spaces, newlines, tabs or nothing. If these strings
   are passed as the edited message, the function will remove the existing message in the same way as message_remove_v1.
 - Dreams owners can still edit and remove messages from a deleted DM, as long as the message has not already been deleted
+- A DM owner can leave the DM they created.
 - Assuming that message_share_v1 can only share a message to either a channel or a DM, not both in a single function call
 - users can still share messages originating from a deleted DM, as long as the message has not been deleted yet
 - If the length of the original message + optional message is over 1000 characters, InputError will be raised by
