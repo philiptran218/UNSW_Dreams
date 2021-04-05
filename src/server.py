@@ -36,18 +36,18 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 try: 
-    with open('src/database.py', 'r') as file:
+    with open('src/database.py', 'r') as datafile:
+        datafile.close()
         pass
 except FileNotFoundError:
     with open('src/database.py', 'w+') as file:
-        file.write(dumps("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}"))
+        file.write("data = {'users': [],'channels': [],'messages': [],'DM': [],'notifications': [],'sessions': [],'session_ids': []}")
+        file.close()
 
 def save_and_return(output):
-    with open('src/persitent_data.json', 'w+') as file:
-        file.write(dumps(data))
-    with open('src/database.py', 'w+') as old_data, open('src/persitent_data.json', 'r+') as new_data:
-        json_data = new_data.read()
-        old_data.write(f"data = {loads(json_data)}")
+    with open('src/database.py', 'w+') as old_data:
+        old_data.write(f"data = {data}")
+        old_data.close()
     return output
 
 
@@ -80,7 +80,7 @@ def auth_login():
 def auth_logout():
     logout_info = request.get_json()
     output = auth_logout_v1(logout_info['token'])
-    return dumps(output)
+    return save_and_return(output)
 
 ################################################################################
 #   channel_invite route                                                       #
@@ -178,8 +178,8 @@ def channels_listall():
 
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list():
-    listall = request.args
-    output = channels_list_v1(listall['token'])
+    list_channels = request.args
+    output = channels_list_v1(list_channels['token'])
     return save_and_return(output)
 
 ################################################################################
@@ -414,5 +414,4 @@ def echo():
 
 if __name__ == "__main__":
     APP.run(port=config.port) # Do not edit this port
-
 
