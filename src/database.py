@@ -23,8 +23,3 @@ def data_storage():
     return python_data
 
 data = data_storage()
-    
-
-"""
-So to maintain peristence, we run the above functions with our functions.
-"""
