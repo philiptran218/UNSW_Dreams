@@ -166,7 +166,7 @@ def dm_remove_v1(token,dm_id):
             dm.update({'dm_members':[]})
     update_data()
     return {}
-    
+
 def dm_messages_v1(token, dm_id, start):
     '''
     Function:
@@ -224,8 +224,8 @@ def dm_messages_v1(token, dm_id, start):
         'messages': list_of_messages(dm_id, start, message_limit),
         'start': start,
         'end': end,
-    } 
-         
+    }   
+
 def dm_leave_v1(token,dm_id):
     '''
     Function:
