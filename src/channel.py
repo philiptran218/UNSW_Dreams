@@ -2,7 +2,7 @@ from src.channels import channels_listall_v1, channels_list_v1, channels_create_
 from src.auth import auth_register_v1
 from src.error import InputError, AccessError
 import src.helper as helper
-from src.database import data
+from src.database import data, update_data
 from datetime import timezone, datetime
 
 OWNER = 1
@@ -172,6 +172,7 @@ def channel_invite_v1(token, channel_id, u_id):
     if helper.find_permissions(u_id) == OWNER:
         helper.add_owner_to_channel(u_id, channel_id)
     helper.add_to_notifications(auth_user_id, u_id, channel_id, -1)
+    update_data()
     return {}
 
 def channel_details_v1(token, channel_id):
@@ -292,6 +293,7 @@ def channel_leave_v1(token, channel_id):
     if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     remove_user(auth_user_id, channel_id)
+    update_data()
     return {}
 
 def channel_join_v1(token, channel_id):
@@ -331,7 +333,7 @@ def channel_join_v1(token, channel_id):
     # Adding user into the owners list if they have global permissions
     if helper.find_permissions(auth_user_id) == OWNER:
         helper.add_owner_to_channel(auth_user_id, channel_id) 
-  
+    update_data()
     return {}
     
 def channel_addowner_v1(token, channel_id, u_id):
@@ -371,6 +373,7 @@ def channel_addowner_v1(token, channel_id, u_id):
     if not helper.is_already_in_channel(u_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     helper.add_owner_to_channel(u_id, channel_id)
+    update_data()
     return {
     }
 
@@ -416,5 +419,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise InputError(description="User is not authorised")
     remove_channel_owner(u_id, channel_id)
+    update_data()
     return {
     }

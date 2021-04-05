@@ -1,5 +1,5 @@
 from src.error import AccessError, InputError
-from src.database import data
+from src.database import data, update_data
 from src.helper import is_valid_token, detoken
 
 OWNER = 1
@@ -68,6 +68,7 @@ def admin_user_remove_v1(token, u_id):
                 user['name_last'] = 'User'
     else:
         raise AccessError(description='Invalid Token')
+    update_data()
     return {}
 
 def admin_userpermission_change_v1(token, u_id, permission_id):
@@ -113,4 +114,5 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
             raise InputError(description='Permission id is invalid.')
     else:
         raise AccessError(description='Invalid Token')
+    update_data()
     return {}

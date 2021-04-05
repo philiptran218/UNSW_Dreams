@@ -1,5 +1,5 @@
 from src.error import InputError, AccessError 
-from src.database import data
+from src.database import data, update_data
 import src.helper as helper
 from datetime import timezone, datetime
 
@@ -173,6 +173,7 @@ def message_send_v1(token, channel_id, message):
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, channel_id, -1, message)
+    update_data()
     return {
         'message_id': message_id,
     }
@@ -217,6 +218,7 @@ def message_remove_v1(token, message_id):
     msg.update({'dm_id': -1})
     msg.update({'u_id': -1})
     msg.update({'message': ''})
+    update_data()
     return {}
 
 def message_edit_v1(token, message_id, message):
@@ -349,6 +351,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
     }
     data['messages'].append(msg)
     add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
+    update_data()
     return {'shared_message_id': message_id}
 
 def message_senddm_v1(token, dm_id, message):
@@ -405,6 +408,7 @@ def message_senddm_v1(token, dm_id, message):
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, -1, dm_id, message)
+    update_data()
     return {
         'message_id': message_id,
     }
