@@ -57,9 +57,6 @@ def list_of_messages(dm_id, start, message_limit):
    
     return messages
 
-
-
-
 # Helper funciton to get the name of the dm.
 def dm_name_generator(u_id):
     handles = []
@@ -78,9 +75,6 @@ def dm_name_generator(u_id):
     dm_name = dm_name + handles[-1]
 
     return dm_name
-
-
-
 
 def dm_invite_v1(token, dm_id, u_id):
     '''
@@ -133,7 +127,6 @@ def dm_invite_v1(token, dm_id, u_id):
             update_data()
             return{}
 
-
 def dm_remove_v1(token,dm_id):
     '''
     Function:
@@ -157,9 +150,7 @@ def dm_remove_v1(token,dm_id):
     if not helper.is_valid_token(token):
         raise AccessError(description="token is invalid")
     
-    
     u_id = int(helper.detoken(token))
-
 
     #checking if the dm to be removed has a valid dm_id
     if not helper.is_valid_dm_id(dm_id):
@@ -176,7 +167,6 @@ def dm_remove_v1(token,dm_id):
     update_data()
     return {}
     
-
 def dm_messages_v1(token, dm_id, start):
     '''
     Function:
@@ -208,7 +198,6 @@ def dm_messages_v1(token, dm_id, start):
         raise AccessError(description="token is invalid")  
     
     u_id = int(helper.detoken(token))
-    
 
     # Check for valid dm id 
     if not helper.is_valid_dm_id(dm_id): 
@@ -235,7 +224,8 @@ def dm_messages_v1(token, dm_id, start):
         'messages': list_of_messages(dm_id, start, message_limit),
         'start': start,
         'end': end,
-    }      
+    } 
+         
 def dm_leave_v1(token,dm_id):
     '''
     Function:
@@ -268,8 +258,6 @@ def dm_leave_v1(token,dm_id):
     if not is_already_in_dm(u_id, dm_id):
         raise AccessError(description="Authorised user is not a member of the dm")
 
-    
-    
     for dm in data['DM']:
         if dm['dm_id'] == dm_id:
             for member in dm['dm_members']:
@@ -336,7 +324,6 @@ def dm_list_v1(token):
     validator = helper.is_valid_token(token)
 
     if validator:
-
         token_u_id = int(helper.detoken(token))
         dm_list = []
 
