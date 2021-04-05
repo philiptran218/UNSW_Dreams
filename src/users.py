@@ -18,7 +18,7 @@ def users_all_v1(token):
         Function returns a list of all the users
     """
 
-    if is_valid_token(token) == False:
+    if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     
     users_list = []

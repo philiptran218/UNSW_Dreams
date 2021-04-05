@@ -23,10 +23,10 @@ def user_profile_v1(token, u_id):
     """
 
     
-    if is_valid_token(token) == False:
+    if not is_valid_token(token):
         raise AccessError(description="Token invalid")
 
-    if is_valid_uid(u_id) == False:
+    if not is_valid_uid(u_id):
         raise InputError(description="Invalid u_id")
     
     for user in data['users']:
@@ -62,7 +62,7 @@ def user_profile_setname_v1(token, name_first, name_last):
         Function does not return anything
     """
        
-    if is_valid_token(token) == False:
+    if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
     if (len(name_first) < 1) or (len(name_first) > 50):
@@ -96,7 +96,7 @@ def user_profile_setemail_v1(token, email):
     Return Type:
         Function does not return anything
     """
-    if is_valid_token(token) == False:
+    if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
     #test for invalid email
@@ -132,7 +132,7 @@ def user_profile_sethandle_v1(token, handle_str):
     """
 
 
-    if is_valid_token(token) == False:
+    if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
     if len(handle_str) < 3 or len(handle_str) > 20:

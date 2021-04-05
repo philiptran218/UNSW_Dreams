@@ -3,14 +3,6 @@ from src.error import AccessError, InputError
 from src.database import data
 from datetime import datetime, timezone
 
-
-#helper fucntion that checks if given dm_id is valid
-def is_valid_dm_id(dm_id):
-    for dm in data['DM']:
-        if dm['dm_id'] == dm_id:
-            return True
-    return False
-
 #helper fucntion that checks if a user in a given dm is the creator of it
 def is_dm_creator(u_id,dm_id):
     for dm in data['DM']:
@@ -118,7 +110,7 @@ def dm_invite_v1(token, dm_id, u_id):
     if not helper.is_valid_uid(u_id):
         raise InputError('u_id is not valid')
     #checking if the dm  has a valid dm_id
-    if not is_valid_dm_id(dm_id) :
+    if not helper.is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
     #checking if the user is a member of the dm
     if not is_already_in_dm(token_u_id, dm_id):
@@ -169,7 +161,7 @@ def dm_remove_v1(token,dm_id):
 
 
     #checking if the dm to be removed has a valid dm_id
-    if not is_valid_dm_id(dm_id):
+    if not helper.is_valid_dm_id(dm_id):
         raise InputError('dm_id is invalid')
     #checking if the user who called the fucntion is the original dm creator
     if not is_dm_creator(u_id,dm_id):
@@ -217,7 +209,7 @@ def dm_messages_v1(token, dm_id, start):
     
 
     # Check for valid dm id 
-    if not is_valid_dm_id(dm_id): 
+    if not helper.is_valid_dm_id(dm_id): 
         raise InputError("Please enter a valid channel_id")
     # Check if user is a member of the dm
     if not is_already_in_dm(u_id, dm_id): 
@@ -268,7 +260,7 @@ def dm_leave_v1(token,dm_id):
     #checking if user who called fucntion has a valid token
 
     # Check for valid dm id 
-    if not is_valid_dm_id(dm_id) :
+    if not helper.is_valid_dm_id(dm_id) :
         raise InputError("dm_id does not refer to an existing dm")
     #checking if user wanting to leave is part of the dm 
     if not is_already_in_dm(u_id, dm_id):
@@ -303,11 +295,11 @@ def dm_details_v1(token, dm_id):
     ''' 
     validator = helper.is_valid_token(token)
 
-    if validator == True:
+    if validator:
         token_u_id = helper.detoken(token)
-        valid_dm_id = is_valid_dm_id(dm_id)
+        valid_dm_id = helper.is_valid_dm_id(dm_id)
 
-        if valid_dm_id == True:
+        if valid_dm_id:
             for dm in data["DM"]:
                 for member in dm["dm_members"]:
                     if member["u_id"] == token_u_id:
@@ -315,8 +307,7 @@ def dm_details_v1(token, dm_id):
                             "name":dm["dm_name"],
                             "members": dm["dm_members"],
                         }
-                        #dm_list.append(output)
-            if is_already_in_dm(token_u_id, dm_id) == True:
+            if is_already_in_dm(token_u_id, dm_id):
                 return output
             else:
                 raise AccessError("Not in DM")
@@ -341,7 +332,7 @@ def dm_list_v1(token):
     ''' 
     validator = helper.is_valid_token(token)
 
-    if validator == True:
+    if validator:
 
         token_u_id = int(helper.detoken(token))
         dm_list = []
@@ -376,7 +367,7 @@ def dm_create_v1(token, u_ids):
     ''' 
     validator = helper.is_valid_token(token)
     
-    if validator == True:
+    if validator:
         
         token_u_id = helper.detoken(token)
         

@@ -81,5 +81,7 @@ def test_all_invalid_token(clear_database, user_1, user_2, user_3):
 def test_all_valid(clear_database, user_1, user_2, user_3):
     all_profiles_json = requests.get(f"{config.url}users/all/v1?token={user_1['token']}")
     all_profiles = all_profiles_json.json()
-
     assert all_profiles == expected_output_all_users()
+    # This is the last http tests, so run clear here to reset database to its
+    # original state.
+    requests.delete(config.url + 'clear/v1')

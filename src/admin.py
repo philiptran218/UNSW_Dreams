@@ -37,7 +37,7 @@ def admin_user_remove_v1(token, u_id):
     """
     token_validator = is_valid_token(token)
 
-    if token_validator == True:
+    if token_validator:
 
         changer_perm = check_permissions(token)
 
@@ -55,7 +55,7 @@ def admin_user_remove_v1(token, u_id):
         if user_count < 2:
             raise InputError(description='Cannot delete as you are only user in Dreams')
         
-        if user_validator == False:
+        if not user_validator:
             raise InputError(description='entered u_id is invalid')
 
         for message in data['messages']:
@@ -92,7 +92,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     """ 
     token_validator = is_valid_token(token)
 
-    if token_validator == True:
+    if token_validator:
 
         if permission_id == OWNER or permission_id == MEMBER:
 
@@ -105,7 +105,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
                         validator = True
                         user['perm_id'] = permission_id
 
-                if validator == False:
+                if not validator:
                     raise InputError (description='Inputted u_id is invalid')
             else:
                 raise AccessError(description='Only owners can change permissions in Dreams')

@@ -31,17 +31,6 @@ def is_already_channel_owner(u_id, channel_id):
             return True
     return False
 
-def is_already_in_channel(u_id, channel_id):
-    selected_channel = None
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            selected_channel = channel
-            
-    for member in selected_channel['all_members']:
-        if member['u_id'] == u_id:
-            return True
-    return False
-
 def is_only_owner_in_channel(u_id, channel_id):
     selected_channel = None
     owner_found = False
@@ -52,7 +41,7 @@ def is_only_owner_in_channel(u_id, channel_id):
     for member in selected_channel['owner_members']:
         if member['u_id'] == u_id:
             owner_found = True
-    if owner_found == True and len(selected_channel['owner_members']) == 1:
+    if owner_found and len(selected_channel['owner_members']) == 1:
         return True
     return False
 
@@ -170,11 +159,11 @@ def channel_invite_v1(token, channel_id, u_id):
     if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can invite the u_id.
         pass
-    elif not is_already_in_channel(auth_user_id, channel_id):
+    elif not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not authorised")
     if not helper.is_valid_uid(u_id):
         raise InputError(description="Please enter a valid user")
-    if is_already_in_channel(u_id, channel_id):
+    if helper.is_already_in_channel(u_id, channel_id):
         # If u_id is already in channel, u_id is not appended again.
         return {}
     else:
@@ -212,7 +201,7 @@ def channel_details_v1(token, channel_id):
     if helper.find_permissions(auth_user_id) == OWNER:
      # If auth_user_id is the global owner, they can access channel details.
         pass
-    elif not is_already_in_channel(auth_user_id, channel_id):
+    elif not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not authorised")
     channel_details = {}
     channel_details['name'] = channel_name(channel_id)
@@ -253,7 +242,7 @@ def channel_messages_v1(token, channel_id, start):
     if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")
     # Check if user is not in the channel
-    if not is_already_in_channel(auth_user_id, channel_id):
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not a member of the channel")
     # Check if start is greater than number of messages
     if start > get_len_messages(channel_id):
@@ -300,7 +289,7 @@ def channel_leave_v1(token, channel_id):
     auth_user_id = helper.detoken(token)
     if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if not is_already_in_channel(auth_user_id, channel_id):
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     remove_user(auth_user_id, channel_id)
     return {}
@@ -335,7 +324,7 @@ def channel_join_v1(token, channel_id):
     if helper.find_permissions(auth_user_id) == MEMBER and not is_channel_public(channel_id):
         raise AccessError(description="Members cannot join a private channel")
     # If auth_user_id is already in the channel     
-    if is_already_in_channel(auth_user_id, channel_id):
+    if helper.is_already_in_channel(auth_user_id, channel_id):
         return {}
         
     helper.add_uid_to_channel(auth_user_id, channel_id)
@@ -379,7 +368,7 @@ def channel_addowner_v1(token, channel_id, u_id):
         pass
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise AccessError(description="User is not authorised")
-    if not is_already_in_channel(u_id, channel_id):
+    if not helper.is_already_in_channel(u_id, channel_id):
         raise AccessError(description="Please enter a valid user")
     helper.add_owner_to_channel(u_id, channel_id)
     return {
@@ -422,7 +411,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
     if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
-    elif not is_already_in_channel(auth_user_id, channel_id):
+    elif not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not an owner of the channel")
     elif not is_already_channel_owner(auth_user_id, channel_id):
         raise InputError(description="User is not authorised")

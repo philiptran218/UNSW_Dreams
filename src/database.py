@@ -7,4 +7,3 @@ data = {
     'sessions': [],
     'session_ids': [],
 }
-
