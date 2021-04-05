@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 import re
-from src.database import data
+from src.database import data, update_data
 from src.helper import is_valid_token, is_valid_uid, detoken
 
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -75,6 +75,7 @@ def user_profile_setname_v1(token, name_first, name_last):
         if user['u_id'] == auth_user_id:
             user['name_first'] = name_first
             user['name_last'] = name_last
+    update_data()
     return {}
         
 
@@ -110,6 +111,7 @@ def user_profile_setemail_v1(token, email):
     for user in data['users']:
         if user.get('u_id') == auth_user_id:
             user.update({'email': email})
+    update_data()
     return {}
 
 def user_profile_sethandle_v1(token, handle_str):
@@ -145,4 +147,5 @@ def user_profile_sethandle_v1(token, handle_str):
     for user in data['users']:
         if user['u_id'] == auth_user_id:
             user.update({'handle_str': handle_str})
+    update_data()
     return {}

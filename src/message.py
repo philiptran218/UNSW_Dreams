@@ -270,6 +270,7 @@ def message_edit_v1(token, message_id, message):
     else:   
         edit_msg = message_details(message_id)
         edit_msg.update({'message': message})
+    update_data()
     return {}
 
 def message_share_v1(token, og_message_id, message, channel_id, dm_id):
