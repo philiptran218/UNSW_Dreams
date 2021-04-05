@@ -408,7 +408,7 @@ def dm_create_v1(token, u_ids):
                 helper.add_to_notifications(token_u_id, user_id, -1, dm_id)
 
         data['DM'].append(new_dm)
-
+        update_data()
         return {
             'dm_id': dm_id,
             'dm_name': dm_name
