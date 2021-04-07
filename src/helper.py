@@ -73,6 +73,20 @@ def get_handle(auth_user_id):
             handle = user['handle_str']
     return handle
 
+def get_reacts(auth_user_id, reacts):
+    if auth_user_id in reacts[0]['u_ids']:
+        reacts[0]['is_this_user_reacted'] = True
+    else:
+        reacts[0]['is_this_user_reacted'] = False
+    return reacts
+
+def create_reacts():
+    return {
+        'react_id': 1,
+        'u_ids': [],
+        'is_this_user_reacted': None
+    }
+
 def find_permissions(u_id):
     user_found = None
     for user in data['users']:

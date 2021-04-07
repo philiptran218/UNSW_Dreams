@@ -109,7 +109,9 @@ def search_v1(token, query_str):
                             'message_id': message['message_id'],
                             'u_id': message['u_id'],
                             'message': message['message'],
-                            'time_created': message['time_created']
+                            'time_created': message['time_created'],
+                            'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                            'is_pinned': message['is_pinned'],
                         }
             search_matches['messages'].append(message_match)
     return search_matches

@@ -32,7 +32,7 @@ def get_len_messages(dm_id):
     return total  
 
 #helper fucntion that returns the number of messages to the limit, in a given dm
-def list_of_messages(dm_id, start, message_limit):
+def list_of_messages(auth_user_id, dm_id, start, message_limit):
     # Reverse messages so most recent are at the beginning 
     ordered_messages = list(reversed(data['messages']))
     messages = []
@@ -48,7 +48,9 @@ def list_of_messages(dm_id, start, message_limit):
                 'message_id': message['message_id'],
                 'u_id': message['u_id'],
                 'message': message['message'],
-                'time_created': message['time_created'],  
+                'time_created': message['time_created'],
+                'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                'is_pinned': message['is_pinned'],  
             }     
             messages.append(message_details)
         
@@ -197,7 +199,7 @@ def dm_messages_v1(token, dm_id, start):
     if not helper.is_valid_token(token):
         raise AccessError(description="token is invalid")  
     
-    u_id = int(helper.detoken(token))
+    u_id = helper.detoken(token)
 
     # Check for valid dm id 
     if not helper.is_valid_dm_id(dm_id): 
@@ -221,7 +223,7 @@ def dm_messages_v1(token, dm_id, start):
         message_limit = end
 
     return {
-        'messages': list_of_messages(dm_id, start, message_limit),
+        'messages': list_of_messages(u_id, dm_id, start, message_limit),
         'start': start,
         'end': end,
     }   

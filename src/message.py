@@ -170,6 +170,8 @@ def message_send_v1(token, channel_id, message):
         'u_id': auth_user_id,
         'message': message,
         'time_created': round(time),
+        'reacts': helper.create_reacts(),
+        'is_pinned': None
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, channel_id, -1, message)
@@ -267,6 +269,8 @@ def message_edit_v1(token, message_id, message):
         edit_msg.update({'dm_id': -1})
         edit_msg.update({'u_id': -1})
         edit_msg.update({'message': ''})
+        edit_msg.update({'reacts': ''})
+        edit_msg.({'is_pinned': None})
     else:   
         edit_msg = message_details(message_id)
         edit_msg.update({'message': message})
@@ -349,6 +353,8 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'u_id': auth_user_id,
         'message': og_msg['message'] + app_message,
         'time_created': round(time),
+        'reacts': og_msg['reacts'],
+        'is_pinned': og_msg['is_pinned'],
     }
     data['messages'].append(msg)
     add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
@@ -406,6 +412,8 @@ def message_senddm_v1(token, dm_id, message):
         'u_id': auth_user_id,
         'message': message,
         'time_created': round(time),
+        'reacts': helper.create_reacts(),
+        'is_pinned': None
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, -1, dm_id, message)
