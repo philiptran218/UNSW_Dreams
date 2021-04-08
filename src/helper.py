@@ -37,6 +37,16 @@ def is_already_in_channel(u_id, channel_id):
             return True
     return False
 
+def is_already_in_dm(u_id, dm_id):
+    selected_dm = None
+    for dm in data['DM']:
+        if dm['dm_id'] == dm_id:
+            selected_dm = dm
+    for members in selected_dm['dm_members']:
+        if members['u_id'] == u_id:
+            return True
+    return False
+
 def is_valid_dm_id(dm_id):
     if dm_id < 1:
         return False
@@ -81,11 +91,11 @@ def get_reacts(auth_user_id, reacts):
     return reacts
 
 def create_reacts():
-    return {
+    return [{
         'react_id': 1,
         'u_ids': [],
         'is_this_user_reacted': None
-    }
+    }]
 
 def find_permissions(u_id):
     user_found = None

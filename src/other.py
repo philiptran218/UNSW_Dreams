@@ -13,17 +13,6 @@ INVITE = 2
 # Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
-    
-def is_already_in_dm(u_id, dm_id):
-    selected_dm = None
-    for dm in data['DM']:
-        if dm['dm_id'] == dm_id:
-            selected_dm = dm
-            
-    for member in selected_dm['dm_members']:
-        if member['u_id'] == u_id:
-            return True
-    return False
 
 def is_query_str_in_msg(query_str, message):
     if query_str in message['message']:
@@ -103,7 +92,7 @@ def search_v1(token, query_str):
         if message['channel_id'] != -1:
             user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
         else:
-            user_found = is_already_in_dm(auth_user_id, message['dm_id'])
+            user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
         if user_found and is_query_str_in_msg(query_str, message):
             message_match = {
                             'message_id': message['message_id'],
