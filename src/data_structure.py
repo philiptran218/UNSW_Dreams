@@ -6,6 +6,7 @@ data = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
+    'users_stats_log': [],
 }
 
 ''' initialise empty lists for data fields '''
@@ -20,12 +21,14 @@ users = [
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
-        'stats': {
-            channels_joined: [{num_channels_joined, time_stamp}]
-            dms_joined: [{num_dms_joined, time_stamp}]
-            messages_sent: [{num_messages_sent, time_stamp}]
-            involvelemt_rate: 
-        }
+        'stats_log': [
+            {
+                channels_joined: [{num_channels_joined, time_stamp}]
+                dms_joined: [{num_dms_joined, time_stamp}]
+                messages_sent: [{num_messages_sent, time_stamp}]
+                involvelemt_rate: 
+            },
+        ]
     }
 ]
 
@@ -99,4 +102,11 @@ notifications = [
 
     }
 ]
+
+'users_stats_log': {
+    num_channels: [{num_channels_joined, time_stamp}]
+    num_dms: [{num_dms_joined, time_stamp}]
+    messages_sent: [{num_messages_sent, time_stamp}]
+    utlilisation_rate: 
+}
 '''

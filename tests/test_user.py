@@ -8,6 +8,7 @@ import pytest
 from src.other import clear_v1
 
 INVALID_VALUE = -1
+INVALID_TOKEN = -1
 
 #################################################################################
 #   Fixtures                                                                    #
@@ -234,7 +235,7 @@ def stats_list():
 
 def test_user_stats_invalid_token(clear_data):
     with pytest.raises(AccessError):
-        user_stats_v1(INVALID_VALUE) 
+        user_stats_v1(INVALID_TOKEN) 
 
 def test_user_stats_valid_empty(clear_data, user_1):
     assert user_stats_v1(user_1['token']) == empty_stats_list()
