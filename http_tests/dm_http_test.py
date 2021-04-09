@@ -63,6 +63,15 @@ def test_create_dm(test_user1,test_user2):
     dm_info = dm.json()
     return dm_info
 
+@pytest.fixture
+def channel_1(user_1):
+    channel = requests.post(config.url + 'channels/create/v2', json={
+        'token': user_1['token'],
+        'name': 'Channel1',
+        'is_public': True
+    })
+    channel_info = channel.json()
+    return channel_info['channel_id']
 
 ################################################################################
 # dm_details http tests                                                        #
