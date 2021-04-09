@@ -149,3 +149,9 @@ def user_profile_sethandle_v1(token, handle_str):
             user.update({'handle_str': handle_str})
     update_data()
     return {}
+
+def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    return {}
+
+def user_stats_v1(token):
+    return {}

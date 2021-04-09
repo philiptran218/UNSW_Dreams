@@ -32,3 +32,6 @@ def users_all_v1(token):
         }
         users_list.append(user_info)
     return {'users': users_list}
+
+def users_stats_v1(token):
+    return {}

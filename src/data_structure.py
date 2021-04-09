@@ -20,6 +20,12 @@ users = [
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
+        'stats': {
+            channels_joined: [{num_channels_joined, time_stamp}]
+            dms_joined: [{num_dms_joined, time_stamp}]
+            messages_sent: [{num_messages_sent, time_stamp}]
+            involvelemt_rate: 
+        }
     }
 ]
 
