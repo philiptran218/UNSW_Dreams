@@ -8,7 +8,7 @@ from src.message import message_send_v1, message_edit_v1, message_remove_v1, mes
 from src.dm import dm_create_v1, dm_messages_v1, dm_invite_v1
 from src.database import data
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 INVALID_ID = 0
 REACT_ID = 1
