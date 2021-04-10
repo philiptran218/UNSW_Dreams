@@ -8,7 +8,9 @@ from src.message import message_send_v1, message_edit_v1, message_remove_v1, mes
 from src.dm import dm_create_v1, dm_messages_v1, dm_invite_v1
 from src.database import data
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import threading
+import time
 
 INVALID_ID = 0
 REACT_ID = 1
@@ -60,7 +62,7 @@ def message2(user1, dm1):
 
 @pytest.fixture
 def message_time():
-    time = datetime.now() + datetime.delta(0, 3)
+    time = datetime.now() + timedelta(0, 3)
     send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
     return send_time
 
@@ -509,19 +511,29 @@ def test_message_sendlater_empty_message(clear_database, user1, channel1, messag
 
 def test_message_sendlater_past_time(clear_database, user1, channel1):
     # Raises InputError since the time_sent argument is in the past
-    time = datetime.now() - datetime.delta(0, 3)
+    time = datetime.now() - timedelta(0, 3)
     send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
     with pytest.raises(InputError):
         message_sendlater_v1(user1['token'], channel1, 'Hi Channel1!', send_time)
 
+def check_before_send_time(token, channel_id, dm_id):
+    if dm_id == -1:
+        chan_msg = channel_messages_v1(token, channel_id, 0)
+        assert chan_msg == {'messages': [], 'start': 0, 'end': -1}
+    elif channel_id == -1:
+        dm_msg = dm_messages_v1(token, dm_id, 0)
+        assert dm_msg == {'messages': [], 'start': 0, 'end': -1}        
+
 def test_message_sendlater_valid_message(clear_database, user1, channel1):
     # Testing a valid case where a message is set to send 5 seconds later
-    time = datetime.now() + datetime.delta(0, 5)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = datetime.now() + timedelta(0, 5)
+    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+
+    # Checks if message is there after 4 seconds, should confirm that it has
+    # not yet been sent
+    check_send = threading.Timer(4, check_before_send_time, args=(user1['token'], channel1, -1))
+    check_send.start()
     message = message_sendlater_v1(user1['token'], channel1, 'Hi everyone!', send_time)
-    chan_msg = channel_messages_v1(user1['token'], channel1, 0)
-    assert chan_msg == {'messages': [], 'start': 0, 'end': -1}
-    time.sleep(5.0)
     chan_msg = channel_messages_v1(user1['token'], channel1, 0)['messages']
     assert chan_msg[0]['message'] == 'Hi everyone!'
     assert chan_msg[0]['message_id'] == message['message_id']
@@ -565,19 +577,19 @@ def test_message_sendlaterdm_empty_message(clear_database, user1, dm1, message_t
 
 def test_message_sendlaterdm_past_time(clear_database, user1, dm1):
     # Raises InputError since the time_sent argument is in the past
-    time = datetime.now() - datetime.delta(0, 3)
+    time = datetime.now() - timedelta(0, 3)
     send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
     with pytest.raises(InputError):
         message_sendlaterdm_v1(user1['token'], dm1, 'Hi DM!', send_time)
 
 def test_message_sendlaterdm_valid_message(clear_database, user1, dm1):
     # Testing a valid case where a message is set to send 5 seconds later
-    time = datetime.now() + datetime.delta(0, 5)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = datetime.now() + timedelta(0, 5)
+    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+
+    check_send = threading.Timer(4, check_before_send_time, args=(user1['token'], -1, dm1))
+    check_send.start()
     message = message_sendlaterdm_v1(user1['token'], dm1, 'Hello everyone!', send_time)
-    dm_msg = dm_messages_v1(user1['token'], dm1, 0)
-    assert dm_msg == {'messages': [], 'start': 0, 'end': -1}
-    time.sleep(5.0)
     dm_msg = dm_messages_v1(user1['token'], dm1, 0)['messages']
     assert dm_msg[0]['message'] == 'Hello everyone!'
     assert dm_msg[0]['message_id'] == message['message_id']
