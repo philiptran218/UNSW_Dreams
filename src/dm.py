@@ -11,18 +11,6 @@ def is_dm_creator(u_id,dm_id):
                 return True
     return False
 
-#helper fucntion that checks if a user is part of the given dm
-def is_already_in_dm(u_id, dm_id):
-    selected_dm = None
-    for dm in data['DM']:
-        if dm['dm_id'] == dm_id:
-            selected_dm = dm
-            break
-    for members in selected_dm['dm_members']:
-        if members['u_id'] == u_id:
-            return True
-    return False
-
 #helper fucntion that returns the number of messages in a given dm
 def get_len_messages(dm_id):
     total = 0
@@ -32,7 +20,7 @@ def get_len_messages(dm_id):
     return total  
 
 #helper fucntion that returns the number of messages to the limit, in a given dm
-def list_of_messages(dm_id, start, message_limit):
+def list_of_messages(auth_user_id, dm_id, start, message_limit):
     # Reverse messages so most recent are at the beginning 
     ordered_messages = list(reversed(data['messages']))
     messages = []
@@ -48,7 +36,9 @@ def list_of_messages(dm_id, start, message_limit):
                 'message_id': message['message_id'],
                 'u_id': message['u_id'],
                 'message': message['message'],
-                'time_created': message['time_created'],  
+                'time_created': message['time_created'],
+                'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                'is_pinned': message['is_pinned'],  
             }     
             messages.append(message_details)
         
@@ -107,10 +97,10 @@ def dm_invite_v1(token, dm_id, u_id):
     if not helper.is_valid_dm_id(dm_id) :
         raise InputError(description="dm_id does not refer to an existing dm")
     #checking if the user is a member of the dm
-    if not is_already_in_dm(token_u_id, dm_id):
+    if not helper.is_already_in_dm(token_u_id, dm_id):
         raise AccessError(description="Authorised user is not a member of the dm")
     #checking if the user is in the dm, if they are , nothing is done.
-    if is_already_in_dm(u_id, dm_id):
+    if helper.is_already_in_dm(u_id, dm_id):
         return {}
     
     invited_member = {
@@ -197,13 +187,13 @@ def dm_messages_v1(token, dm_id, start):
     if not helper.is_valid_token(token):
         raise AccessError(description="token is invalid")  
     
-    u_id = int(helper.detoken(token))
+    u_id = helper.detoken(token)
 
     # Check for valid dm id 
     if not helper.is_valid_dm_id(dm_id): 
         raise InputError(description="Please enter a valid channel_id")
     # Check if user is a member of the dm
-    if not is_already_in_dm(u_id, dm_id): 
+    if not helper.is_already_in_dm(u_id, dm_id): 
         raise AccessError(description="User is not a member of this dm")
     # Check if start is greater than number of messages
     if start > get_len_messages(dm_id):  
@@ -221,7 +211,7 @@ def dm_messages_v1(token, dm_id, start):
         message_limit = end
 
     return {
-        'messages': list_of_messages(dm_id, start, message_limit),
+        'messages': list_of_messages(u_id, dm_id, start, message_limit),
         'start': start,
         'end': end,
     }   
@@ -255,7 +245,7 @@ def dm_leave_v1(token,dm_id):
     if not helper.is_valid_dm_id(dm_id) :
         raise InputError(description="dm_id does not refer to an existing dm")
     #checking if user wanting to leave is part of the dm 
-    if not is_already_in_dm(u_id, dm_id):
+    if not helper.is_already_in_dm(u_id, dm_id):
         raise AccessError(description="Authorised user is not a member of the dm")
 
     for dm in data['DM']:
@@ -298,7 +288,7 @@ def dm_details_v1(token, dm_id):
                             "name":dm["dm_name"],
                             "members": dm["dm_members"],
                         }
-            if is_already_in_dm(token_u_id, dm_id):
+            if helper.is_already_in_dm(token_u_id, dm_id):
                 return output
             else:
                 raise AccessError(description="Not in DM")

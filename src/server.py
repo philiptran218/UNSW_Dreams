@@ -10,7 +10,7 @@ from src.channels import channels_create_v1, channels_listall_v1,channels_list_v
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
-from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1
+from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1
 from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1
 from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
@@ -243,8 +243,8 @@ def dm_messages():
 
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
-    create_info = request.get_json()
-    output = message_senddm_v1(create_info['token'], create_info['dm_id'], create_info['message'])
+    message_info = request.get_json()
+    output = message_senddm_v1(message_info['token'], message_info['dm_id'], message_info['message'])
     return dumps(output)
 
 ################################################################################
@@ -253,8 +253,8 @@ def message_senddm():
 
 @APP.route("/message/send/v2", methods=['POST'])
 def message_send():
-    create_info = request.get_json()
-    output = message_send_v1(create_info['token'], create_info['channel_id'], create_info['message'])
+    message_info = request.get_json()
+    output = message_send_v1(message_info['token'], message_info['channel_id'], message_info['message'])
     return dumps(output)
 
 ################################################################################
@@ -263,8 +263,8 @@ def message_send():
 
 @APP.route("/message/edit/v2", methods=['PUT'])
 def message_edit():
-    create_info = request.get_json()
-    output = message_edit_v1(create_info['token'], create_info['message_id'], create_info['message'])
+    message_info = request.get_json()
+    output = message_edit_v1(message_info['token'], message_info['message_id'], message_info['message'])
     return dumps(output)
 
 ################################################################################
@@ -273,8 +273,8 @@ def message_edit():
 
 @APP.route("/message/remove/v1", methods=['DELETE'])
 def message_remove():
-    create_info = request.get_json()
-    output = message_remove_v1(create_info['token'], create_info['message_id'])
+    message_info = request.get_json()
+    output = message_remove_v1(message_info['token'], message_info['message_id'])
     return dumps(output)
 
 ################################################################################
@@ -283,8 +283,8 @@ def message_remove():
 
 @APP.route("/message/share/v1", methods=['POST'])
 def message_share():
-    create_info = request.get_json()
-    output = message_share_v1(create_info['token'], create_info['og_message_id'], create_info['message'], create_info['channel_id'], create_info['dm_id'])
+    message_info = request.get_json()
+    output = message_share_v1(message_info['token'], message_info['og_message_id'], message_info['message'], message_info['channel_id'], message_info['dm_id'])
     return dumps(output)
 
 ################################################################################
@@ -383,6 +383,16 @@ def profile_sethandle():
 def users_all():
     userall_info = request.args
     output = users_all_v1(userall_info['token'])
+    return dumps(output)
+
+################################################################################
+#   message_react route                                                        #
+################################################################################
+
+@APP.route("/message/react/v1", methods=['POST'])
+def message_react():
+    message_info = request.get_json()
+    output = message_react_v1(message_info['token'], message_info['message_id'], message_info['react_id'])
     return dumps(output)
     
 ################################################################################

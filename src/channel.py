@@ -105,7 +105,7 @@ def get_len_messages(channel_id):
             
     return total  
 
-def list_of_messages(channel_id, start, message_limit):
+def list_of_messages(auth_user_id, channel_id, start, message_limit):
     # Reverse messages so most recent are at the beginning 
     ordered_messages = list(reversed(data['messages']))
     messages = []
@@ -121,7 +121,9 @@ def list_of_messages(channel_id, start, message_limit):
                 'message_id': message['message_id'],
                 'u_id': message['u_id'],
                 'message': message['message'],
-                'time_created': message['time_created'],  
+                'time_created': message['time_created'],
+                'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                'is_pinned': message['is_pinned'],  
             }     
             messages.append(message_details)
         
@@ -261,7 +263,7 @@ def channel_messages_v1(token, channel_id, start):
         message_limit = end
 
     return {
-        'messages': list_of_messages(channel_id, start, message_limit),
+        'messages': list_of_messages(auth_user_id, channel_id, start, message_limit),
         'start': start,
         'end': end,
     }        
