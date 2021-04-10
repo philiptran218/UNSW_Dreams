@@ -4,9 +4,11 @@ from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.channel import channel_messages_v1, channel_join_v1, channel_invite_v1
-from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_senddm_v1, message_react_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_senddm_v1, message_react_v1, message_sendlater_v1, message_sendlaterdm_v1
 from src.dm import dm_create_v1, dm_messages_v1, dm_invite_v1
 from src.database import data
+
+from datetime import datetime
 
 INVALID_ID = 0
 REACT_ID = 1
@@ -55,6 +57,12 @@ def message1(user1, channel1):
 def message2(user1, dm1):
     msgid = message_senddm_v1(user1['token'], dm1, 'Hello There')
     return msgid['message_id']
+
+@pytest.fixture
+def message_time():
+    time = datetime.now() + datetime.delta(0, 3)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    return send_time
 
 @pytest.fixture
 def clear_database():
@@ -463,3 +471,53 @@ def test_message_react_multiple_reacts_in_dm(clear_database, user1, user2, user3
     assert message['reacts'][0]['react_id'] == 1
     assert message['reacts'][0]['u_ids'] == [1,2]
     assert message['reacts'][0]['is_this_user_reacted'] == False
+
+################################################################################
+# message_sendlater_v1 tests                                                   #
+################################################################################
+
+def test_message_sendlater_invalid_token(clear_database, user1, channel1, message_time):
+    # Raises AccessError since token INVALID_ID does not exist
+    with pytest.raises(AccessError):
+        message_sendlater_v1(INVALID_ID, channel1, 'Hello World', message_time)
+        
+def test_message_sendlater_invalid_channel(clear_database, user1, message_time):
+    # Raises InputError since channel_id INVALID_ID does not exist
+    with pytest.raises(InputError):
+        message_sendlater_v1(user1['token'], INVALID_ID, 'Nice to meet you!', message_time)
+
+def test_message_sendlater_user_not_in_channel(clear_database, user1, channel1, user2, channel2, message_time):
+    # Raises AccessError since user2 is not in channel1
+    with pytest.raises(AccessError):
+        message_sendlater_v1(user2['token'], channel1, 'Hello World', message_time)
+
+def test_message_sendlater_invalid_message(clear_database, user1, channel1, message_time):
+    # Raises InputError since message > 1000 characters
+    i = 0
+    message = ''
+    while i < 500:
+        message += str(i)
+        i += 1
+    with pytest.raises(InputError):
+        message_sendlater_v1(user1['token'], channel1, message, message_time)
+
+def test_message_sendlater_empty_message(clear_database, user1, channel1, message_time):
+    # Assuming that function will not add empty messages (or messages with just
+    # whitespace) and instead raises InputError
+    with pytest.raises(InputError):
+        message_sendlater_v1(user1['token'], channel1, '', message_time)
+
+def test_message_sendlater_past_time(clear_database, user1, channel1):
+    # Raises InputError since the time_sent argument is in the past
+    time = datetime.now() - datetime.delta(0, 3)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    with pytest.raises(InputError):
+        message_sendlater_v1(user1['token'], channel1, 'Hi Channel1!', send_time)
+
+def test_message_sendlater_valid_message(clear_database, user1, channel1, message_time):
+    
+
+
+
+
+
