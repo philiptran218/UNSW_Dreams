@@ -514,10 +514,72 @@ def test_message_sendlater_past_time(clear_database, user1, channel1):
     with pytest.raises(InputError):
         message_sendlater_v1(user1['token'], channel1, 'Hi Channel1!', send_time)
 
-def test_message_sendlater_valid_message(clear_database, user1, channel1, message_time):
-    
+def test_message_sendlater_valid_message(clear_database, user1, channel1):
+    # Testing a valid case where a message is set to send 5 seconds later
+    time = datetime.now() + datetime.delta(0, 5)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    message = message_sendlater_v1(user1['token'], channel1, 'Hi everyone!', send_time)
+    chan_msg = channel_messages_v1(user1['token'], channel1, 0)
+    assert chan_msg == {'messages': [], 'start': 0, 'end': -1}
+    time.sleep(5.0)
+    chan_msg = channel_messages_v1(user1['token'], channel1, 0)['messages']
+    assert chan_msg[0]['message'] == 'Hi everyone!'
+    assert chan_msg[0]['message_id'] == message['message_id']
+    assert chan_msg[0]['u_id'] == user1['auth_user_id']
+    assert chan_msg[0]['time_created'] == send_time
 
+################################################################################
+# message_sendlaterdm_v1 tests                                                 #
+################################################################################
 
+def test_message_sendlaterdm_invalid_token(clear_database, user1, dm1, message_time):
+    # Raises AccessError since token INVALID_ID does not exist
+    with pytest.raises(AccessError):
+        message_sendlaterdm_v1(INVALID_ID, dm1, 'Hello World', message_time)
+        
+def test_message_sendlaterdm_invalid_dm(clear_database, user1, message_time):
+    # Raises InputError since dm_id INVALID_ID does not exist
+    with pytest.raises(InputError):
+        message_sendlaterdm_v1(user1['token'], INVALID_ID, 'Nice to meet you!', message_time)
 
+def test_message_sendlaterdm_user_not_in_dm(clear_database, user1, dm1, user2, dm2, message_time):
+    # Raises AccessError since user2 is not in dm1
+    with pytest.raises(AccessError):
+        message_sendlaterdm_v1(user2['token'], dm1, 'Hello World', message_time)
 
+def test_message_sendlaterdm_invalid_message(clear_database, user1, dm1, message_time):
+    # Raises InputError since message > 1000 characters
+    i = 0
+    message = ''
+    while i < 500:
+        message += str(i)
+        i += 1
+    with pytest.raises(InputError):
+        message_sendlaterdm_v1(user1['token'], dm1, message, message_time)
 
+def test_message_sendlaterdm_empty_message(clear_database, user1, dm1, message_time):
+    # Assuming that function will not add empty messages (or messages with just
+    # whitespace) and instead raises InputError
+    with pytest.raises(InputError):
+        message_sendlaterdm_v1(user1['token'], dm1, '      ', message_time)
+
+def test_message_sendlaterdm_past_time(clear_database, user1, dm1):
+    # Raises InputError since the time_sent argument is in the past
+    time = datetime.now() - datetime.delta(0, 3)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    with pytest.raises(InputError):
+        message_sendlaterdm_v1(user1['token'], dm1, 'Hi DM!', send_time)
+
+def test_message_sendlaterdm_valid_message(clear_database, user1, dm1):
+    # Testing a valid case where a message is set to send 5 seconds later
+    time = datetime.now() + datetime.delta(0, 5)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    message = message_sendlaterdm_v1(user1['token'], dm1, 'Hello everyone!', send_time)
+    dm_msg = dm_messages_v1(user1['token'], dm1, 0)
+    assert dm_msg == {'messages': [], 'start': 0, 'end': -1}
+    time.sleep(5.0)
+    dm_msg = dm_messages_v1(user1['token'], dm1, 0)['messages']
+    assert dm_msg[0]['message'] == 'Hello everyone!'
+    assert dm_msg[0]['message_id'] == message['message_id']
+    assert dm_msg[0]['u_id'] == user1['auth_user_id']
+    assert dm_msg[0]['time_created'] == send_time
