@@ -288,26 +288,6 @@ def message_share():
     return dumps(output)
 
 ################################################################################
-#   message_sendlater route                                                    #
-################################################################################
-
-@APP.route("/message/sendlater/v1", methods=['POST'])
-def message_sendlater():
-    message_info = request.get_json()
-    output = message_sendlater_v1(message_info['token'], message_info['channel_id'], message_info['message'], message_info['time_sent'])
-    return dumps(output)
-
-################################################################################
-#   message_sendlaterdm route                                                  #
-################################################################################
-
-@APP.route("/message/sendlaterdm/v1", methods=['POST'])
-def message_sendlaterdm():
-    message_info = request.get_json()
-    output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
-    return dumps(output)
-
-################################################################################
 #   search route                                                               #
 ################################################################################
 
@@ -413,6 +393,26 @@ def users_all():
 def message_react():
     message_info = request.get_json()
     output = message_react_v1(message_info['token'], message_info['message_id'], message_info['react_id'])
+    return dumps(output)
+
+################################################################################
+#   message_sendlater route                                                    #
+################################################################################
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    message_info = request.get_json()
+    output = message_sendlater_v1(message_info['token'], message_info['channel_id'], message_info['message'], message_info['time_sent'])
+    return dumps(output)
+
+################################################################################
+#   message_sendlaterdm route                                                  #
+################################################################################
+
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    message_info = request.get_json()
+    output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
     return dumps(output)
     
 ################################################################################
