@@ -10,7 +10,7 @@ from src.channels import channels_create_v1, channels_listall_v1,channels_list_v
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
-from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1, message_unreact_v1
+from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1, message_unreact_v1, message_pin_v1
 from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1
 from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
@@ -396,13 +396,23 @@ def message_react():
     return dumps(output)
 
 ################################################################################
-#   message_unreact route                                                        #
+#   message_unreact route                                                      #
 ################################################################################
 
 @APP.route("/message/unreact/v1", methods=['POST'])
 def message_unreact():
     message_info = request.get_json()
     output = message_unreact_v1(message_info['token'], message_info['message_id'], message_info['react_id'])
+    return dumps(output)
+
+################################################################################
+#   message_pin route                                                          #
+################################################################################
+
+@APP.route("/message/pin/v1", methods=['POST'])
+def message_pin():
+    message_info = request.get_json()
+    output = message_pin_v1(message_info['token'], message_info['message_id'])
     return dumps(output)
     
 ################################################################################
