@@ -470,13 +470,6 @@ def message_react_v1(token, message_id, react_id):
     update_data()
     return {}
 
-# Used to create a thread which pauses for a certain amount of seconds before
-# calling message_send or message_senddm. A better alternative to using
-# time.sleep() since it allows other messages to be sent while message_sendlater
-# or message_sendlaterdm is called
-def do_nothing():
-    return None
-
 def message_sendlater_v1(token, channel_id, message, time_sent):
     '''
     Function:
