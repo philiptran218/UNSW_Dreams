@@ -831,9 +831,11 @@ def test_message_sendlater_past_time(clear_database, user_1, channel_1):
 def check_before_send_time(token, channel_id, dm_id):
     if dm_id == -1:
         chan_msg = requests.get(f"{config.url}channel/messages/v2?token={token}&channel_id={channel_id}&start=0")
+        chan_msg = chan_msg.json()
         assert chan_msg == {'messages': [], 'start': 0, 'end': -1}
     elif channel_id == -1:
         dm_msg = requests.get(f"{config.url}dm/messages/v1?token={token}&dm_id={dm_id}&start=0")
+        dm_msg = dm_msg.json()
         assert dm_msg == {'messages': [], 'start': 0, 'end': -1}
 
 def test_message_sendlater_valid_message(clear_database, user_1, channel_1):
