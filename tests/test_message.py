@@ -601,8 +601,8 @@ def test_message_sendlater_and_send(clear_database, user1, user2, channel1):
     # Checks for messages 4 seconds from now (should only show 1 message)
     check_send = threading.Timer(4, check_message_sent, args=(user1, channel1, -1, 'This is first'))
     check_send.start()
-    # Sleeping for 5 seconds to allow send_later thread to finish
-    time.sleep(5)
+    # Sleeping for 6 seconds to allow send_later thread to finish
+    time.sleep(6)
     chan_msg = channel_messages_v1(user1['token'], channel1, 0)['messages']
     assert len(chan_msg) == 2
     assert chan_msg[0]['message'] == 'This is last'
@@ -688,8 +688,8 @@ def test_message_sendlaterdm_valid_multiple(clear_database, user1, user2, dm1):
     assert dm_msg == {'messages': [], 'start': 0, 'end': -1}
     # Sends a message 2 seconds from now, should be first message in DM
     msg = message_sendlaterdm_v1(user2['token'], dm1, 'This should be first', send_time_1)
-    # Sleeping for 3 seconds to wait for the send_last thread to finish
-    time.sleep(3)
+    # Sleeping for 4 seconds to wait for the send_last thread to finish
+    time.sleep(4)
     dm_msg = dm_messages_v1(user1['token'], dm1, 0)['messages']
     assert len(dm_msg) == 2
     assert dm_msg[0]['message'] == 'This should be second'
@@ -717,8 +717,8 @@ def test_message_sendlaterdm_and_senddm(clear_database, user1, user2, dm1):
     # Checks for messages 4 seconds from now (should show no messages)
     check_send = threading.Timer(4, check_before_send_time, args=(user1['token'], -1, dm1))
     check_send.start()
-    # Sleeping for 6 seconds to allow send_first and send_last threads to finish
-    time.sleep(6)
+    # Sleeping for 7 seconds to allow send_first and send_last threads to finish
+    time.sleep(7)
     dm_msg = dm_messages_v1(user1['token'], dm1, 0)['messages']
     assert len(dm_msg) == 2
     assert dm_msg[0]['message'] == 'This is last'
