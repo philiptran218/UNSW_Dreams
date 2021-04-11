@@ -4,7 +4,7 @@ from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.channel import channel_messages_v1, channel_join_v1, channel_invite_v1, channel_leave_v1
-from src.message import message_send_v1, message_edit_v1, message_remove_v1
+from src.message import message_send_v1, message_edit_v1, message_remove_v1, message_pin_v1
 from src.message import message_share_v1, message_senddm_v1, message_react_v1, message_unreact_v1
 from src.dm import dm_create_v1, dm_messages_v1, dm_invite_v1, dm_leave_v1
 from src.database import data
@@ -417,7 +417,7 @@ def test_message_react_user_not_in_dm(clear_database, user1, user2, dm1, message
 
 def test_message_react_valid_inputs_in_channel(clear_database, user1, channel1, message1):
     message_react_v1(user1['token'], channel1, REACT_ID)
-    channel_messages = channel_messages_v1(user1['token'], message1, 0)
+    channel_messages = channel_messages_v1(user1['token'], channel1, 0)
     message = channel_messages['messages'][0]
     assert message['message_id'] == 1
     assert message['u_id'] == 1
@@ -442,7 +442,7 @@ def test_message_react_multiple_reacts_in_channel(clear_database, user1, user2, 
     channel_invite_v1(user1['token'], channel1, user3['auth_user_id'])
     message_react_v1(user1['token'], message1, REACT_ID)
     message_react_v1(user2['token'], message1, REACT_ID)
-    channel_messages = channel_messages_v1(user3['token'], message1, 0)
+    channel_messages = channel_messages_v1(user3['token'], channel1, 0)
     message = channel_messages['messages'][0]
     assert message['message_id'] == 1
     assert message['u_id'] == 1
@@ -486,27 +486,27 @@ def test_message_unreact_no_reacts(clear_database, user1, channel1, message1):
         message_unreact_v1(user1['token'], message1, REACT_ID)
 
 def test_message_has_already_unreacted(clear_database, user1, channel1, message1):
-    message_react_v1(user1['token'], channel1, REACT_ID)
+    message_react_v1(user1['token'], message1, REACT_ID)
     message_unreact_v1(user1['token'], channel1, REACT_ID)
     with pytest.raises(InputError):
         message_unreact_v1(user1['token'], message1, REACT_ID)
 
 def test_message_unreact_user_not_in_channel(clear_database, user1, user2, channel1, message1):
-    message_react_v1(user1['token'], channel1, REACT_ID)
+    message_react_v1(user1['token'], message1, REACT_ID)
     channel_leave_v1(user1['token'], channel1)
     with pytest.raises(AccessError):
         message_unreact_v1(user1['token'], message1, REACT_ID)   
 
 def test_message_unreact_user_not_in_dm(clear_database, user1, user2, dm1, message2):
-    message_react_v1(user1['token'], dm1, REACT_ID)
+    message_react_v1(user1['token'], message2, REACT_ID)
     dm_leave_v1(user1['token'], dm1)
     with pytest.raises(AccessError):
         message_unreact_v1(user1['token'], message2, REACT_ID)
 
 def test_message_unreact_valid_inputs_in_channel(clear_database, user1, channel1, message1):
-    message_react_v1(user1['token'], channel1, REACT_ID)
+    message_react_v1(user1['token'], message1, REACT_ID)
     message_unreact_v1(user1['token'], message1, REACT_ID)
-    channel_messages = channel_messages_v1(user1['token'], message1, 0)
+    channel_messages = channel_messages_v1(user1['token'], channel1, 0)
     message = channel_messages['messages'][0]
     assert message['message_id'] == 1
     assert message['u_id'] == 1
@@ -535,7 +535,7 @@ def test_message_unreact_multiple_unreacts_in_channel(clear_database, user1, use
     message_react_v1(user3['token'], message1, REACT_ID)
     message_unreact_v1(user1['token'], message1, REACT_ID)
     message_unreact_v1(user2['token'], message1, REACT_ID)
-    channel_messages = channel_messages_v1(user3['token'], message1, 0)
+    channel_messages = channel_messages_v1(user3['token'], channel1, 0)
     message = channel_messages['messages'][0]
     assert message['message_id'] == 1
     assert message['u_id'] == 1
@@ -560,3 +560,52 @@ def test_message_unreact_multiple_reacts_in_dm(clear_database, user1, user2, use
     assert message['reacts'][0]['react_id'] == 1
     assert message['reacts'][0]['u_ids'] == [3]
     assert message['reacts'][0]['is_this_user_reacted'] == True
+
+################################################################################
+# message_pin_v1 tests                                                       #
+################################################################################
+
+def test_message_pin_invalid_token(clear_database, user1, channel1, message1):
+    with pytest.raises(AccessError):
+        message_pin_v1(INVALID_ID, message1)
+
+def test_message_pin_invalid_message_id(clear_database, user1, channel1, message1):
+    with pytest.raises(InputError):
+        message_pin_v1(user1['token'], INVALID_ID)
+
+def test_message_same_user_pin_again(clear_database, user1, channel1, message1):
+    message_pin_v1(user1['token'], message1)
+    with pytest.raises(InputError):
+        message_pin_v1(user1['token'], message1)
+
+def test_message_diff_user_pin_again(clear_database, user1, channel1, message1):
+    message_pin_v1(user1['token'], message1)
+    channel_invite_v1(user1['token'], channel1, user2['auth_user_id'])
+    with pytest.raises(InputError):
+        message_pin_v1(user2['token'], message1)
+
+def test_message_pin_user_not_in_channel(clear_database, user1, user2, channel1, message1):
+    with pytest.raises(AccessError):
+        message_pin_v1(user2['token'], message1)   
+
+def test_message_pin_user_not_in_dm(clear_database, user1, user2, dm1, message2):
+    with pytest.raises(AccessError):
+        message_pin_v1(user2['token'], message2)
+
+def test_message_pin_valid_inputs_in_channel(clear_database, user1, channel1, message1):
+    message_pin_v1(user1['token'], message1)
+    channel_messages = channel_messages_v1(user1['token'], channel1, 0)
+    message = channel_messages['messages'][0]
+    assert message['message_id'] == 1
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello World'
+    assert message['is_pinned'] == True
+
+def test_message_pin_valid_inputs_in_dm(clear_database, user1, channel1, dm1, message1, message2):
+    message_pin_v1(user1['token'], message2)
+    dm_messages = dm_messages_v1(user1['token'], dm1, 0)
+    message = dm_messages['messages'][0]
+    assert message['message_id'] == 2
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello There'
+    assert message['is_pinned'] == True
