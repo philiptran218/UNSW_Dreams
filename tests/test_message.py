@@ -578,7 +578,7 @@ def test_message_same_user_pin_again(clear_database, user1, channel1, message1):
     with pytest.raises(InputError):
         message_pin_v1(user1['token'], message1)
 
-def test_message_diff_user_pin_again(clear_database, user1, channel1, message1):
+def test_message_diff_user_pin_again(clear_database, user1, user2, channel1, message1):
     message_pin_v1(user1['token'], message1)
     channel_invite_v1(user1['token'], channel1, user2['auth_user_id'])
     with pytest.raises(InputError):
@@ -603,6 +603,26 @@ def test_message_pin_valid_inputs_in_channel(clear_database, user1, channel1, me
 
 def test_message_pin_valid_inputs_in_dm(clear_database, user1, channel1, dm1, message1, message2):
     message_pin_v1(user1['token'], message2)
+    dm_messages = dm_messages_v1(user1['token'], dm1, 0)
+    message = dm_messages['messages'][0]
+    assert message['message_id'] == 2
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello There'
+    assert message['is_pinned'] == True
+
+def test_message_pin_another_user_in_channel(clear_database, user1, user2, channel1, message1):
+    channel_invite_v1(user1['token'], channel1, user2['auth_user_id'])
+    message_pin_v1(user2['token'], message1)
+    channel_messages = channel_messages_v1(user1['token'], channel1, 0)
+    message = channel_messages['messages'][0]
+    assert message['message_id'] == 1
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello World'
+    assert message['is_pinned'] == True
+
+def test_message_pin_another_user_in_dm(clear_database, user1, user2, channel1, dm1, message1, message2):
+    dm_invite_v1(user1['token'], dm1, user2['auth_user_id'])
+    message_pin_v1(user2['token'], message2)
     dm_messages = dm_messages_v1(user1['token'], dm1, 0)
     message = dm_messages['messages'][0]
     assert message['message_id'] == 2
