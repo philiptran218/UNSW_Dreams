@@ -10,7 +10,7 @@ from src.channels import channels_create_v1, channels_listall_v1,channels_list_v
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
-from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1
+from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1, message_sendlater_v1, message_sendlaterdm_v1
 from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1
 from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
@@ -285,6 +285,26 @@ def message_remove():
 def message_share():
     message_info = request.get_json()
     output = message_share_v1(message_info['token'], message_info['og_message_id'], message_info['message'], message_info['channel_id'], message_info['dm_id'])
+    return dumps(output)
+
+################################################################################
+#   message_sendlater route                                                    #
+################################################################################
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    message_info = request.get_json()
+    output = message_sendlater_v1(message_info['token'], message_info['channel_id'], message_info['message'], message_info['time_sent'])
+    return dumps(output)
+
+################################################################################
+#   message_sendlaterdm route                                                  #
+################################################################################
+
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    message_info = request.get_json()
+    output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
     return dumps(output)
 
 ################################################################################
