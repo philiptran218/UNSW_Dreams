@@ -105,6 +105,53 @@ def message_2(user_1, dm_1):
 def clear_database():
     requests.delete(config.url + 'clear/v1')
 
+def message_react(token, message_id, react_id):
+    return requests.post(config.url + 'message/react/v1', json={
+        'token': token,
+        'message_id': message_id,
+        'react_id': react_id
+    })
+
+def message_unreact(token, message_id, react_id):
+    return requests.post(config.url + 'message/unreact/v1', json={
+        'token': token,
+        'message_id': message_id,
+        'react_id': react_id
+    })
+
+def channel_messages(token, channel_id, start):
+    return requests.get(f"{config.url}channel/messages/v2?token={token}&channel_id={channel_id}&start={start}")
+
+def dm_messages(token, channel_id, start):
+    return requests.get(f"{config.url}dm/messages/v1?token={token}&dm_id={channel_id}&start={start}")
+
+def channel_invite(token, channel_id, u_id):
+    return requests.post(config.url + 'channel/invite/v2', json={
+        'token': token,
+        'channel_id': channel_id,
+        'u_id': u_id
+    })
+
+def channel_leave(token, channel_id):
+    return requests.post(config.url + 'channel/leave/v1', json={
+        'token': token,
+        'channel_id': channel_id,
+    })
+
+def dm_invite(token, dm_id, u_id):
+    return requests.post(config.url + 'dm/invite/v1', json={
+        'token': token,
+        'dm_id': dm_id,
+        'u_id': u_id
+    })
+
+def dm_leave(token, dm_id):
+    return requests.post(config.url + 'dm/leave/v1', json={
+        'token': token,
+        'dm_id': dm_id,
+    })
+
+
 ################################################################################
 # message_send http tests                                                      #
 ################################################################################
@@ -643,33 +690,6 @@ def test_message_senddm_invited_user(clear_database, user_1, user_2, dm_1, dm_2)
 # message_react http tests                                                     #
 ################################################################################
 
-def message_react(token, message_id, react_id):
-    return requests.post(config.url + 'message/react/v1', json={
-        'token': token,
-        'message_id': message_id,
-        'react_id': react_id
-    })
-
-def channel_messages(token, channel_id, start):
-    return requests.get(f"{config.url}channel/messages/v2?token={token}&channel_id={channel_id}&start={start}")
-
-def dm_messages(token, channel_id, start):
-    return requests.get(f"{config.url}dm/messages/v1?token={token}&dm_id={channel_id}&start={start}")
-
-def channel_invite(token, channel_id, u_id):
-    return requests.post(config.url + 'channel/invite/v2', json={
-        'token': token,
-        'channel_id': channel_id,
-        'u_id': u_id
-    })
-
-def dm_invite(token, dm_id, u_id):
-    return requests.post(config.url + 'dm/invite/v1', json={
-        'token': token,
-        'dm_id': dm_id,
-        'u_id': u_id
-    })
-
 def test_message_react_invalid_token(clear_database, user_1, channel_1, message_1):
     react = message_react(INVALID_TOKEN, message_1, REACT_ID)
     assert react.status_code == ACCESSERROR
@@ -697,7 +717,7 @@ def test_message_react_user_not_in_dm(clear_database, user_1, user_2, dm_1, mess
 
 def test_message_react_valid_inputs_in_channel(clear_database, user_1, channel_1, message_1):
     message_react(user_1['token'], channel_1, REACT_ID)
-    messages_json = channel_messages(user_1['token'], message_1, 0)
+    messages_json = channel_messages(user_1['token'], channel_1, 0)
     messages = messages_json.json()
     message = messages['messages'][0]
     assert message['message_id'] == 1
@@ -741,7 +761,6 @@ def test_message_react_multiple_reacts_in_dm(clear_database, user_1, user_2, use
     message_react(user_2['token'], message_2, REACT_ID)
     messages_json = dm_messages(user_3['token'], dm_1, 0)
     messages = messages_json.json()
-    print(messages)
     message = messages['messages'][0]
     assert message['message_id'] == 1
     assert message['u_id'] == 1
@@ -749,3 +768,103 @@ def test_message_react_multiple_reacts_in_dm(clear_database, user_1, user_2, use
     assert message['reacts'][0]['react_id'] == 1
     assert message['reacts'][0]['u_ids'] == [1,2]
     assert message['reacts'][0]['is_this_user_reacted'] == False
+
+################################################################################
+# message_unreact http tests                                                   #
+################################################################################
+
+def test_message_unreact_invalid_token(clear_database, user_1, channel_1, message_1):
+    react = message_unreact(INVALID_TOKEN, message_1, REACT_ID)
+    assert react.status_code == ACCESSERROR
+
+def test_message_unreact_invalid_message_id(clear_database, user_1, channel_1, message_1):
+    react = message_unreact(user_1['token'], INVALID_MESSAGE_ID, REACT_ID)
+    assert react.status_code == INPUTERROR
+
+def test_message_unreact_invalid_react_id(clear_database, user_1, channel_1, message_1):
+    react = message_unreact(user_1['token'], message_1, INVALID_REACT_ID)
+    assert react.status_code == INPUTERROR
+
+def test_message_unreact_no_reacts(clear_database, user_1, channel_1, message_1):
+    react = message_unreact(user_1['token'], message_1, REACT_ID)
+    assert react.status_code == INPUTERROR
+
+def test_message_has_already_unreacted(clear_database, user_1, channel_1, message_1):
+    message_react(user_1['token'], message_1, REACT_ID)
+    message_unreact(user_1['token'], message_1, REACT_ID)
+    react = message_unreact(user_1['token'], message_1, REACT_ID)
+    assert react.status_code == INPUTERROR
+
+def test_message_unreact_user_not_in_channel(clear_database, user_1, user_2, channel_1, message_1):
+    message_react(user_1['token'], message_1, REACT_ID)
+    channel_leave(user_1['token'], channel_1)
+    react = message_unreact(user_1['token'], message_1, REACT_ID)
+    assert react.status_code == ACCESSERROR   
+
+def test_message_unreact_user_not_in_dm(clear_database, user_1, user_2, dm_1, message_2):
+    message_react(user_1['token'], message_2, REACT_ID)
+    dm_leave(user_1['token'], dm_1)
+    react = message_unreact(user_1['token'], message_2, REACT_ID)
+    assert react.status_code == ACCESSERROR  
+
+def test_message_unreact_valid_inputs_in_channel(clear_database, user_1, channel_1, message_1):
+    message_react(user_1['token'], message_1, REACT_ID)
+    message_unreact(user_1['token'], message_1, REACT_ID)
+    messages_json = channel_messages(user_1['token'], channel_1, 0)
+    messages = messages_json.json()
+    message = messages['messages'][0]
+    assert message['message_id'] == 1
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello World'
+    assert message['reacts'][0]['react_id'] == 1
+    assert message['reacts'][0]['u_ids'] == []
+    assert message['reacts'][0]['is_this_user_reacted'] == False
+
+def test_message_unreact_valid_inputs_in_dm(clear_database, user_1, channel_1, dm_1, message_1, message_2):
+    message_react(user_1['token'], message_2, REACT_ID)
+    message_unreact(user_1['token'], message_2, REACT_ID)
+    messages_json = dm_messages(user_1['token'], dm_1, 0)
+    messages = messages_json.json()
+    message = messages['messages'][0]
+    assert message['message_id'] == 2
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello DM'
+    assert message['reacts'][0]['react_id'] == 1
+    assert message['reacts'][0]['u_ids'] == []
+    assert message['reacts'][0]['is_this_user_reacted'] == False
+
+def test_message_react_multiple_reacts_in_channel(clear_database, user_1, user_2, user_3, channel_1, message_1):
+    channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
+    channel_invite(user_1['token'], channel_1, user_3['auth_user_id'])
+    message_react(user_1['token'], message_1, REACT_ID)
+    message_react(user_2['token'], message_1, REACT_ID)
+    message_react(user_3['token'], message_1, REACT_ID)
+    message_unreact(user_1['token'], message_1, REACT_ID)
+    message_unreact(user_2['token'], message_1, REACT_ID)
+    messages_json = channel_messages(user_3['token'], channel_1, 0)
+    messages = messages_json.json()
+    message = messages['messages'][0]
+    assert message['message_id'] == 1
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello World'
+    assert message['reacts'][0]['react_id'] == 1
+    assert message['reacts'][0]['u_ids'] == [3]
+    assert message['reacts'][0]['is_this_user_reacted'] == True
+
+def test_message_react_multiple_reacts_in_dm(clear_database, user_1, user_2, user_3, dm_1, message_2):
+    dm_invite(user_1['token'], dm_1, user_2['auth_user_id'])
+    dm_invite(user_1['token'], dm_1, user_3['auth_user_id'])
+    message_react(user_1['token'], message_2, REACT_ID)
+    message_react(user_2['token'], message_2, REACT_ID)
+    message_react(user_3['token'], message_2, REACT_ID)
+    message_unreact(user_1['token'], message_2, REACT_ID)
+    message_unreact(user_2['token'], message_2, REACT_ID)
+    messages_json = dm_messages(user_3['token'], dm_1, 0)
+    messages = messages_json.json()
+    message = messages['messages'][0]
+    assert message['message_id'] == 1
+    assert message['u_id'] == 1
+    assert message['message'] == 'Hello DM'
+    assert message['reacts'][0]['react_id'] == 1
+    assert message['reacts'][0]['u_ids'] == [3]
+    assert message['reacts'][0]['is_this_user_reacted'] == True
