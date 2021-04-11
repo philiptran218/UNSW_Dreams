@@ -833,7 +833,7 @@ def test_message_unreact_valid_inputs_in_dm(clear_database, user_1, channel_1, d
     assert message['reacts'][0]['u_ids'] == []
     assert message['reacts'][0]['is_this_user_reacted'] == False
 
-def test_message_react_multiple_reacts_in_channel(clear_database, user_1, user_2, user_3, channel_1, message_1):
+def test_message_unreact_multiple_reacts_in_channel(clear_database, user_1, user_2, user_3, channel_1, message_1):
     channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
     channel_invite(user_1['token'], channel_1, user_3['auth_user_id'])
     message_react(user_1['token'], message_1, REACT_ID)
@@ -851,7 +851,7 @@ def test_message_react_multiple_reacts_in_channel(clear_database, user_1, user_2
     assert message['reacts'][0]['u_ids'] == [3]
     assert message['reacts'][0]['is_this_user_reacted'] == True
 
-def test_message_react_multiple_reacts_in_dm(clear_database, user_1, user_2, user_3, dm_1, message_2):
+def test_message_unreact_multiple_reacts_in_dm(clear_database, user_1, user_2, user_3, dm_1, message_2):
     dm_invite(user_1['token'], dm_1, user_2['auth_user_id'])
     dm_invite(user_1['token'], dm_1, user_3['auth_user_id'])
     message_react(user_1['token'], message_2, REACT_ID)
