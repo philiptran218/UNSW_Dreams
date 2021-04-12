@@ -86,7 +86,7 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
     standup_info = standup_start_v1(user_1['token'],public_channel_1,10)
-    assert standup_active_v1(user_1['token'], public_channel_1) == True
+    assert standup_active_v1(user_1['token'], public_channel_1)['is_active'] == True
     assert standup_info['time_finish'] == time_end
 
 ################################################################################
@@ -108,7 +108,7 @@ def test_standup_active(clear_data,user_1,public_channel_1):
     active_standup_info = standup_active_v1(user_1['token'],public_channel_1)
     assert(active_standup_info['is_active'])
     assert active_standup_info['time_finish'] == time_end
-    time.sleep(11)
+    time.sleep(15)
     standup_info = standup_active_v1(user_1['token'], public_channel_1)
     assert standup_info['is_active'] == False
     assert standup_info['time_finish'] == None
