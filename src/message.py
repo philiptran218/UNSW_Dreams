@@ -552,11 +552,11 @@ def message_pin_v1(token, message_id):
         raise InputError(description="Please select a valid message")
     message = message_details(message_id)
     if message['channel_id'] != -1:
-        user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
+        user_found = helper.is_already_channel_owner(auth_user_id, message['channel_id'])
     else:
-        user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
+        user_found = helper.is_dm_creator(auth_user_id, message['dm_id'])
     if not user_found:
-        raise AccessError(description="User is not in channel/dm")
+        raise AccessError(description="User is not owner of channel/dm")
     if message['is_pinned']:
         raise InputError(description="Message has already been pinned")
     add_pin(message_id)
@@ -594,11 +594,11 @@ def message_unpin_v1(token, message_id):
         raise InputError(description="Please select a valid message")
     message = message_details(message_id)
     if message['channel_id'] != -1:
-        user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
+        user_found = helper.is_already_channel_owner(auth_user_id, message['channel_id'])
     else:
-        user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
+        user_found = helper.is_dm_creator(auth_user_id, message['dm_id'])
     if not user_found:
-        raise AccessError(description="User is not in channel/dm")
+        raise AccessError(description="User is not owner of channel/dm")
     if not message['is_pinned']:
         raise InputError(description="Message has not been pinned")
     remove_pin(message_id)
