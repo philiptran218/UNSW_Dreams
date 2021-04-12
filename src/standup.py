@@ -24,28 +24,34 @@ def is_message_empty(message):
 
 #function that creates a standup and adds it to the list of standups.
 def standup_create(auth_user_id,channel_id,length,token):
+    curr_time = datetime.now()+ timedelta(seconds=length)
+    curr_time = round(curr_time.replace(tzinfo=timezone.utc).timestamp())
     standup = {
         'channel_id':channel_id,
         'u_id': auth_user_id,
         'messages':[],
-        'finish_time': datetime.now()+ timedelta(seconds=length),
+        'finish_time': curr_time,
         'is_active': True
     }
     data['standups'].append(standup)
+    update_data()
     time.sleep(length)
     
     for stands in data['standups']:
         if stands['channel_id'] == channel_id:
-            final_msg = '\n'.join(stands['messages'])
-            message_send_v1(token, channel_id, final_msg)
-    
-    data['standups'].remove(standup)
+            if len (stands['messages']) > 0:
+                final_msg = '\n'.join(stands['messages'])
+                message_send_v1(token, channel_id, final_msg)
+    for stand in data['standups']:
+        if stand['channel_id'] == channel_id:
+            data['standups'].remove(stand)
+    update_data()
 
 def standup_running(channel_id):
     for standup in data['standups']:
         if standup['channel_id'] == channel_id:
             return True
-        return False
+    return False
 
 def standup_start_v1(token,channel_id,length):
     '''
@@ -88,11 +94,12 @@ def standup_start_v1(token,channel_id,length):
         raise InputError(description="An active standup is currently running in this channel") 
 
 
-    standup_create(auth_user_id,channel_id,length,token)
-    finishing_time = datetime.now()+ timedelta(seconds=length)
-    mythread = threading.Thread(target=standup_create)
+
+    curr_time = datetime.now()+ timedelta(seconds=length)
+    curr_time = round(curr_time.replace(tzinfo=timezone.utc).timestamp())
+    mythread = threading.Thread(target=standup_create,args=(auth_user_id,channel_id,length,token))
     mythread.start()
-    return{'time_finish':finishing_time}
+    return{'time_finish':curr_time}
 
 
 
@@ -134,7 +141,7 @@ def standup_active_v1(token,channel_id):
     for standup in data['standups']:
         if standup['channel_id'] == channel_id:
             return {'is_active':True,'time_finish':standup['finish_time']}
-        return {'is_active':False,'time_finish':None}
+    return {'is_active':False,'time_finish':None}
     
 
 def standup_send_v1(token,channel_id,message):
@@ -154,10 +161,12 @@ def standup_send_v1(token,channel_id,message):
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError(description="Message is longer than 1000 characters")
-    
+    if not standup_running(channel_id):
+        raise InputError(description='no standup running in this channel')
     handle = helper.get_handle(auth_user_id)
     for standup in data['standups']:
         if standup['channel_id'] == channel_id:
             msg = ''
             msg = handle + ':' + ' ' + message
             standup['messages'].append(msg)
+            update_data()
