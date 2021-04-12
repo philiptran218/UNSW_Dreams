@@ -678,7 +678,7 @@ def test_message_unpin_user_not_in_dm(clear_database, user1, user2, dm1, message
     with pytest.raises(AccessError):
         message_unpin_v1(user2['token'], message2)
 
-def test_message_dm_member_pin(clear_database, user1, user2, dm1, message2):
+def test_message_dm_member_unpin(clear_database, user1, user2, dm1, message2):
     message_pin_v1(user1['token'], message2)
     dm_invite_v1(user1['token'], dm1, user2['auth_user_id'])
     with pytest.raises(AccessError):
