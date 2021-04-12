@@ -4,6 +4,7 @@ from src.dm import dm_create_v1
 from src.channels import channels_create_v1
 from src.message import message_senddm_v1
 from src.error import InputError, AccessError
+from src.other import clear_v1
 import pytest
 from src.other import clear_v1
 

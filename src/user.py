@@ -1,5 +1,6 @@
 from src.error import InputError, AccessError
 import re
+from json import dumps, load
 from src.database import data, update_data
 from src.helper import is_valid_token, is_valid_uid, detoken, is_already_in_channel
 from datetime import timezone, datetime
@@ -13,9 +14,12 @@ def get_involvement_rate(user_channels, user_dms, user_msg):
     num_msg = len(data['messages'])
 
     demon_sum = num_channels + num_dms + num_msg
-           
     numer_sum = user_channels + user_dms + user_msg
-    involve_rate = float(numer_sum/demon_sum)
+
+    if demon_sum == 0:
+        involve_rate = 0
+    else:
+        involve_rate = float(numer_sum/demon_sum)
         
     return involve_rate
 
@@ -195,7 +199,7 @@ def user_stats_v1(token):
         This function returns the dms data type; a dictionary with dm_id and dm_name.
     ''' 
 
-    if is_valid_token == False:
+    if is_valid_token(token) == False:
         raise AccessError(description='token invalid')
 
     token_u_id = detoken(token)
@@ -217,23 +221,30 @@ def user_stats_v1(token):
         if msg['u_id'] == token_u_id:
             user_msg += 1
 
-    invovle_rate = get_involvement_rate(user_channels, user_dms, user_msg)
+    involve_rate = get_involvement_rate(user_channels, user_dms, user_msg)
 
     time = datetime.today()
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
     stats_log = {
-        'num_channels': [{user_channels, time_issued}],
-        'num_dms': [{user_dms, time_issued}],
-        'num_msg': [{user_msg, time_issued}],
-        'involvement_rate': invovle_rate,
+        'channels_joined': [{user_channels, time_issued}],
+        'dms_joined': [{user_dms, time_issued}],
+        'messages_sent': [{user_msg, time_issued}],
+        'involvement_rate': involve_rate,
     }
+    
 
     for user in data['users']:
         if user['u_id'] == token_u_id:
-            user['stats_log'].update(stats_log)
-    
+            user['stats_log']['channels_joined'] = stats_log['channels_joined']
+            user['stats_log']['dms_joined'] = stats_log['dms_joined']
+            user['stats_log']['messages_sent'] = stats_log['messages_sent']
+            user['stats_log']['involvement_rate'] = stats_log['involvement_rate']
+
+    with open ('src/persitent_data.json', 'r') as fp:
+        print(fp.read())
+
     update_data()
     
     return {'user_stats': stats_log}

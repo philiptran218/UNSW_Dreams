@@ -74,7 +74,7 @@ def users_stats_v1(token):
         statistics about all dreams users.
     ''' 
 
-    if is_valid_token == False:
+    if is_valid_token(token) == False:
         raise AccessError(description='token invalid')
 
     num_channels = len(data['channels'])
@@ -93,7 +93,7 @@ def users_stats_v1(token):
         'utilisation_rate': util_rate,
     }
 
-    data['users_stats_log'].update(stats_log)
+    data['stats_log'] = stats_log
     update_data()
 
     return {'dreams_stats': stats_log}

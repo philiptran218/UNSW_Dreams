@@ -8,7 +8,7 @@ DATA = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
-    'users_stats_log': {},
+    'stats_log': [],
 }
 
 def data_storage():
