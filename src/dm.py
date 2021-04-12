@@ -3,14 +3,6 @@ from src.error import AccessError, InputError
 from src.database import data, update_data
 from datetime import datetime, timezone
 
-#helper fucntion that checks if a user in a given dm is the creator of it
-def is_dm_creator(u_id,dm_id):
-    for dm in data['DM']:
-        if dm['dm_id'] ==dm_id:
-            if dm['dm_owner'] == u_id:
-                return True
-    return False
-
 #helper fucntion that returns the number of messages in a given dm
 def get_len_messages(dm_id):
     total = 0
@@ -146,7 +138,7 @@ def dm_remove_v1(token,dm_id):
     if not helper.is_valid_dm_id(dm_id):
         raise InputError(description='dm_id is invalid')
     #checking if the user who called the fucntion is the original dm creator
-    if not is_dm_creator(u_id,dm_id):
+    if not helper.is_dm_creator(u_id,dm_id):
         raise AccessError(description='user is not original dm creator')
     
     for dm in data['DM']:

@@ -398,7 +398,7 @@ def test_removeowner_invalid_channel(clear_data, user_1, user_2, public_channel_
         channel_removeowner_v1(user_1['token'], INVALID_VALUE, user_2['auth_user_id'])
 
 def test_removeowner_invalid_auth_id(clear_data, user_1, user_2, public_channel_1):
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         channel_removeowner_v1(user_2['token'], public_channel_1, user_1['auth_user_id'])
 
 def test_removeowner_invalid_uid(clear_data, user_1, user_2, public_channel_1):

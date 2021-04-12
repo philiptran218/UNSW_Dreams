@@ -55,6 +55,24 @@ def is_valid_dm_id(dm_id):
             return True
     return False
 
+def is_already_channel_owner(u_id, channel_id):
+    selected_channel = None
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            selected_channel = channel
+            
+    for member in selected_channel['owner_members']:
+        if member['u_id'] == u_id:
+            return True
+    return False
+
+def is_dm_creator(u_id,dm_id):
+    for dm in data['DM']:
+        if dm['dm_id'] ==dm_id:
+            if dm['dm_owner'] == u_id:
+                return True
+    return False
+
 def get_first_name(auth_user_id):
     first_name = None
     for user in data['users']:
