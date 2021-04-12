@@ -76,7 +76,7 @@ def standup_start_v1(token,channel_id,length):
         raise InputError(description="Please enter a valid channel_id")       
     # Check if user is not in the channel
     if not helper.is_already_in_channel(auth_user_id, channel_id):
-        raise AccessError(description="User is not a member in the channel they are sending the message to")
+        raise AccessError(description="User is not a member in the channel")
     if standup_running(channel_id):
         raise InputError(description="An active standup is currently running in this channel") 
 
@@ -91,7 +91,44 @@ def standup_start_v1(token,channel_id,length):
 
 
 def standup_active_v1(token,channel_id):
-    pass
+    '''
+    Function:
+        For a given channel, return whether a standup is active in it,
+        and what time the standup finishes. If no standup is active, then time_finish returns None
+
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        channel_id (int) - this is the ID of an existing channel
+
+
+
+    Exceptions:
+        InputError - the channel ID is not a valid ID
+        
+        AccessError - the user's token is not a valid token
+                    - the user is not in the channel
+  
+
+    Return value:
+        Returns a dictionary containing the type {time_finish}
+    '''
+    # Check for token
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")  
+    auth_user_id = helper.detoken(token)    
+    # Check for valid channel_id
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel_id")       
+    # Check if user is not in the channel
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not a member in the channel")
+    
+    for standup in data['standups']:
+        if standup['channel_id'] == channel_id:
+            return {'is_active':True,'time_finish':standup['finish_time']}
+        return {'is_active':False,'time_finish':None}
+    
 
 def standup_send_v1(token,channel_id,message):
     # Check for token
