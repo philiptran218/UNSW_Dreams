@@ -223,18 +223,17 @@ def user_stats_v1(token):
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
-    for user in data['users']:
-        if user['u_id'] == token_u_id:
-            user[['stats_log'].update({
-                'num_channels': [{user_channels, time_issued}],
-                'num_dms': [{user_dms, time_issued}],
-                'num_msg': [{user_msg, time_issued}],
-                'involvement_rate': invovle_rate,
-            })
-    
-    return {
+    stats_log = {
         'num_channels': [{user_channels, time_issued}],
         'num_dms': [{user_dms, time_issued}],
         'num_msg': [{user_msg, time_issued}],
         'involvement_rate': invovle_rate,
     }
+
+    for user in data['users']:
+        if user['u_id'] == token_u_id:
+            user['stats_log'].update(stats_log)
+    
+    update_data()
+    
+    return {'user_stats': stats_log}

@@ -167,6 +167,12 @@ def auth_register_v1(email, password, name_first, name_last):
         'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
+        'stats_log': {
+            'channels_joined': 0,
+            'dms_joined': 0,
+            'messages_sent': 0,
+            'involvement_rate': 0,
+        }
     }
     
     data['users'].append(user)
