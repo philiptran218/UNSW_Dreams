@@ -86,15 +86,17 @@ def users_stats_v1(token):
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
-    data['users_stats_log'].update({
+    stats_log = {
         'num_channels': [{num_channels, time_issued}],
         'num_dms': [{num_dms, time_issued}],
         'num_msg': [{num_msg, time_issued}],
         'utilisation_rate': util_rate,
-    })
+    }
+
+    data['users_stats_log'].update(stats_log)
     update_data()
 
-    return data['users_stats_log']
+    return {'dreams_stats': stats_log}
 
     
 
