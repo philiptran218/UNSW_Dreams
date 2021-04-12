@@ -64,6 +64,7 @@ def clear_v1():
     delete('notifications')
     delete('sessions')
     delete('session_ids')
+    delete('standups')
     update_data()
     return {}
 
