@@ -6,6 +6,7 @@ data = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
+    'standups':[],
 }
 
 ''' initialise empty lists for data fields '''
