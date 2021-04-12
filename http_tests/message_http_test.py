@@ -150,6 +150,13 @@ def channel_leave(token, channel_id):
         'channel_id': channel_id,
     })
 
+def channel_addowner(token, channel_id, u_id):
+    return requests.post(config.url + 'channel/addowner/v1', json={
+        'token': token,
+        'channel_id': channel_id,
+        'u_id': u_id
+    })
+
 def dm_invite(token, dm_id, u_id):
     return requests.post(config.url + 'dm/invite/v1', json={
         'token': token,
@@ -901,10 +908,16 @@ def test_message_same_user_pin_again(clear_database, user_1, channel_1, message_
 def test_message_diff_user_pin_again(clear_database, user_1, user_2, channel_1, message_1):
     message_pin(user_1['token'], message_1)
     channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
+    channel_addowner(user_1['token'], channel_1, user_2['auth_user_id'])
     pin = message_pin(user_2['token'], message_1)
     assert pin.status_code == INPUTERROR
 
 def test_message_pin_user_not_in_channel(clear_database, user_1, user_2, channel_1, message_1):
+    pin = message_pin(user_2['token'], message_1)
+    assert pin.status_code == ACCESSERROR  
+
+def test_message_pin_member_in_channel(clear_database, user_1, user_2, channel_1, message_1):
+    channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
     pin = message_pin(user_2['token'], message_1)
     assert pin.status_code == ACCESSERROR  
 
@@ -934,6 +947,7 @@ def test_message_pin_valid_inputs_in_dm(clear_database, user_1, channel_1, dm_1,
 
 def test_message_pin_another_user_in_channel(clear_database, user_1, user_2, channel_1, message_1):
     channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
+    channel_addowner(user_1['token'], channel_1, user_2['auth_user_id'])
     message_pin(user_2['token'], message_1)
     messages_json = channel_messages(user_1['token'], channel_1, 0)
     messages = messages_json.json()
@@ -941,17 +955,6 @@ def test_message_pin_another_user_in_channel(clear_database, user_1, user_2, cha
     assert message['message_id'] == 1
     assert message['u_id'] == 1
     assert message['message'] == 'Hello World'
-    assert message['is_pinned'] == True
-
-def test_message_pin_another_user_in_dm(clear_database, user_1, user_2, channel_1, dm_1, message_1, message_2):
-    dm_invite(user_1['token'], dm_1, user_2['auth_user_id'])
-    message_pin(user_2['token'], message_2)
-    messages_json = dm_messages(user_1['token'], dm_1, 0)
-    messages = messages_json.json()
-    message = messages['messages'][0]
-    assert message['message_id'] == 2
-    assert message['u_id'] == 1
-    assert message['message'] == 'Hello DM'
     assert message['is_pinned'] == True
 
 ################################################################################
@@ -977,11 +980,18 @@ def test_message_same_user_unpin_again(clear_database, user_1, channel_1, messag
 def test_message_diff_user_unpin_again(clear_database, user_1, user_2, channel_1, message_1):
     message_pin(user_1['token'], message_1)
     channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
-    message_unpin(user_2['token'], message_1)
+    channel_addowner(user_1['token'], channel_1, user_2['auth_user_id'])
+    message_unpin(user_1['token'], message_1)
     pin = message_unpin(user_2['token'], message_1)
     assert pin.status_code == INPUTERROR
 
 def test_message_unpin_user_not_in_channel(clear_database, user_1, user_2, channel_1, message_1):
+    message_pin(user_1['token'], message_1)
+    pin = message_unpin(user_2['token'], message_1)
+    assert pin.status_code == ACCESSERROR 
+
+def test_message_unpin_member_in_channel(clear_database, user_1, user_2, channel_1, message_1):
+    channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
     message_pin(user_1['token'], message_1)
     pin = message_unpin(user_2['token'], message_1)
     assert pin.status_code == ACCESSERROR  
@@ -1015,6 +1025,7 @@ def test_message_unpin_valid_inputs_in_dm(clear_database, user_1, channel_1, dm_
 
 def test_message_unpin_another_user_in_channel(clear_database, user_1, user_2, channel_1, message_1):
     channel_invite(user_1['token'], channel_1, user_2['auth_user_id'])
+    channel_addowner(user_1['token'], channel_1, user_2['auth_user_id'])
     message_pin(user_1['token'], message_1)
     message_unpin(user_2['token'], message_1)
     messages_json = channel_messages(user_1['token'], channel_1, 0)
@@ -1023,16 +1034,4 @@ def test_message_unpin_another_user_in_channel(clear_database, user_1, user_2, c
     assert message['message_id'] == 1
     assert message['u_id'] == 1
     assert message['message'] == 'Hello World'
-    assert message['is_pinned'] == False
-
-def test_message_unpin_another_user_in_dm(clear_database, user_1, user_2, channel_1, dm_1, message_1, message_2):
-    dm_invite(user_1['token'], dm_1, user_2['auth_user_id'])
-    message_pin(user_1['token'], message_2)
-    message_unpin(user_2['token'], message_2)
-    messages_json = dm_messages(user_1['token'], dm_1, 0)
-    messages = messages_json.json()
-    message = messages['messages'][0]
-    assert message['message_id'] == 2
-    assert message['u_id'] == 1
-    assert message['message'] == 'Hello DM'
     assert message['is_pinned'] == False
