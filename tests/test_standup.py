@@ -5,6 +5,7 @@ from src.channel import channel_messages_v1, channel_join_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.database import data
+from src.standup import standup_active_v1, standup_send_v1, standup_start_v1
 import time
 from datetime import datetime, timezone, timedelta
 INVALID_CHANNEL_ID = -1
@@ -141,7 +142,7 @@ def test_standup_send_user_not_member(clear_data,user_1,user_2,public_channel_1)
 
 def test_standup_send_invalid_token(clear_data, user_1, public_channel_1):
     with pytest.raises(AccessError):
-        standup_send_v1(INVALID_TOKEN, public_channel_1)
+        standup_send_v1(INVALID_TOKEN, public_channel_1,'ds')
     
 def test_standup_send_successful_message(clear_data, user_1, user_2, public_channel_1):
     channel_join_v1(user_2['token'], public_channel_1)
@@ -149,7 +150,7 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
     standup_start_v1(user_1['token'], public_channel_1, 5)
     standup_send_v1(user_1['token'], public_channel_1, 'Welcome to the standup!')
-    startup_send_v1(user_2['token'], public_channel_1, 'Hi there!')
+    standup_send_v1(user_2['token'], public_channel_1, 'Hi there!')
     time.sleep(6)
     chan_msg = channel_messages_v1(user_1['token'], public_channel_1, 0)['messages']
     assert len(chan_msg) == 1
