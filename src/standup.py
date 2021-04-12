@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.database import data, update_data
 import src.helper as helper
+from src.message import message_send_v1
 from datetime import timezone, datetime, timedelta
 import threading 
 import time
@@ -22,7 +23,7 @@ def is_message_empty(message):
     return len(message) == 0
 
 #function that creates a standup and adds it to the list of standups.
-def standup_create(auth_user_id,channel_id,length):
+def standup_create(auth_user_id,channel_id,length,token):
     standup = {
         'channel_id':channel_id,
         'u_id': auth_user_id,
@@ -32,6 +33,12 @@ def standup_create(auth_user_id,channel_id,length):
     }
     data['standups'].append(standup)
     time.sleep(length)
+    
+    for stands in data['standups']:
+        if stands['channel_id'] == channel_id:
+            final_msg = '\n'.join(stands['messages'])
+            message_send_v1(token, channel_id, final_msg)
+    
     data['standups'].remove(standup)
 
 def standup_running(channel_id):
@@ -81,7 +88,7 @@ def standup_start_v1(token,channel_id,length):
         raise InputError(description="An active standup is currently running in this channel") 
 
 
-    standup_create(auth_user_id,channel_id,length)
+    standup_create(auth_user_id,channel_id,length,token)
     finishing_time = datetime.now()+ timedelta(seconds=length)
     mythread = threading.Thread(target=standup_create)
     mythread.start()
@@ -147,3 +154,10 @@ def standup_send_v1(token,channel_id,message):
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError(description="Message is longer than 1000 characters")
+    
+    handle = helper.get_handle(auth_user_id)
+    for standup in data['standups']:
+        if standup['channel_id'] == channel_id:
+            msg = ''
+            msg = handle + ':' + ' ' + message
+            standup['messages'].append(msg)
