@@ -5,7 +5,8 @@ from src import config
 import time
 from datetime import datetime, timezone, timedelta
 
-
+INPUTERROR = 400
+ACCESSERROR = 403
 INVALID_CHANNEL_ID = -1
 INVALID_TOKEN = -1
 
