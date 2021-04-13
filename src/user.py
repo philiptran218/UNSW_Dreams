@@ -4,6 +4,9 @@ from json import dumps, load
 from src.database import data, update_data
 from src.helper import is_valid_token, is_valid_uid, detoken, is_already_in_channel
 from datetime import timezone, datetime
+import urllib.request
+import sys
+from PIL import Image
 
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
@@ -56,6 +59,7 @@ def user_profile_v1(token, u_id):
                     'name_first': user.get('name_first'),
                     'name_last': user.get('name_last'),
                     'handle_str': user.get('handle_str'),
+                    'profile_img_url': user.get('profile_img_url')
                 },
             }
     return user_details
@@ -171,17 +175,59 @@ def user_profile_sethandle_v1(token, handle_str):
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     '''
     Function:
-       returns a list of DM's the user is a part of. 
+       Function allows a user to update their profile picture to a picture of their choosing. 
 
     Arguments:
         token (str) - token of a registered user during their session
+        img_url(str) - url of the image that you want to be placed through url
+        x_start(int) - starting x coordinate of the image.
+        x_end(int) - ending x coordinate of the image.
+        y_start(int) - starting y coordinate of the image.
+        y_end(int) - ending y coordinate of the image.
 
     Exceptions:     
-        AccessError - the user who calls the fucntion is not a valid user (invalid token).
+        AccessError: - the user who calls the fucntion is not a valid user (invalid token).
+        InputError when:
+            - img_url returns a HTTP status other then 200
+            - any of the coordinates are not in dimensions of image url
+            - image uploaded is not a JPEG
 
     Return Type:
-        This function returns the dms data type; a dictionary with dm_id and dm_name.
+        This function has no return value. 
     ''' 
+    if not is_valid_token(token):
+        raise AccessError(description="Token invalid")
+
+    token_u_id = detoken(token)
+
+    file_name = f"{img_url}.jpg"
+
+    urllib.request.urlretrieve(img_url, file_name)
+    max_y = Image.open(file_name, 'r').height
+    max_x = Image.open(file_name, 'r').width
+
+    jpg_checker = img_url.endswith('.jpg')
+    if jpg_checker != True:
+        raise InputError(description="Image is not of specified type")
+
+    if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
+        raise InputError(description="Coordinates not in dimensions of image")
+
+    if x_start > max_x or x_end > max_x or y_start > max_y or y_end > max_y:
+        raise InputError(description="Coordinates not in dimensions of image")
+
+    if x_start > x_end or  y_start > y_end:
+        raise InputError(description="Coordinates are invalid")
+
+    for user in data['users']:
+        if user['u_id'] == token_u_id:
+            user['profile_img_url'] = img_url
+    update_data()
+
+    image_object = Image.open(file_name)
+    cropped_image = image_object.crop(x_start, y_start, x_end, y_end)
+    cropped_image.save(file_name)
+
     return {}
 
 def user_stats_v1(token):

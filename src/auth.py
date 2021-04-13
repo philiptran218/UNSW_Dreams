@@ -5,6 +5,7 @@ import hashlib
 import jwt
 from src.helper import is_valid_token
 
+DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg" 
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -167,6 +168,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
+        'profile_img_url': DEFAULT_IMG_URL,
         'stats_log': {
             'channels_joined': 0,
             'dms_joined': 0,

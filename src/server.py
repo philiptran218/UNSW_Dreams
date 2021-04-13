@@ -404,7 +404,6 @@ def users_stats():
     userall_stats = request.args
     output = users_stats_v1(userall_stats['token'])
     return dumps(output)
-
     
 ################################################################################
 # Example
