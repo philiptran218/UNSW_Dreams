@@ -66,7 +66,7 @@ def test_currently_running_standup(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length' :10
     })  
-         standup = requests.post(config.url + 'standup/start/v1', json={
+    standup = requests.post(config.url + 'standup/start/v1', json={
         'token' :user_1['token'],
         'channel_id' : public_channel_1,
         'length' : 19
