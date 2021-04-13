@@ -54,37 +54,37 @@ def clear_data():
 
 def test_standup_start_invalid_channel_id(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={
-        'token' : user_1['token']
-        'channel_id' : INVALID_CHANNEL_ID
+        'token' : user_1['token'],
+        'channel_id' : INVALID_CHANNEL_ID,
         'length' : 10
     })
     assert standup.status_code == InputError
 
 def test_currently_running_standup(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={
-        'token' :user_1['token']
-        'channel_id' : public_channel_1
+        'token' :user_1['token'],
+        'channel_id' : public_channel_1,
         'length' :10
     })  
          standup = requests.post(config.url + 'standup/start/v1', json={
-        'token' :user_1['token']
-        'channel_id' : public_channel_1
+        'token' :user_1['token'],
+        'channel_id' : public_channel_1,
         'length' : 19
     })  
     assert standup.status_code == InputError
 
 def test_user_not_in_channel(clear_data,user_1,user_2,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={
-        'token' : user_2['token']
-        'channel_id' : public_channel_1
+        'token' : user_2['token'],
+        'channel_id' : public_channel_1,
         'length' : 19
     })  
     assert standup.status_code == AccessError
 
 def test_standup_start_invalid_token(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={  
-        'token' : INVALID_TOKEN
-        'channel_id' : public_channel_1
+        'token' : INVALID_TOKEN,
+        'channel_id' : public_channel_1,
         'length': 19
     })  
     assert standup.status_code == AccessError
@@ -94,8 +94,8 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
 
     standup = requests.post(config.url + 'standup/start/v1', json={  
-        'token' : INVALID_TOKEN
-        'channel_id' : public_channel_1
+        'token' : INVALID_TOKEN,
+        'channel_id' : public_channel_1,
         'length' : 19
     })
     time = standup.json()['time_finish']
