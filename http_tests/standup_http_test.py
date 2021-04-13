@@ -62,7 +62,7 @@ def test_standup_start_invalid_channel_id(clear_data,user_1,public_channel_1):
         'channel_id' : INVALID_CHANNEL_ID,
         'length' : 10
     })
-    assert standup.status_code == InputError
+    assert standup.status_code == INPUTERROR
 
 def test_currently_running_standup(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={
@@ -75,7 +75,7 @@ def test_currently_running_standup(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length' : 19
     })  
-    assert standup.status_code == InputError
+    assert standup.status_code == INPUTERROR
 
 def test_user_not_in_channel(clear_data,user_1,user_2,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={
@@ -83,7 +83,7 @@ def test_user_not_in_channel(clear_data,user_1,user_2,public_channel_1):
         'channel_id' : public_channel_1,
         'length' : 19
     })  
-    assert standup.status_code == AccessError
+    assert standup.status_code == ACCESSERROR
 
 def test_standup_start_invalid_token(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/start/v1', json={  
@@ -91,7 +91,7 @@ def test_standup_start_invalid_token(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length': 19
     })  
-    assert standup.status_code == AccessError
+    assert standup.status_code == ACCESSERROR
 
 def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
@@ -109,3 +109,111 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     
     assert time == time_end
     assert is_active == True
+
+
+################################################################################
+# standup_active_v1 tests                                                      #
+################################################################################
+
+def test_standup_active_invalid_channel_id(clear_data,user_1,public_channel_1):
+    is_active = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={INVALID_CHANNEL_ID}")
+    assert is_active.status_code == INPUTERROR
+
+def test_standup_active_invalid_token(clear_data,user_1,public_channel_1):
+    is_active = requests.get(f"{config.url}standup/active/v1={INVALID_TOKEN}&channel_id={public_channel_1}")   
+    assert is_active.status_code == ACCESSERROR
+
+def test_standup_active(clear_data,user_1,public_channel_1):
+    time_end = datetime.now() + timedelta(0, 10)
+    time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
+    requests.post(config.url + 'standup/start/v1', json={
+        'token' :user_1['token'],
+        'channel_id' : public_channel_1,
+        'length' :10
+    })  
+    info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    info = info.json()
+    assert(info['is_active'])
+    assert info['time_finish'] == time_end
+    time.sleep(15)
+    
+    new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    new_info = new_info.json()
+    assert not info['is_active']
+    assert info['time_finish'] == None
+
+def test_standup_inactive(clear_data, user_1, public_channel_1):
+    new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    new_info = new_info.json()
+    assert not info['is_active']
+    assert info['time_finish'] == None
+
+################################################################################
+# standup_send_v1 http tests                                                   #
+################################################################################
+
+def test_standup_send_invalid_channel_id(clear_data,user_1,public_channel_1):
+    standup = requests.post(config.url + 'standup/send/v1', json={  
+        'token' : user_1['token'],
+        'channel_id' : INVALID_CHANNEL_ID,
+        'message': "hibye"
+    })  
+    assert standup.status_code == INPUTERROR
+
+def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,create_long_msg):
+    requests.post(config.url + 'standup/start/v1', json={
+        'token' :user_1['token'],
+        'channel_id' : public_channel_1,
+        'length' :20
+    })  
+    standup = requests.post(config.url + 'standup/send/v1', json={  
+        'token' : user_1['token'],
+        'channel_id' : public_channel_1
+        'message': create_long_msg
+    })  
+    assert standup.status_code == INPUTERROR
+
+
+def test_standup_send_not_active(clear_data,user_1,public_channel_1):
+    standup = requests.post(config.url + 'standup/send/v1', json={  
+        'token' : user_1['token'],
+        'channel_id' : public_channel_1
+        'message': 'bye'
+    })  
+    assert standup.status_code == INPUTERROR
+
+
+def test_standup_send_user_not_member(clear_data,user_1,user_2,public_channel_1):
+    requests.post(config.url + 'standup/start/v1', json={
+        'token' :user_1['token'],
+        'channel_id' : public_channel_1,
+        'length' :20
+    }) 
+    standup = requests.post(config.url + 'standup/send/v1', json={  
+        'token' : user_2['token'],
+        'channel_id' : public_channel_1
+        'message': 'bye'
+    })  
+    assert standup.status_code == ACCESSERROR
+
+def test_standup_send_invalid_token(clear_data, user_1, public_channel_1):
+    standup = requests.post(config.url + 'standup/send/v1', json={  
+        'token' : INVALID_TOKEN,
+        'channel_id' : public_channel_1
+        'message': 'bye'
+    })  
+    assert standup.status_code == ACCESSERROR
+
+
+
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
