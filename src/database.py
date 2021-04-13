@@ -28,6 +28,5 @@ data = data_storage()
 
 def update_data():
     with open('src/persitent_data.json', 'w') as fp:
-        print(data)
         fp.write(dumps(data))
         fp.close()

@@ -6,23 +6,22 @@ from datetime import timezone, datetime
 
 def get_utlilisation_rate(token):
 
-    token_u_id = detoken(token)
     num_users = len(data['users'])
-    unutilised = True
-    util_users = 0
 
-    for user in data['users']:
-        for channel in data['channels']:
-            if is_already_in_channel(user['u_id'], channel['channel_id']) == False:
-                unutilised == False
+    utilised_id_list = []
 
-        for dm in data['DM']:
-            for member in dm['dm_members']:
-                if member['u_id'] == token_u_id:
-                    unutilised == False
+    for channel in data['channels']:
+        for member in channel['all_members']:
+            utilised_id_list.append(member['u_id'])
 
-        if unutilised == False:
-            util_users += 1
+    for dm in data['DM']:
+        for member in dm['dm_members']:
+            for utilised_id in utilised_id_list:
+                if member['u_id'] == utilised_id:
+                    break
+                utilised_id_list.append(member['u_id'])
+
+    util_users = len(utilised_id_list)
 
     util_rate = float(util_users/num_users)
         
@@ -87,13 +86,13 @@ def users_stats_v1(token):
     time_issued = round(time)
 
     stats_log = {
-        'num_channels': [{num_channels, time_issued}],
-        'num_dms': [{num_dms, time_issued}],
-        'num_msg': [{num_msg, time_issued}],
+        'channels_exist': [{num_channels, time_issued}],
+        'dms_exist': [{num_dms, time_issued}],
+        'messages_exist': [{num_msg, time_issued}],
         'utilisation_rate': util_rate,
     }
 
-    data['stats_log'].append(stats_log)
+    #data['stats_log'].append(stats_log)
     update_data()
 
     return {'dreams_stats': stats_log}

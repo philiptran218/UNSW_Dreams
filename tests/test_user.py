@@ -6,6 +6,7 @@ from src.channels import channels_create_v1
 from src.message import message_senddm_v1
 import pytest
 from src.other import clear_v1
+from datetime import timezone, datetime
 
 INVALID_VALUE = -1
 INVALID_TOKEN = -1
@@ -38,6 +39,13 @@ def dm1(user_1, user_2):
 def message1(user_1, user_2, dm1):
     message = message_senddm_v1(user_1['token'], dm1['dm_id'], 'Hello DM')
     return message
+
+@pytest.fixture
+def get_time():
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time_issued = round(time)
+    return time_issued
 
 @pytest.fixture
 def clear_data():
@@ -217,28 +225,32 @@ def test_sethandle_invalid_token(clear_data):
 # user_stats_v1 tests                                                         #
 ################################################################################
 
-def empty_stats_list():
+def empty_stats_list(get_time):
     return {
-        'channels_joined': 0,
-        'dms_joined': 0,
-        'messages_sent': 0,
-        'utilisation_rate': 0,
+        'user_stats': {
+            'channels_joined': [{0, get_time}],
+            'dms_joined': [{0, get_time}],
+            'messages_sent': [{0, get_time}],
+            'involvement_rate': 0.0,
+        }
     }
 
-def stats_list():
+def stats_list(get_time):
     return {
-        'channels_joined': 1,
-        'dms_joined': 1,
-        'messages_sent': 1,
-        'involvement_rate': 1,
+        'user_stats': {
+            'channels_joined': [{1, get_time}],
+            'dms_joined': [{1, get_time}],
+            'messages_sent': [{1, get_time}],
+            'involvement_rate': 1.0,
+        }
     }
 
 def test_user_stats_invalid_token(clear_data):
     with pytest.raises(AccessError):
         user_stats_v1(INVALID_TOKEN) 
 
-def test_user_stats_valid_empty(clear_data, user_1):
-    assert user_stats_v1(user_1['token']) == empty_stats_list()
+def test_user_stats_valid_empty(clear_data, user_1, get_time):
+    assert user_stats_v1(user_1['token']) == empty_stats_list(get_time)
 
-def test_user_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1):
-    assert user_stats_v1(user_1['token']) == stats_list()
+def test_user_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
+    assert user_stats_v1(user_1['token']) == stats_list(get_time)

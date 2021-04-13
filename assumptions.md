@@ -52,5 +52,6 @@ We are assuming:
 - if a user is tagged in a channel/DM they are not a member of, there will be no notification created
 - deleting a DM will not remove its messages
 - User and users stats are not recorded in real time. They are instead only recorded when the functions are called.
-  These stats must be kept for the most recent update.
+  These stats must be kept and archived.
+- Involvement rate and utilisation rate are tracked in addition to other measures. This makes the code easier to implement.
 

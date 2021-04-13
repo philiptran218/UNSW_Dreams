@@ -9,11 +9,17 @@ REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 def get_involvement_rate(user_channels, user_dms, user_msg):
 
-    num_users = len(data['users'])
+    num_messages = len(data['messages'])
+    num_channels = len(data['channels'])
+    num_dms = len(data['DM'])
 
+    denom_sum = num_dms + num_messages + num_channels
     numer_sum = user_channels + user_dms + user_msg
 
-    involve_rate = float(numer_sum/num_users)
+    if denom_sum == 0:
+        involve_rate = 0.0
+    else:
+        involve_rate = float(numer_sum/denom_sum)
         
     return involve_rate
 
@@ -228,16 +234,12 @@ def user_stats_v1(token):
         'involvement_rate': involve_rate,
     }
     
-
-    for user in data['users']:
-        if user['u_id'] == token_u_id:
-            user['stats_log']['channels_joined'] = stats_log['channels_joined']
-            user['stats_log']['dms_joined'] = stats_log['dms_joined']
-            user['stats_log']['messages_sent'] = stats_log['messages_sent']
-            user['stats_log']['involvement_rate'] = stats_log['involvement_rate']
-
-    with open ('src/persitent_data.json', 'r') as fp:
-        print(fp.read())
+    #for user in data['users']:
+    #   if user['u_id'] == token_u_id:
+    #        user['stats_log']['channels_joined'] = stats_log['channels_joined']
+    #        user['stats_log']['dms_joined'] = stats_log['dms_joined']
+    #        user['stats_log']['messages_sent'] = stats_log['messages_sent']
+    #        user['stats_log']['involvement_rate'] = stats_log['involvement_rate']
 
     update_data()
     
