@@ -93,7 +93,7 @@ def users_stats_v1(token):
         'utilisation_rate': util_rate,
     }
 
-    data['stats_log'] = stats_log
+    data['stats_log'].append(stats_log)
     update_data()
 
     return {'dreams_stats': stats_log}

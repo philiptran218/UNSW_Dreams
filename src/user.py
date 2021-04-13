@@ -9,17 +9,11 @@ REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 def get_involvement_rate(user_channels, user_dms, user_msg):
 
-    num_channels = len(data['channels'])
-    num_dms = len(data['DM'])
-    num_msg = len(data['messages'])
+    num_users = len(data['users'])
 
-    demon_sum = num_channels + num_dms + num_msg
     numer_sum = user_channels + user_dms + user_msg
 
-    if demon_sum == 0:
-        involve_rate = 0
-    else:
-        involve_rate = float(numer_sum/demon_sum)
+    involve_rate = float(numer_sum/num_users)
         
     return involve_rate
 
