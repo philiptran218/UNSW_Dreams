@@ -20,17 +20,6 @@ def is_channel_public(channel_id):
     else:
         return False
 
-def is_already_channel_owner(u_id, channel_id):
-    selected_channel = None
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            selected_channel = channel
-            
-    for member in selected_channel['owner_members']:
-        if member['u_id'] == u_id:
-            return True
-    return False
-
 def is_only_owner_in_channel(u_id, channel_id):
     selected_channel = None
     owner_found = False
@@ -105,7 +94,7 @@ def get_len_messages(channel_id):
             
     return total  
 
-def list_of_messages(channel_id, start, message_limit):
+def list_of_messages(auth_user_id, channel_id, start, message_limit):
     # Reverse messages so most recent are at the beginning 
     ordered_messages = list(reversed(data['messages']))
     messages = []
@@ -121,7 +110,9 @@ def list_of_messages(channel_id, start, message_limit):
                 'message_id': message['message_id'],
                 'u_id': message['u_id'],
                 'message': message['message'],
-                'time_created': message['time_created'],  
+                'time_created': message['time_created'],
+                'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                'is_pinned': message['is_pinned'],  
             }     
             messages.append(message_details)
         
@@ -261,7 +252,7 @@ def channel_messages_v1(token, channel_id, start):
         message_limit = end
 
     return {
-        'messages': list_of_messages(channel_id, start, message_limit),
+        'messages': list_of_messages(auth_user_id, channel_id, start, message_limit),
         'start': start,
         'end': end,
     }        
@@ -363,12 +354,12 @@ def channel_addowner_v1(token, channel_id, u_id):
     auth_user_id = helper.detoken(token)
     if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if is_already_channel_owner(u_id, channel_id):
+    if helper.is_already_channel_owner(u_id, channel_id):
         raise InputError(description="User is already an owner of the channel")
     if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
-    elif not is_already_channel_owner(auth_user_id, channel_id):
+    elif not helper.is_already_channel_owner(auth_user_id, channel_id):
         raise AccessError(description="User is not authorised")
     if not helper.is_already_in_channel(u_id, channel_id):
         raise AccessError(description="Please enter a valid user")
@@ -407,16 +398,14 @@ def channel_removeowner_v1(token, channel_id, u_id):
         raise AccessError(description="Please enter a valid user") 
     if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel")
-    if not is_already_channel_owner(u_id, channel_id):
+    if not helper.is_already_channel_owner(u_id, channel_id):
         raise InputError(description="User is not an owner of the channel")
     if is_only_owner_in_channel(auth_user_id, channel_id):
         raise InputError(description="User is currently the only owner")
     if helper.find_permissions(auth_user_id) == OWNER:
         # If auth_user_id is the global owner, they can add owner.
         pass
-    elif not helper.is_already_in_channel(auth_user_id, channel_id):
-        raise AccessError(description="User is not an owner of the channel")
-    elif not is_already_channel_owner(auth_user_id, channel_id):
+    elif not helper.is_already_channel_owner(auth_user_id, channel_id):
         raise InputError(description="User is not authorised")
     remove_channel_owner(u_id, channel_id)
     update_data()

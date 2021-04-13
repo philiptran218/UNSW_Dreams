@@ -58,7 +58,17 @@ messages = [
         'dm_id': -1, 
         'message': 'Hello world',
         'time_created': 1582426789,
+        'is_pinned': True/False
+        'reacts': [
+            {
+                'react_id': 1
+                'u_ids': [list of u_ids that have reacted]
+                'is_this_user_reacted': None
+            }
+        ]
     }
+
+    
 ]
 
 DM = [
@@ -94,4 +104,13 @@ notifications = [
 
     }
 ]
+
+stand_ups = [
+    {
+        'channel_id' = Id of channel inwhich the standup is taking place
+        'messages' = A multi-line string containing all the messages sent to the standup
+        'time_finished' = Time stand-up is going to finish
+    }
+]
 '''
+

@@ -5,6 +5,7 @@ from datetime import timezone, datetime
 
 OWNER = 1
 MEMBER = 2
+REACTS = [1]
 
 # Helper functions for the message.py:
 def is_message_empty(message):
@@ -74,13 +75,6 @@ def is_valid_channelid(channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             return True       
-    return False
-    
-def is_already_in_dm(u_id, dm_id):
-    for dm in data['DM']:
-        for member in dm['dm_members']:
-            if member['u_id'] == u_id:
-                return True
     return False
     
 def is_message_deleted(message):
@@ -170,6 +164,8 @@ def message_send_v1(token, channel_id, message):
         'u_id': auth_user_id,
         'message': message,
         'time_created': round(time),
+        'reacts': helper.create_reacts(),
+        'is_pinned': None
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, channel_id, -1, message)
@@ -267,6 +263,8 @@ def message_edit_v1(token, message_id, message):
         edit_msg.update({'dm_id': -1})
         edit_msg.update({'u_id': -1})
         edit_msg.update({'message': ''})
+        edit_msg.update({'reacts': ''})
+        edit_msg.update({'is_pinned': None})
     else:   
         edit_msg = message_details(message_id)
         edit_msg.update({'message': message})
@@ -319,7 +317,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         if not helper.is_valid_dm_id(dm_id):
             raise InputError(description="Please enter a valid dm_id")
         # Check if user has joined the DM
-        if not is_already_in_dm(auth_user_id, dm_id):
+        if not helper.is_already_in_dm(auth_user_id, dm_id):
             raise AccessError(description="User is not a member in the DM they are sharing the message to")
     # Check if og_message_id is valid
     if not message_exists(og_message_id):
@@ -349,6 +347,8 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'u_id': auth_user_id,
         'message': og_msg['message'] + app_message,
         'time_created': round(time),
+        'reacts': og_msg['reacts'],
+        'is_pinned': og_msg['is_pinned'],
     }
     data['messages'].append(msg)
     add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
@@ -387,7 +387,7 @@ def message_senddm_v1(token, dm_id, message):
     if not helper.is_valid_dm_id(dm_id):
         raise InputError(description="Please enter a valid dm_id")       
     # Check if user is not in the DM
-    if not is_already_in_dm(auth_user_id, dm_id):
+    if not helper.is_already_in_dm(auth_user_id, dm_id):
         raise AccessError(description="User is not a member in the DM they are sending the message to")
     # Check if message is empty
     if is_message_empty(message):
@@ -406,6 +406,8 @@ def message_senddm_v1(token, dm_id, message):
         'u_id': auth_user_id,
         'message': message,
         'time_created': round(time),
+        'reacts': helper.create_reacts(),
+        'is_pinned': None
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, -1, dm_id, message)
@@ -414,3 +416,191 @@ def message_senddm_v1(token, dm_id, message):
         'message_id': message_id,
     }
 
+def add_react(auth_user_id, reacts, react_id):
+    for react in reacts:
+        if react['react_id'] == react_id:
+            react['u_ids'].append(auth_user_id)
+    return reacts
+
+def message_react_v1(token, message_id, react_id):
+    '''
+    Function:
+        Given a message within a channel or DM the authorised user is part of, 
+        add a "react" to that particular message
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        message_id (int) - this is the ID of the message the user wants to react to
+        react_id (int) - this is the id of the type of react the user is using
+        
+    Exceptions:
+        InputError - message_id is not a valid message within a channel or DM 
+                     that the authorised user has joined
+                   - react_id is not a valid React ID. The only valid react ID 
+                     the frontend has is 1
+                   - Message with ID message_id already contains an active React 
+                     with ID react_id from the authorised user
+        AccessError - The authorised user is not a member of the channel or DM 
+                      that the message is within
+                      
+    Return value:
+        Returns a dictionary containing the type {message_id}
+    '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token") 
+    auth_user_id = helper.detoken(token) 
+    if not message_exists(message_id):
+        raise InputError(description="Please select a valid message")
+    if react_id not in REACTS:
+        raise InputError(description="Please select a valid react")
+    message = message_details(message_id)
+    reacts = helper.get_reacts(auth_user_id, message['reacts'])
+    if reacts[0]['is_this_user_reacted']:
+        raise InputError(description="User has already reacted to this message")
+    if message['channel_id'] != -1:
+        user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
+    else:
+        user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
+    if not user_found:
+        raise AccessError(description="User is not in channel/dm")
+    add_react(auth_user_id, reacts, react_id)
+    update_data()
+    return {}
+
+def remove_react(auth_user_id, reacts, react_id):
+    for react in reacts:
+        if react['react_id'] == react_id:
+            react['u_ids'].remove(auth_user_id)
+    return reacts
+
+def message_unreact_v1(token, message_id, react_id):
+    '''
+    Function:
+        Given a message within a channel or DM the authorised user is part of,
+        remove a "react" to that particular message
+        
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        message_id (int) - this is the ID of the message the user wants to react to
+        react_id (int) - this is the id of the type of react the user is using
+        
+    Exceptions:
+        InputError - message_id is not a valid message within a channel or DM 
+                     that the authorised user has joined
+                   - react_id is not a valid React ID. The only valid react ID 
+                     the frontend has is 1
+                   - Message with ID message_id does not contain an active React 
+                     with ID react_id from the authorised user
+        AccessError - The authorised user is not a member of the channel or DM 
+                      that the message is within
+                      
+    Return value:
+        Returns a dictionary containing the type {message_id}
+    '''
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token") 
+    auth_user_id = helper.detoken(token) 
+    if not message_exists(message_id):
+        raise InputError(description="Please select a valid message")
+    if react_id not in REACTS:
+        raise InputError(description="Please select a valid react")
+    message = message_details(message_id)
+    reacts = helper.get_reacts(auth_user_id, message['reacts'])
+    if not reacts[0]['is_this_user_reacted']:
+        raise InputError(description="User has not reacted to this message")
+    if message['channel_id'] != -1:
+        user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
+    else:
+        user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
+    if not user_found:
+        raise AccessError(description="User is not in channel/dm")
+    remove_react(auth_user_id, reacts, react_id)
+    update_data()
+    return {}
+
+def add_pin(message_id):
+    for message in data['messages']:
+        if message['message_id'] == message_id:
+            message['is_pinned'] = True
+
+def message_pin_v1(token, message_id):
+    """
+    Function:
+        Given a message within a channel or DM, mark it as "pinned" to be given 
+        special display treatment by the frontend
+
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        message_id (int) - this is the ID of the message the user wants to pin
+        
+    Exceptions:
+        InputError - message_id is not a valid message
+                   - Message with ID message_id is already pinned
+        AccessError - The authorised user is not a member of the channel or DM 
+                      that the message is within
+                      
+    Return value:
+        {}
+    """
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token") 
+    auth_user_id = helper.detoken(token) 
+    if not message_exists(message_id):
+        raise InputError(description="Please select a valid message")
+    message = message_details(message_id)
+    if message['channel_id'] != -1:
+        user_found = helper.is_already_channel_owner(auth_user_id, message['channel_id'])
+    else:
+        user_found = helper.is_dm_creator(auth_user_id, message['dm_id'])
+    if not user_found:
+        raise AccessError(description="User is not owner of channel/dm")
+    if message['is_pinned']:
+        raise InputError(description="Message has already been pinned")
+    add_pin(message_id)
+    update_data()
+    return {}
+
+def remove_pin(message_id):
+    for message in data['messages']:
+        if message['message_id'] == message_id:
+            message['is_pinned'] = False
+
+def message_unpin_v1(token, message_id):
+    """
+    Function:
+        Given a message within a channel or DM, remove it's mark as unpinned
+
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        message_id (int) - this is the ID of the message the user wants to pin
+        
+    Exceptions:
+        InputError - message_id is not a valid message
+                   - Message with ID message_id is not pinned
+        AccessError - The authorised user is not a member of the channel or DM 
+                      that the message is within
+                      
+    Return value:
+        {}
+    """
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token") 
+    auth_user_id = helper.detoken(token) 
+    if not message_exists(message_id):
+        raise InputError(description="Please select a valid message")
+    message = message_details(message_id)
+    if message['channel_id'] != -1:
+        user_found = helper.is_already_channel_owner(auth_user_id, message['channel_id'])
+    else:
+        user_found = helper.is_dm_creator(auth_user_id, message['dm_id'])
+    if not user_found:
+        raise AccessError(description="User is not owner of channel/dm")
+    if not message['is_pinned']:
+        raise InputError(description="Message has not been pinned")
+    remove_pin(message_id)
+    update_data()
+    return {}
