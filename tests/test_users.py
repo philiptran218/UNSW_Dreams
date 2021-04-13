@@ -12,6 +12,8 @@ from datetime import timezone, datetime
 INVALID_VALUE = -1
 INVALID_TOKEN = -1
 
+DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg" 
+
 ################################################################################
 # Fixtures                                                                     #
 ################################################################################
@@ -69,6 +71,7 @@ def expected_output_1():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
+                'profile_img_url': DEFAULT_IMG_URL, 
                 }]
             }
 
@@ -80,6 +83,7 @@ def expected_output_2():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
+                'profile_img_url': DEFAULT_IMG_URL, 
                 },
                 {
                 'u_id': 2,
@@ -87,6 +91,7 @@ def expected_output_2():
                 'name_last': 'Nguyen',
                 'email': 'terrynguyen@gmail.com',
                 'handle_str': 'terrynguyen',
+                'profile_img_url': DEFAULT_IMG_URL, 
                 },
                 {
                 'u_id': 3,
@@ -94,6 +99,7 @@ def expected_output_2():
                 'name_last': 'Tran',
                 'email': 'philt@gmail.com',
                 'handle_str': 'philtran',
+                'profile_img_url': DEFAULT_IMG_URL, 
                 }]
             }
 

@@ -53,6 +53,7 @@ def expected_output_admin_user_remove():
         'name_first': 'Removed',
         'name_last': 'User', 
         'handle_str': "dansmith",
+        'profile_img_url': "https://www.usbji.org/sites/default/files/person.jpg", 
     }
     }
 

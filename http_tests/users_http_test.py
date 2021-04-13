@@ -2,6 +2,7 @@ import pytest
 import requests
 import json
 from src import config
+from datetime import timezone, datetime
 
 INVALID_TOKEN = -1
 INVALID_UID = -1
@@ -67,6 +68,13 @@ def message_1(user_1, test_create_dm):
     msg_info = msg.json()
     return msg_info['message_id']
 
+@pytest.fixture
+def get_time():
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time_issued = round(time)
+    return time_issued
+
 @pytest.fixture 
 def clear_database():
     requests.delete(config.url + 'clear/v1')
@@ -119,32 +127,38 @@ def test_all_valid(clear_database, user_1, user_2, user_3):
 # users_stats http tests                                                       #
 ################################################################################
 
-def empty_stats_list():
+def empty_stats_list(get_time):
     return {
-        'channels_joined': 0,
-        'dms_joined': 0,
-        'messages_sent': 0,
-        'utilisation_rate': 0,
+        'dreams_stats': {
+            'channels_exist': [{0, get_time}],
+            'dms_exist': [{0, get_time}],
+            'messages_exist': [{0, get_time}],
+            'utilisation_rate': 0.0
+        }
     }
 
-def stats_list():
+
+def stats_list(get_time):
     return {
-        'channels_joined': 1,
-        'dms_joined': 1,
-        'messages_sent': 1,
-        'involvement_rate': 1,
+        'dreams_stats': {
+            'channels_exist': [{1, get_time}],
+            'dms_exist': [{1, get_time}],
+            'messages_exist': [{1, get_time}],
+            'utilisation_rate': 1.0
+        }
     }
+
 
 def test_users_stats_invalid_token(clear_database, user_1):
     stats = requests.get(f"{config.url}users/stats/v1?{INVALID_TOKEN}")
     assert stats.status_code == ACCESSERROR
 
-def test_users_stats_valid_empty(clear_database, user_1):
+def test_users_stats_valid_empty(clear_database, user_1, get_time):
     stats = requests.get(f"{config.url}user/stats/v1?{user_1['token']}")
     stats_info = stats.json()
-    assert stats_info == empty_stats_list()
+    assert stats_info == empty_stats_list(get_time)
 
-def test_users_stats_valid(clear_database, user_1, user_2, test_create_dm, channel_1, message_1):
+def test_users_stats_valid(clear_database, user_1, user_2, test_create_dm, channel_1, message_1, get_time):
     stats = requests.get(f"{config.url}user/stats/v1?{user_1['token']}")
     stats_info = stats.json()
-    assert stats_info == stats_list()
+    assert stats_info == stats_list(get_time)

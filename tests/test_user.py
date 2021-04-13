@@ -10,6 +10,12 @@ from datetime import timezone, datetime
 
 INVALID_VALUE = -1
 INVALID_TOKEN = -1
+INVALID_COORDINATE = -1
+LARGE_COORDINATE = 1000000000000
+
+DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg"
+NEW_IMG_URL = "https://img1.looper.com/img/gallery/things-only-adults-notice-in-shrek/intro-1573597941.jpg"
+INVALID_IMG_URL = "https://i.insider.com/5c59e77ceb3ce80d46564023?width=700"
 
 #################################################################################
 #   Fixtures                                                                    #
@@ -63,6 +69,7 @@ def test_valid_user_profile_v1(clear_data):
     assert user['user']['name_first'] == "John"
     assert user['user']['name_last'] == "Smith"
     assert user['user']['handle_str'] == "johnsmith"
+    assert user['user']['profile_img_url'] == DEFAULT_IMG_URL
     assert user == {
                     'user' : {
                         'u_id': 1,
@@ -70,6 +77,7 @@ def test_valid_user_profile_v1(clear_data):
                         'name_first': "John",
                         'name_last': "Smith",
                         'handle_str': "johnsmith",
+                        'profile_img_url': DEFAULT_IMG_URL
                     }
                 }
 
@@ -222,7 +230,7 @@ def test_sethandle_invalid_token(clear_data):
         user_profile_sethandle_v1("invalid", 'mycrosoft')
 
 ################################################################################
-# user_stats_v1 tests                                                         #
+# user_stats_v1 tests                                                          #
 ################################################################################
 
 def empty_stats_list(get_time):
@@ -254,3 +262,58 @@ def test_user_stats_valid_empty(clear_data, user_1, get_time):
 
 def test_user_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
     assert user_stats_v1(user_1['token']) == stats_list(get_time)
+
+################################################################################
+# user_profile_uploadphoto_v1 tests                                            #
+################################################################################
+
+def expected_output_uploadphoto():
+    return { 'user': {
+        'u_id': 1,
+        'email': 'johnsmith@gmail.com',
+        'name_first': 'John',
+        'name_last': 'Smith', 
+        'handle_str': "johnsmith",
+        'profile_img_url': NEW_IMG_URL, 
+    }
+    }
+
+def test_user_photo_invalid_token(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(INVALID_TOKEN, NEW_IMG_URL, 0, 0, 200, 200)
+
+def test_user_photo_invalid_not_jpg(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], INVALID_IMG_URL, 0, 0, 200, 200)
+
+def test_user_photo_invalid_x_start(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, INVALID_COORDINATE, 0, 200, 200)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, LARGE_COORDINATE, 0, 200, 200)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 200, 0, 0, 200)
+
+def test_user_photo_invalid_y_start(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, INVALID_COORDINATE, 200, 200)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, LARGE_COORDINATE, 200, 200)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 200, 200, 0)
+
+def test_user_photo_invalid_x_end(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, INVALID_COORDINATE, 200)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, LARGE_COORDINATE, 200)
+
+def test_user_photo_invalid_y_end(clear_data, user_1):
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, INVALID_COORDINATE)
+    with pytest.raises(AccessError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, LARGE_COORDINATE)
+
+def test_user_photo_valid(clear_data, user_1, user_2):
+    user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, 200)
+    assert user_profile_v1(user_2['token'], user_1['auth_user_id']) == expected_output_uploadphoto()
