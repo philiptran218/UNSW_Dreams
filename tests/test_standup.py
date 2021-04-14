@@ -48,12 +48,7 @@ def private_channel(user_2):
     channel = channels_create_v1(user_2['token'], "Terry's Channel", False)
     return channel['channel_id']
 
-@pytest.fixture
-def create_long_msg():
-    msg = ''
-    for i in range(0,400):
-        msg += str(i)
-    return msg
+
 
 
 @pytest.fixture
@@ -126,10 +121,10 @@ def test_standup_send_invalid_channel_id(clear_data,user_1,public_channel_1):
     with pytest.raises(InputError):
         standup_send_v1(user_1['token'],INVALID_CHANNEL_ID,'hi')
 
-def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,create_long_msg):
+def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1):
     standup_start_v1(user_1['token'],public_channel_1,20)
     with pytest.raises(InputError):
-        standup_send_v1(user_1['token'],public_channel_1,create_long_msg)
+        standup_send_v1(user_1['token'],public_channel_1,"i"*1001)
 
 def test_standup_send_not_active(clear_data,user_1,public_channel_1):
     with pytest.raises(InputError):
