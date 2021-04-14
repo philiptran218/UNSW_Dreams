@@ -210,12 +210,12 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
         'channel_id' : public_channel_1,
         'length' : 5
     }) 
-    standup = requests.post(config.url + 'standup/send/v1', json={  
+    requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_1['token'],
         'channel_id' : public_channel_1,
         'message': 'Welcome to the standup!'
     }) 
-    standup = requests.post(config.url + 'standup/send/v1', json={  
+    requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_2['token'],
         'channel_id' : public_channel_1,
         'message': 'Hi there!'
