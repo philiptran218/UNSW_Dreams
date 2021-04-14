@@ -233,7 +233,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 def user_stats_v1(token):
     '''
     Function:
-       returns a list of DM's the user is a part of. 
+       returns a dictionary of the user's personal stats, relating to their dreams usage.
 
     Arguments:
         token (str) - token of a registered user during their session
@@ -242,7 +242,7 @@ def user_stats_v1(token):
         AccessError - the user who calls the fucntion is not a valid user (invalid token).
 
     Return Type:
-        This function returns the dms data type; a dictionary with dm_id and dm_name.
+        This function returns the users_stats data type; a dictionary with the stats and the time at which it was measured.
     ''' 
 
     if is_valid_token(token) == False:
@@ -280,13 +280,17 @@ def user_stats_v1(token):
         'involvement_rate': involve_rate,
     }
     
-    #for user in data['users']:
-    #   if user['u_id'] == token_u_id:
-    #        user['stats_log']['channels_joined'] = stats_log['channels_joined']
-    #        user['stats_log']['dms_joined'] = stats_log['dms_joined']
-    #        user['stats_log']['messages_sent'] = stats_log['messages_sent']
-    #        user['stats_log']['involvement_rate'] = stats_log['involvement_rate']
+    # storage needs to be different from output in order to keep data persistence. 
+    stored_stats_log = {
+        'channels_joined': [{'channels_joined': user_channels, 'time': time_issued}],
+        'dms_joined': [{'dms_joined': user_dms, 'time': time_issued}],
+        'messages_sent': [{'messages_sent': user_msg, 'time': time_issued}],
+        'involvement_rate': involve_rate,
+    }
 
-    update_data()
+    for user in data['users']:
+        if user['u_id'] == token_u_id:
+            user['stats_log'].append(stored_stats_log)
+            update_data()
     
     return {'user_stats': stats_log}

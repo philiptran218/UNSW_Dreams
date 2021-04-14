@@ -4,6 +4,7 @@ from src.database import data, update_data
 import hashlib
 import jwt
 from src.helper import is_valid_token
+from datetime import timezone, datetime
 
 DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg" 
 
@@ -160,6 +161,12 @@ def auth_register_v1(email, password, name_first, name_last):
     else:
         perm_id = 2
 
+    # Checking the time, useful for the stats log.
+
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time_issued = round(time)
+
     user = {
         'u_id': number_users + 1,
         'name_first': name_first,
@@ -169,12 +176,14 @@ def auth_register_v1(email, password, name_first, name_last):
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
         'profile_img_url': DEFAULT_IMG_URL,
-        'stats_log': {
-            'channels_joined': 0,
-            'dms_joined': 0,
-            'messages_sent': 0,
-            'involvement_rate': 0,
-        }
+        'stats_log': [
+            {
+                'channels_joined': [{'channels_joined': 0, 'time': time_issued}],
+                'dms_joined': [{'dms_joined': 0, 'time': time_issued}],
+                'messages_sent': [{'messages_sent': 0, 'time': time_issued}],
+                'involvement_rate': 0.0,
+            }
+        ]
     }
     
     data['users'].append(user)

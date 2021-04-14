@@ -93,7 +93,15 @@ def users_stats_v1(token):
         'utilisation_rate': util_rate,
     }
 
-    #data['stats_log'].append(stats_log)
+    # storage needs to be different from output in order to keep data persistence. 
+    stored_stats_log = {
+        'channels_exist': [{'channels_exist': num_channels, 'time': time_issued}],
+        'dms_exist': [{'dms_exist': num_dms, 'time': time_issued}],
+        'messages_exist': [{'messages_exist': num_msg, 'time': time_issued}],
+        'utilisation_rate': util_rate,
+    }
+
+    data['stats_log'].append(stored_stats_log)
     update_data()
 
     return {'dreams_stats': stats_log}
