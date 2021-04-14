@@ -454,7 +454,7 @@ def standup_active():
 def standup_send():
     standup_info = request.get_json()
     output = standup_send_v1(standup_info['token'],standup_info['channel_id'],standup_info['message'])
-    return dumps (output)
+    return dumps(output)
 
 ################################################################################
 # Example
