@@ -168,7 +168,7 @@ def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,crea
     })  
     standup = requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_1['token'],
-        'channel_id' : public_channel_1
+        'channel_id' : public_channel_1,
         'message': create_long_msg
     })  
     assert standup.status_code == INPUTERROR
@@ -177,7 +177,7 @@ def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,crea
 def test_standup_send_not_active(clear_data,user_1,public_channel_1):
     standup = requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_1['token'],
-        'channel_id' : public_channel_1
+        'channel_id' : public_channel_1,
         'message': 'bye'
     })  
     assert standup.status_code == INPUTERROR
@@ -191,7 +191,7 @@ def test_standup_send_user_not_member(clear_data,user_1,user_2,public_channel_1)
     }) 
     standup = requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_2['token'],
-        'channel_id' : public_channel_1
+        'channel_id' : public_channel_1,
         'message': 'bye'
     })  
     assert standup.status_code == ACCESSERROR
@@ -199,7 +199,7 @@ def test_standup_send_user_not_member(clear_data,user_1,user_2,public_channel_1)
 def test_standup_send_invalid_token(clear_data, user_1, public_channel_1):
     standup = requests.post(config.url + 'standup/send/v1', json={  
         'token' : INVALID_TOKEN,
-        'channel_id' : public_channel_1
+        'channel_id' : public_channel_1,
         'message': 'bye'
     })  
     assert standup.status_code == ACCESSERROR
