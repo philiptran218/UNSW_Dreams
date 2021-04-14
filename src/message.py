@@ -167,7 +167,7 @@ def message_send_v1(token, channel_id, message):
         'message': message,
         'time_created': round(time),
         'reacts': helper.create_reacts(),
-        'is_pinned': None
+        'is_pinned': False
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, channel_id, -1, message)
@@ -350,7 +350,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'message': og_msg['message'] + app_message,
         'time_created': round(time),
         'reacts': og_msg['reacts'],
-        'is_pinned': og_msg['is_pinned'],
+        'is_pinned': False,
     }
     data['messages'].append(msg)
     add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
@@ -409,7 +409,7 @@ def message_senddm_v1(token, dm_id, message):
         'message': message,
         'time_created': round(time),
         'reacts': helper.create_reacts(),
-        'is_pinned': None
+        'is_pinned': False
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, -1, dm_id, message)
