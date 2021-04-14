@@ -41,13 +41,6 @@ def public_channel_1(user_1):
     channel_info = channel.json()
     return channel_info['channel_id']
 
-@pytest.fixture
-def create_long_msg():
-    msg = ''
-    for i in range(0,400):
-        msg += str(i)
-    return msg
-
 @pytest.fixture 
 def clear_data():
     requests.delete(config.url + '/clear/v1')
@@ -160,7 +153,7 @@ def test_standup_send_invalid_channel_id(clear_data,user_1,public_channel_1):
     })  
     assert standup.status_code == INPUTERROR
 
-def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,create_long_msg):
+def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1):
     requests.post(config.url + 'standup/start/v1', json={
         'token' :user_1['token'],
         'channel_id' : public_channel_1,
@@ -169,7 +162,7 @@ def test_standup_send_invalid_msg_length(clear_data,user_1,public_channel_1,crea
     standup = requests.post(config.url + 'standup/send/v1', json={  
         'token' : user_1['token'],
         'channel_id' : public_channel_1,
-        'message': create_long_msg
+        'message': "i"*1001
     })  
     assert standup.status_code == INPUTERROR
 
