@@ -9,6 +9,8 @@ INVALID_UID = -1
 INPUTERROR = 400
 ACCESSERROR = 403
 
+DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg"
+
 @pytest.fixture
 def user_1():
     user = requests.post(config.url + 'auth/register/v2', json={
@@ -92,6 +94,7 @@ def expected_output_all_users():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
+                'profile_img_url': DEFAULT_IMG_URL,
             },
             {
                 'u_id': 2,
@@ -99,6 +102,7 @@ def expected_output_all_users():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'handle_str': 'philiptran',
+                'profile_img_url': DEFAULT_IMG_URL,
             },
             {
                 'u_id': 3,
@@ -106,6 +110,7 @@ def expected_output_all_users():
                 'name_first': 'Terrance',
                 'name_last': 'Nguyen',
                 'handle_str': 'terrancenguyen', 
+                'profile_img_url': DEFAULT_IMG_URL,
             }
         ]   
     }
@@ -150,15 +155,15 @@ def stats_list(get_time):
 
 
 def test_users_stats_invalid_token(clear_database, user_1):
-    stats = requests.get(f"{config.url}users/stats/v1?{INVALID_TOKEN}")
+    stats = requests.get(f"{config.url}users/stats/v1?token={INVALID_TOKEN}")
     assert stats.status_code == ACCESSERROR
 
 def test_users_stats_valid_empty(clear_database, user_1, get_time):
-    stats = requests.get(f"{config.url}user/stats/v1?{user_1['token']}")
+    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
     stats_info = stats.json()
     assert stats_info == empty_stats_list(get_time)
 
 def test_users_stats_valid(clear_database, user_1, user_2, test_create_dm, channel_1, message_1, get_time):
-    stats = requests.get(f"{config.url}user/stats/v1?{user_1['token']}")
+    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
     stats_info = stats.json()
     assert stats_info == stats_list(get_time)
