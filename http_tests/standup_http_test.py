@@ -95,12 +95,13 @@ def test_standup_start(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length' : 19
     })
-    time = standup.json()['time_finish']
+    time = standup.json()
+    
 
-    is_active = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    is_active = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
     is_active = is_active.json()['is_active']
     
-    assert time == time_end
+    assert time['time_finish'] == time_end
     assert is_active == True
 
 
@@ -109,11 +110,11 @@ def test_standup_start(clear_data,user_1,public_channel_1):
 ################################################################################
 
 def test_standup_active_invalid_channel_id(clear_data,user_1,public_channel_1):
-    is_active = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={INVALID_CHANNEL_ID}")
+    is_active = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={INVALID_CHANNEL_ID}")
     assert is_active.status_code == INPUTERROR
 
 def test_standup_active_invalid_token(clear_data,user_1,public_channel_1):
-    is_active = requests.get(f"{config.url}standup/active/v1={INVALID_TOKEN}&channel_id={public_channel_1}")   
+    is_active = requests.get(f"{config.url}standup/active/v1?token={INVALID_TOKEN}&channel_id={public_channel_1}")   
     assert is_active.status_code == ACCESSERROR
 
 def test_standup_active(clear_data,user_1,public_channel_1):
@@ -124,22 +125,22 @@ def test_standup_active(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length' :10
     })  
-    info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
     info = info.json()
     assert(info['is_active'])
     assert info['time_finish'] == time_end
     time.sleep(15)
     
-    new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
+    new_info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
     new_info = new_info.json()
     assert not new_info['is_active']
     assert new_info['time_finish'] == None
 
 def test_standup_inactive(clear_data, user_1, public_channel_1):
-    new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
-    new_info = new_info.json()
-    assert not new_info['is_active']
-    assert new_info['time_finish'] == None
+    new_info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
+    info = new_info.json()
+    assert not info['is_active']
+    assert info['time_finish'] == None
 
 ################################################################################
 # standup_send_v1 http tests                                                   #
