@@ -123,7 +123,7 @@ def empty_stats_list(get_time):
             'channels_exist': [{0, get_time}],
             'dms_exist': [{0, get_time}],
             'messages_exist': [{0, get_time}],
-            'utilisation_rate': 0.0
+            'utilization_rate': 0.0
         }
     }
 
@@ -133,7 +133,7 @@ def stats_list(get_time):
             'channels_exist': [{1, get_time}],
             'dms_exist': [{1, get_time}],
             'messages_exist': [{1, get_time}],
-            'utilisation_rate': 1.0
+            'utilization_rate': 1.0
         }
     }
 

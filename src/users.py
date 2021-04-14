@@ -77,9 +77,9 @@ def users_stats_v1(token):
     if is_valid_token(token) == False:
         raise AccessError(description='token invalid')
 
-    num_channels = len(data['channels'])
-    num_dms = len(data['DM'])
-    num_msg = len(data['messages'])
+    num_channels_exist = len(data['channels'])
+    num_dms_exist = len(data['DM'])
+    num_msg_exist = len(data['messages'])
     util_rate = get_utlilisation_rate(token)
 
     time = datetime.today()
@@ -87,18 +87,18 @@ def users_stats_v1(token):
     time_issued = round(time)
 
     stats_log = {
-        'channels_exist': [{num_channels, time_issued}],
-        'dms_exist': [{num_dms, time_issued}],
-        'messages_exist': [{num_msg, time_issued}],
-        'utilisation_rate': util_rate,
+        'channels_exist': [{num_channels_exist, time_issued}],
+        'dms_exist': [{num_dms_exist, time_issued}],
+        'messages_exist': [{num_msg_exist, time_issued}],
+        'utilization_rate': util_rate,
     }
 
     # storage needs to be different from output in order to keep data persistence. 
     stored_stats_log = {
-        'channels_exist': [{'channels_exist': num_channels, 'time': time_issued}],
-        'dms_exist': [{'dms_exist': num_dms, 'time': time_issued}],
-        'messages_exist': [{'messages_exist': num_msg, 'time': time_issued}],
-        'utilisation_rate': util_rate,
+        'channels_exist': [{'channels_exist': num_channels_exist, 'time': time_issued}],
+        'dms_exist': [{'dms_exist': num_dms_exist, 'time': time_issued}],
+        'messages_exist': [{'messages_exist': num_msg_exist, 'time': time_issued}],
+        'utilization_rate': util_rate,
     }
 
     data['stats_log'].append(stored_stats_log)

@@ -324,7 +324,7 @@ def test_user_stats_valid_full(clear_database, user_1, user_2, test_create_dm, c
 ################################################################################
 
 def test_user_profile_uploadphoto_invalid_token(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': INVALID_TOKEN,
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -335,7 +335,7 @@ def test_user_profile_uploadphoto_invalid_token(clear_database, user_1):
     assert photo.status_code == ACCESSERROR
 
 def test_user_profile_uploadphoto_invalid_img_url(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': INVALID_IMG_URL,
         'x_start': 0,
@@ -346,7 +346,7 @@ def test_user_profile_uploadphoto_invalid_img_url(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_x_start_1(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': INVALID_COORDINATE,
@@ -357,7 +357,7 @@ def test_user_profile_uploadphoto_invalid_x_start_1(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_x_start_2(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': LARGE_COORDINATE,
@@ -368,7 +368,7 @@ def test_user_profile_uploadphoto_invalid_x_start_2(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_x_start_3(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 200,
@@ -379,7 +379,7 @@ def test_user_profile_uploadphoto_invalid_x_start_3(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_y_start_1(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -390,7 +390,7 @@ def test_user_profile_uploadphoto_invalid_y_start_1(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_y_start_2(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -401,7 +401,7 @@ def test_user_profile_uploadphoto_invalid_y_start_2(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_y_start_3(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -412,7 +412,7 @@ def test_user_profile_uploadphoto_invalid_y_start_3(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_x_end_1(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -423,7 +423,7 @@ def test_user_profile_uploadphoto_invalid_x_end_1(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_x_end_2(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -434,7 +434,7 @@ def test_user_profile_uploadphoto_invalid_x_end_2(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_y_end_1(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -445,7 +445,7 @@ def test_user_profile_uploadphoto_invalid_y_end_1(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_invalid_y_end_2(clear_database, user_1):
-    photo = requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -456,7 +456,7 @@ def test_user_profile_uploadphoto_invalid_y_end_2(clear_database, user_1):
     assert photo.status_code == INPUTERROR
 
 def test_user_profile_uploadphoto_valid(clear_database, user_1):
-    requests.post(config.url + '/user/profile/uploadphoto/v1', json=={
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json=={
         'token': user_1['token'],
         'img_url': NEW_IMG_URL,
         'x_start': 0,
@@ -464,7 +464,7 @@ def test_user_profile_uploadphoto_valid(clear_database, user_1):
         'x_end': 200,
         'y_end': 200,
     })
-    #assert photo.status_code == 200
+    assert photo.status_code == 200
     profile = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
     user_1_profile = profile.json() 
 

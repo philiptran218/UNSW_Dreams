@@ -124,9 +124,6 @@ def test_all_valid(clear_database, user_1, user_2, user_3):
     all_profiles_json = requests.get(f"{config.url}users/all/v1?token={user_1['token']}")
     all_profiles = all_profiles_json.json()
     assert all_profiles == expected_output_all_users()
-    # This is the last http tests, so run clear here to reset database to its
-    # original state.
-    requests.delete(config.url + 'clear/v1')
 
 ################################################################################
 # users_stats http tests                                                       #
@@ -138,7 +135,7 @@ def empty_stats_list(get_time):
             'channels_exist': [{0, get_time}],
             'dms_exist': [{0, get_time}],
             'messages_exist': [{0, get_time}],
-            'utilisation_rate': 0.0
+            'utilization_rate': 0.0
         }
     }
 
@@ -149,21 +146,24 @@ def stats_list(get_time):
             'channels_exist': [{1, get_time}],
             'dms_exist': [{1, get_time}],
             'messages_exist': [{1, get_time}],
-            'utilisation_rate': 1.0
+            'utilization_rate': 1.0
         }
     }
-
 
 def test_users_stats_invalid_token(clear_database, user_1):
     stats = requests.get(f"{config.url}users/stats/v1?token={INVALID_TOKEN}")
     assert stats.status_code == ACCESSERROR
 
 def test_users_stats_valid_empty(clear_database, user_1, get_time):
-    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
+    stats = requests.get(f"{config.url}users/stats/v1?token={user_1['token']}")
     stats_info = stats.json()
     assert stats_info == empty_stats_list(get_time)
 
 def test_users_stats_valid(clear_database, user_1, user_2, test_create_dm, channel_1, message_1, get_time):
-    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
+    stats = requests.get(f"{config.url}users/stats/v1?token={user_1['token']}")
     stats_info = stats.json()
     assert stats_info == stats_list(get_time)
+
+# This is the last http tests, so run clear here to reset database to its
+# original state.
+requests.delete(config.url + 'clear/v1')
