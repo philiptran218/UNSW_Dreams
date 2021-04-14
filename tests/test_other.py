@@ -4,8 +4,8 @@ from src.channel import channel_messages_v1, channel_invite_v1
 from src.channels import channels_create_v1, channels_listall_v1
 from src.database import data
 from src.error import InputError, AccessError
-from src.message import message_send_v1, message_senddm_v1
-from src.dm import dm_create_v1
+from src.message import message_send_v1, message_senddm_v1, message_edit_v1, message_react_v1
+from src.dm import dm_create_v1, dm_invite_v1
 
 import pytest
 import random
@@ -381,3 +381,48 @@ def test_notifications_get_channel_and_dm(clear_data, user_1, user_2, public_cha
     assert notif[3]['dm_id'] == user_1_dm
     assert notif[3]['notification_message'] == "johnsmith added you to johnsmith, terrynguyen"
 
+def test_notifications_get_tag_edit(clear_data, user_1, user_2, public_channel_1):
+    # Testing if a notification is raised when a message is edited to tag a user
+    channel_invite_v1(user_1['token'], public_channel_1, user_2['auth_user_id'])
+    msg = message_send_v1(user_2['token'], public_channel_1, 'Hello @johnsmith')
+    message_edit_v1(user_1['token'], msg['message_id'], 'I have edited this @terrynguyen')
+    user_1_notif = notifications_get_v1(user_1['token'])['notifications']
+    assert len(user_1_notif) == 1
+    assert user_1_notif[0]['channel_id'] == public_channel_1
+    assert user_1_notif[0]['dm_id'] == -1
+    assert user_1_notif[0]['notification_message'] == "terrynguyen tagged you in John's Channel: Hello @johnsmith"
+
+    user_2_notif = notifications_get_v1(user_2['token'])['notifications']
+    assert len(user_2_notif) == 2
+    assert user_2_notif[0]['channel_id'] == public_channel_1
+    assert user_2_notif[0]['dm_id'] == -1
+    assert user_2_notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: I have edited this @"
+    assert user_2_notif[1]['channel_id'] == public_channel_1
+    assert user_2_notif[1]['dm_id'] == -1
+    assert user_2_notif[1]['notification_message'] == "johnsmith added you to John's Channel"
+
+def test_notifications_get_react(clear_data, user_1, user_2):
+    # Testing notifications for react
+    dm = dm_create_v1(user_1['token'], [])
+    dm_invite_v1(user_1['token'], dm['dm_id'], user_2['auth_user_id'])
+    msg = message_senddm_v1(user_1['token'], dm['dm_id'], 'Hi @terrynguyen')
+    message_react_v1(user_2['token'], msg['message_id'], 1)
+    message_react_v1(user_1['token'], msg['message_id'], 1)
+    user_1_notif = notifications_get_v1(user_1['token'])['notifications']
+    assert len(user_1_notif) == 2
+    assert user_1_notif[0]['channel_id'] == -1
+    assert user_1_notif[0]['dm_id'] == dm['dm_id']
+    assert user_1_notif[0]['notification_message'] == "johnsmith reacted to your message in johnsmith"
+    assert user_1_notif[1]['channel_id'] == -1
+    assert user_1_notif[1]['dm_id'] == dm['dm_id']
+    assert user_1_notif[1]['notification_message'] == "terrynguyen reacted to your message in johnsmith"
+
+    user_2_notif = notifications_get_v1(user_2['token'])['notifications']
+    assert len(user_2_notif) == 2
+    assert user_2_notif[0]['channel_id'] == -1
+    assert user_2_notif[0]['dm_id'] == dm['dm_id']
+    assert user_2_notif[0]['notification_message'] == "johnsmith tagged you in johnsmith: Hi @terrynguyen"
+    assert user_2_notif[1]['channel_id'] == -1
+    assert user_2_notif[1]['dm_id'] == dm['dm_id']
+    assert user_2_notif[1]['notification_message'] == "johnsmith added you to johnsmith"
+    
