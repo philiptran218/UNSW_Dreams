@@ -1,6 +1,6 @@
 import sys
 from json import dumps, loads
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.error import InputError
 from src import config
@@ -411,8 +411,16 @@ def users_stats():
 @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
 def user_profile_uploadphoto():
     photo = request.get_json()
-    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], photo['x_start'], photo['y_start'], photo['x_end'], photo['y_end'])
+    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['x_end']))
     return dumps(output)
+
+################################################################################
+#   uploadphoto routes                                                         #
+################################################################################
+
+@APP.route("/user/static/<path:path>")
+def send_js(path):
+    return send_from_directory('', path)
     
 ################################################################################
 # Example
