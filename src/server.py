@@ -15,6 +15,7 @@ from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_set
 from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
+from src.standup import standup_start_v1, standup_send_v1, standup_active_v1
 
 from src.database import data
 
@@ -424,7 +425,37 @@ def message_unpin():
     message_info = request.get_json()
     output = message_unpin_v1(message_info['token'], message_info['message_id'])
     return dumps(output)
-    
+
+################################################################################
+# standup_start_v1 route                                                       #
+################################################################################
+
+@APP.route('/standup/start/v1', methods=['POST'])
+def standup_start():
+    standup_info = request.get_json()
+    output = standup_start_v1(standup_info['token'],standup_info['channel_id'],standup_info['length'])
+    return dumps(output)
+
+################################################################################
+# standup_active_v1 tests                                                      #
+################################################################################
+
+@APP.route('/standup/active/v1', methods=['GET'])
+def standup_active():
+    standup_info = request.args
+    output = standup_active_v1(standup_info['token'],standup_info['channel_id'])
+    return dumps(output)
+
+################################################################################
+# standup_send_v1 tests                                                        #
+################################################################################
+
+@APP.route('/standup/send/v1', methods=['POST'])
+def standup_send():
+    standup_info = request.get_json()
+    output = standup_send_v1(standup_info['token'],standup_info['channel_id'],standup_info['message'])
+    return dumps (output)
+
 ################################################################################
 # Example
 @APP.route("/echo", methods=['GET'])
