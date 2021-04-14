@@ -146,7 +146,6 @@ def test_other_search_invalid_token(clear_database, user_1):
 
 def test_other_search_invalid_query_str(clear_database, user_1):
     string = create_invalid_string()
-    print(len(string))
     search = requests.get(f"{config.url}search/v2?token={user_1['token']}&query_str={string}")
     assert search.status_code == INPUTERROR
 
