@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.database import data, update_data
 import src.helper as helper
-from src.message import message_send_v1
+from src.message import message_send_v1, add_tag_notification
 from datetime import timezone, datetime, timedelta
 import threading 
 import time
@@ -22,6 +22,25 @@ def is_message_empty(message):
     message = message.replace('\t', '')
     return len(message) == 0
 
+
+def standup_msg_send(auth_user_id, channel_id, message):
+    message_id = len(data['messages']) + 1
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    message_info = {
+        'message_id': message_id,
+        'channel_id': channel_id,
+        'dm_id': -1,
+        'u_id': auth_user_id,
+        'message': message,
+        'time_created': round(time),
+        'reacts': helper.create_reacts(),
+        'is_pinned': None
+    }
+    data['messages'].append(message_info)
+    add_tag_notification(auth_user_id, channel_id, -1, message)
+    update_data()
+
 #function that creates a standup and adds it to the list of standups.
 def standup_create(auth_user_id,channel_id,length,token):
     curr_time = datetime.now()+ timedelta(seconds=length)
@@ -41,7 +60,7 @@ def standup_create(auth_user_id,channel_id,length,token):
         if stands['channel_id'] == channel_id:
             if len (stands['messages']) > 0:
                 final_msg = '\n'.join(stands['messages'])
-                message_send_v1(token, channel_id, final_msg)
+                standup_msg_send(auth_user_id, channel_id, final_msg)
     for stand in data['standups']:
         if stand['channel_id'] == channel_id:
             data['standups'].remove(stand)
