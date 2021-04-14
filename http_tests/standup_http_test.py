@@ -132,14 +132,14 @@ def test_standup_active(clear_data,user_1,public_channel_1):
     
     new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
     new_info = new_info.json()
-    assert not info['is_active']
-    assert info['time_finish'] == None
+    assert not new_info['is_active']
+    assert new_info['time_finish'] == None
 
 def test_standup_inactive(clear_data, user_1, public_channel_1):
     new_info = requests.get(f"{config.url}standup/active/v1={user_1['token']}&channel_id={public_channel_1}")  
     new_info = new_info.json()
-    assert not info['is_active']
-    assert info['time_finish'] == None
+    assert not new_info['is_active']
+    assert new_info['time_finish'] == None
 
 ################################################################################
 # standup_send_v1 http tests                                                   #
@@ -224,7 +224,7 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     chan = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={public_channel_1}&start={0}")
     chan_msg = chan.json()['messages']
     assert len(chan_msg) == 1
-    assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nterrynguyen: Hi there!'
+    assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nphiliptran: Hi there!'
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
     assert chan_msg[0]['time_created'] == time_end
