@@ -256,7 +256,7 @@ def test_notifications_get_tag_edit(clear_database, user_1, user_2, channel_1):
     
 def test_notifications_get_react(clear_database, user_1, user_2, channel_1):
 
-    requests.post(config.url + 'channel/join/v2,', json={
+    requests.post(config.url + 'channel/join/v2', json={
         'token': user_2['token'],
         'channel_id': channel_1
     })
