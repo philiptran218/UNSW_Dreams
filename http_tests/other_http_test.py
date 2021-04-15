@@ -230,7 +230,7 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     assert notif_3_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_3_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
 
-def test_notifications_get_tag_edit(clear_data, user_1, user_2, channel_1):
+def test_notifications_get_tag_edit(clear_database, user_1, user_2, channel_1):
 
     requests.post(config.url + 'channel/invite/v2', json={
         'token': user_1['token'],
@@ -254,7 +254,7 @@ def test_notifications_get_tag_edit(clear_data, user_1, user_2, channel_1):
     assert notif[0]['dm_id'] == -1
     assert notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: I have edited this @"
     
-def test_notifications_get_react(clear_data, user_1, user_2, channel_1):
+def test_notifications_get_react(clear_database, user_1, user_2, channel_1):
 
     requests.post(config.url + 'channel/join/v2,', json={
         'token': user_2['token'],
@@ -293,7 +293,7 @@ def test_notifications_get_react(clear_data, user_1, user_2, channel_1):
     assert user_2_notif[0]['dm_id'] == -1
     assert user_2_notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: Hi @philiptran"
 
-def test_notifications_get_max(clear_data, user_1, user_2, channel_1, channel_2):
+def test_notifications_get_max(clear_database, user_1, user_2, channel_1, channel_2):
 
     i = 0
     while i < 25:
