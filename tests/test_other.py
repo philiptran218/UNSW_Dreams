@@ -425,4 +425,19 @@ def test_notifications_get_react(clear_data, user_1, user_2):
     assert user_2_notif[1]['channel_id'] == -1
     assert user_2_notif[1]['dm_id'] == dm['dm_id']
     assert user_2_notif[1]['notification_message'] == "johnsmith added you to johnsmith"
-    
+
+def test_notifications_get_max(clear_data, user_1, user_2, public_channel_1, public_channel_2):
+    # Testing for up to 20 notifications
+    i = 0
+    while i < 25:
+        message_send_v1(user_1['token'], public_channel_1, 'hi @johnsmith')
+        i += 1
+    channel_invite_v1(user_2['token'], public_channel_2, user_1['auth_user_id'])
+    notif = notifications_get_v1(user_1['token'])['notifications']
+    assert len(notif) == 20
+    assert notif[0]['channel_id'] == public_channel_2
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "terrynguyen added you to Terry's Channel"
+    assert notif[1]['channel_id'] == public_channel_1
+    assert notif[1]['dm_id'] == -1
+    assert notif[1]['notification_message'] == "johnsmith tagged you in John's Channel: hi @johnsmith"
