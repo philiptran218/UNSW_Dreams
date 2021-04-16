@@ -7,6 +7,21 @@ from src.other import clear_v1
 def clear_data():
     clear_v1()
 
+@pytest.fixture
+def user_1():
+    user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
+    return user
+
+@pytest.fixture
+def user_2():
+    user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
+    return user
+
+@pytest.fixture
+def user_3():
+    user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
+    return user
+
 ################################################################################
 # auth_login_v1 tests                                                          #
 ################################################################################
@@ -99,7 +114,7 @@ def test_repeat_long_handle(clear_data):
         j += 1
 
 #################################################################################
-#   auth_logout_v1 testing functions                                               #
+#   auth_logout_v1 testing functions                                            #
 #################################################################################
 
 def test_valid_logout_token(clear_data):
@@ -114,3 +129,39 @@ def test_invalid_logout(clear_data):
         auth_logout_v1(user.get('invalid_token')).get('is_success')
         
 
+################################################################################
+# auth_passwordreset_request tests                                             #
+################################################################################
+
+def test_invalid_email(clear_data, user_1):
+    with pytest.raises(InputError):
+        auth_passwordreset_request("johnsmithy@gmail.com")
+
+def test_invalid_email_format(clear_data, user_1):
+    with pytest.raises(InputError):
+        auth_passwordreset_request("john")
+
+################################################################################
+# auth_passwordreset_reset tests                                               #
+################################################################################
+def test_reset_pass(clear_data, user_1):
+    auth_passwordreset_request("johnsmith@gmail.com")
+    auth_passwordreset_reset(reset_code, 'newpassword')
+    auth_logout(user.get('token'))
+    auth_login_v1('johnsmith@gmail.com', 'newpassword')
+
+def test_invalid_code(clear_data, user_1):
+    auth_login_v1("johnsmith@gmail.com", "password")
+    auth_passwordreset_request("johnsmith@gmail.com")
+    with pytest.raises(InputError):
+        auth_passwordreset_reset(invalid_reset_code, 'newpassword')
+    
+def test_multireset_pass(clear_data, user_1):
+    auth_passwordreset_request("johnsmith@gmail.com")
+    auth_passwordreset_reset(reset_code, 'newpassword')
+    auth_logout(user.get('token'))
+    auth_login_v1('johnsmith@gmail.com', 'newpassword')
+    auth_passwordreset_request("johnsmith@gmail.com")
+    auth_passwordreset_reset(reset_code, 'newpassword2')
+    auth_logout(user.get('token'))
+    auth_login_v1('johnsmith@gmail.com', 'newpassword2')
