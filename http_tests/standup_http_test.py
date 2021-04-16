@@ -90,7 +90,7 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
 
-    standup = requests.post(config.url + 'standup/start/v1', json={  
+    standup = requests.post(config.url +'standup/start/v1', json={  
         'token' : INVALID_TOKEN,
         'channel_id' : public_channel_1,
         'length' : 19
@@ -98,11 +98,11 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time = standup.json()
     
 
-    is_active = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
-    is_active = is_active.json()['is_active']
+    info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
+    info = info.json()
     
-    assert time['time_finish'] == time_end
-    assert is_active == True
+    assert (time['time_finish'] == time_end
+    assert (info['is_active'])
 
 
 ################################################################################
