@@ -189,3 +189,4 @@ def standup_send_v1(token,channel_id,message):
             msg = handle + ':' + ' ' + message
             standup['messages'].append(msg)
             update_data()
+    return{}
