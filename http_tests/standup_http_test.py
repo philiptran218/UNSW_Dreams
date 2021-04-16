@@ -95,7 +95,7 @@ def test_standup_start(clear_data,user_1,public_channel_1):
         'channel_id' : public_channel_1,
         'length' : 19
     })
-    time = standup.json()
+    #time = standup.json()
     
 
     info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
