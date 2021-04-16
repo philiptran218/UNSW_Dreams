@@ -2,6 +2,8 @@ from src.error import InputError, AccessError
 from src.database import data, update_data
 import src.helper as helper
 from datetime import timezone, datetime
+import threading 
+import time
 
 OWNER = 1
 MEMBER = 2
@@ -165,7 +167,7 @@ def message_send_v1(token, channel_id, message):
         'message': message,
         'time_created': round(time),
         'reacts': helper.create_reacts(),
-        'is_pinned': None
+        'is_pinned': False
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, channel_id, -1, message)
@@ -348,7 +350,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'message': og_msg['message'] + app_message,
         'time_created': round(time),
         'reacts': og_msg['reacts'],
-        'is_pinned': og_msg['is_pinned'],
+        'is_pinned': False,
     }
     data['messages'].append(msg)
     add_tag_notification(auth_user_id, channel_id, dm_id, msg['message'])
@@ -407,7 +409,7 @@ def message_senddm_v1(token, dm_id, message):
         'message': message,
         'time_created': round(time),
         'reacts': helper.create_reacts(),
-        'is_pinned': None
+        'is_pinned': False
     }
     data['messages'].append(message_info)
     add_tag_notification(auth_user_id, -1, dm_id, message)
@@ -520,6 +522,114 @@ def message_unreact_v1(token, message_id, react_id):
     update_data()
     return {}
 
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    '''
+    Function:
+        Send a message from authorised_user to the channel specified by 
+        channel_id automatically at a specified time in the future
+
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        channel_id (int) - this is the ID of an existing channel
+        message (str) - the message that will be sent to the channel with ID
+                        channel_id
+        time_sent (int) - the time that the message will be sent at, represented
+                          as a unix timestamp
+
+    Exceptions:
+        InputError - the channel ID is not a valid ID
+                   - the message being sent is empty
+                   - the message is more than 100 characters long
+                   - the time the message is being sent at is in the past
+        AccessError - the user's token is not a valid token
+                    - the user is not a member of the channel they are sending 
+                      the message to   
+
+    Return value:
+        Returns a dictionary containing the type {message_id}
+    '''
+    # Check for token
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")  
+    auth_user_id = helper.detoken(token)    
+    # Check for valid channel_id
+    if not is_valid_channelid(channel_id):
+        raise InputError(description="Please enter a valid channel_id")       
+    # Check if user is not in the channel
+    if not helper.is_already_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not a member in the channel they are sending the message to")
+    # Check if message is empty
+    if is_message_empty(message):
+        raise InputError(description="Empty messages cannot be posted to channels")
+    # Check if message surpasses accepted length
+    if len(message) > 1000:
+        raise InputError(description="Message is longer than 1000 characters")
+    time_now = datetime.now()
+    time_now = round(time_now.replace(tzinfo=timezone.utc).timestamp())
+    # Check is time_sent is in the past
+    if time_sent < time_now:
+        raise InputError(description="time_sent is in the past")
+
+    # Sending the message at the specified time
+    msg_send_time = time_sent - time_now
+    time.sleep(msg_send_time)
+    return message_send_v1(token, channel_id, message)
+
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    '''
+    Function:
+        Send a message from authorised_user to the DM specified by dm_id 
+        automatically at a specified time in the future
+
+    Arguments:
+        token (str) - this is the token of a registered user during their
+                      session
+        dm_id (int) - this is the ID of an existing DM
+        message (str) - the message that will be sent to the DM with ID
+                        dm_id
+        time_sent (int) - the time that the message will be sent at, represented
+                          as a unix timestamp
+
+    Exceptions:
+        InputError - the DM ID is not a valid ID
+                   - the message being sent is empty
+                   - the message is more than 100 characters long
+                   - the time the message is being sent at is in the past
+        AccessError - the user's token is not a valid token
+                    - the user is not a member of the DM they are sending the 
+                      message to   
+
+    Return value:
+        Returns a dictionary containing the type {message_id}
+    '''
+    # Check for token
+    if not helper.is_valid_token(token):
+        raise AccessError(description="Please enter a valid token")  
+    auth_user_id = helper.detoken(token)    
+    # Check for valid dm_id
+    if not helper.is_valid_dm_id(dm_id):
+        raise InputError(description="Please enter a valid dm_id")       
+    # Check if user is not in the DM
+    if not helper.is_already_in_dm(auth_user_id, dm_id):
+        raise AccessError(description="User is not a member in the DM they are sending the message to")
+    # Check if message is empty
+    if is_message_empty(message):
+        raise InputError(description="Empty messages cannot be posted to channels")
+    # Check if message surpasses accepted length
+    if len(message) > 1000:
+        raise InputError(description="Message is longer than 1000 characters")
+    time_now = datetime.now()
+    time_now = round(time_now.replace(tzinfo=timezone.utc).timestamp())
+    # Check is time_sent is in the past
+    if time_sent < time_now:
+        raise InputError(description="time_sent is in the past")
+
+    # Sending the message at the specified time
+    msg_send_time = time_sent - time_now
+    time.sleep(msg_send_time)
+    return message_senddm_v1(token, dm_id, message)
+
 def add_pin(message_id):
     for message in data['messages']:
         if message['message_id'] == message_id:
@@ -530,10 +640,6 @@ def message_pin_v1(token, message_id):
     Function:
         Given a message within a channel or DM, mark it as "pinned" to be given 
         special display treatment by the frontend
-
-    Arguments:
-        token (str) - this is the token of a registered user during their
-                      session
         message_id (int) - this is the ID of the message the user wants to pin
         
     Exceptions:

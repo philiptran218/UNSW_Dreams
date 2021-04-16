@@ -2,6 +2,8 @@ import pytest
 import requests
 import json
 from src import config
+from datetime import datetime, timezone, timedelta
+import threading
 
 INVALID_TOKEN = -1
 INVALID_CHANNEL_ID = -1
@@ -100,6 +102,12 @@ def message_2(user_1, dm_1):
     })
     msg_info = msg.json()
     return msg_info['message_id']
+
+@pytest.fixture
+def message_time():
+    time = datetime.now() + timedelta(0, 3)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    return send_time
 
 @pytest.fixture 
 def clear_database():
@@ -1035,3 +1043,193 @@ def test_message_unpin_another_user_in_channel(clear_database, user_1, user_2, c
     assert message['u_id'] == 1
     assert message['message'] == 'Hello World'
     assert message['is_pinned'] == False
+
+################################################################################
+# message_sendlater http tests                                                 #
+################################################################################
+
+def test_message_sendlater_invalid_token(clear_database, user_1, channel_1, message_time):
+    
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': INVALID_TOKEN,
+        'channel_id': channel_1,
+        'message': 'Hello World',
+        'time_sent': message_time
+    })
+    assert msg.status_code == ACCESSERROR
+    
+def test_message_sendlater_invalid_channel(clear_database, user_1, channel_1, message_time):
+
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_1['token'],
+        'channel_id': INVALID_CHANNEL_ID,
+        'message': 'Hello World',
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+    
+def test_message_sendlater_user_not_in_channel(clear_database, user_1, user_2, channel_1, channel_2, message_time):
+    
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+        'message': 'Hiya World!',
+        'time_sent': message_time
+    })
+    assert msg.status_code == ACCESSERROR
+    
+def test_message_sendlater_invalid_length(clear_database, user_1, channel_1, message_time):
+    i = 0
+    message = ''
+    while i < 500:
+        message += str(i)
+        i += 1
+
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'message': message,
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_message_sendlater_empty_message(clear_database, user_1, channel_1, message_time):
+
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'message': '   ',
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_message_sendlater_past_time(clear_database, user_1, channel_1):
+    time = datetime.now() - timedelta(0, 5)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    msg = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'message': 'This will not be sent',
+        'time_sent': send_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def check_before_send_time(token, channel_id, dm_id):
+    if dm_id == -1:
+        chan_msg = requests.get(f"{config.url}channel/messages/v2?token={token}&channel_id={channel_id}&start=0")
+        chan_msg = chan_msg.json()
+        assert chan_msg == {'messages': [], 'start': 0, 'end': -1}
+    elif channel_id == -1:
+        dm_msg = requests.get(f"{config.url}dm/messages/v1?token={token}&dm_id={dm_id}&start=0")
+        dm_msg = dm_msg.json()
+        assert dm_msg == {'messages': [], 'start': 0, 'end': -1}
+
+def test_message_sendlater_valid_message(clear_database, user_1, channel_1):
+    send_time = datetime.now() + timedelta(0, 5)
+    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+
+    check_send = threading.Timer(4, check_before_send_time, args=(user_1['token'], channel_1, -1))
+    check_send.start()
+    message = requests.post(config.url + 'message/sendlater/v1', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'message': 'This is successful!',
+        'time_sent': send_time
+    })
+    message = message.json()
+    chan_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_1}&start=0")
+    chan_msg = chan_msg.json()['messages']
+    assert chan_msg[0]['message'] == 'This is successful!'
+    assert chan_msg[0]['message_id'] == message['message_id']
+    assert chan_msg[0]['u_id'] == user_1['auth_user_id']
+    assert chan_msg[0]['time_created'] == send_time
+
+################################################################################
+# message_sendlaterdm http tests                                               #
+################################################################################
+
+def test_message_sendlaterdm_invalid_token(clear_database, user_1, dm_1, message_time):
+    
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': INVALID_TOKEN,
+        'dm_id': dm_1,
+        'message': 'Sending to DM...',
+        'time_sent': message_time
+    })
+    assert msg.status_code == ACCESSERROR
+    
+def test_message_sendlaterdm_invalid_dm(clear_database, user_1, dm_1, message_time):
+
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_1['token'],
+        'dm_id': INVALID_DM_ID,
+        'message': 'Hello World',
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+    
+def test_message_sendlaterdm_user_not_in_channel(clear_database, user_1, user_2, dm_1, dm_2, message_time):
+    
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_2['token'],
+        'dm_id': dm_1,
+        'message': 'Hiya World!',
+        'time_sent': message_time
+    })
+    assert msg.status_code == ACCESSERROR
+    
+def test_message_sendlaterdm_invalid_length(clear_database, user_1, dm_1, message_time):
+    i = 0
+    message = ''
+    while i < 500:
+        message += str(i)
+        i += 1
+
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_1['token'],
+        'dm_id': dm_1,
+        'message': message,
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_message_sendlaterdm_empty_message(clear_database, user_1, dm_1, message_time):
+
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_1['token'],
+        'dm_id': dm_1,
+        'message': '  \n  \t  ',
+        'time_sent': message_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_message_sendlaterdm_past_time(clear_database, user_1, dm_1):
+    time = datetime.now() - timedelta(0, 5)
+    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_1['token'],
+        'dm_id': dm_1,
+        'message': 'This is me from the past!!!',
+        'time_sent': send_time
+    })
+    assert msg.status_code == INPUTERROR
+
+def test_message_sendlaterdm_valid_message(clear_database, user_1, dm_1):
+    send_time = datetime.now() + timedelta(0, 5)
+    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+
+    check_send = threading.Timer(4, check_before_send_time, args=(user_1['token'], -1, dm_1))
+    check_send.start()
+    message = requests.post(config.url + 'message/sendlaterdm/v1', json={
+        'token': user_1['token'],
+        'dm_id': dm_1,
+        'message': 'Delayed message for dm_1.',
+        'time_sent': send_time
+    })
+    message = message.json()
+    dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
+    dm_msg = dm_msg.json()['messages']
+    assert dm_msg[0]['message'] == 'Delayed message for dm_1.'
+    assert dm_msg[0]['message_id'] == message['message_id']
+    assert dm_msg[0]['u_id'] == user_1['auth_user_id']
+    assert dm_msg[0]['time_created'] == send_time
