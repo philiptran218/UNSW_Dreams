@@ -443,7 +443,7 @@ def standup_start():
 @APP.route('/standup/active/v1', methods=['GET'])
 def standup_active():
     standup_info = request.args
-    output = standup_active_v1(standup_info['token'],standup_info['channel_id'])
+    output = standup_active_v1(standup_info['token'],int(standup_info['channel_id']))
     return dumps(output)
 
 ################################################################################
