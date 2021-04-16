@@ -102,7 +102,7 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     info = info.json()
     
     assert (time['time_finish'] == time_end
-    assert (info['is_active'])
+    assert info['is_active']
 
 
 ################################################################################
