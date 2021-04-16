@@ -90,7 +90,7 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
 
-    standup = requests.post(config.url +'standup/start/v1', json={  
+    '''standup =''' requests.post(config.url +'standup/start/v1', json={  
         'token' : user_1['token'],
         'channel_id' : public_channel_1,
         'length' : 19
