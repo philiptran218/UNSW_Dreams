@@ -9,6 +9,7 @@ import string
 MAX_STRING_LENGTH = 1000
 TAG = 1
 INVITE = 2
+REACT = 3
 
 # Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
@@ -133,14 +134,17 @@ def notifications_get_v1(token):
     # Searches for user's notifications in data['notifications']
     for notif in notif_list:
         chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
+        user_handle = helper.get_handle(notif['auth_user_id'])
         if notif['u_id'] == auth_user_id and notif_count < 20:
             # If the notification is a tag
             if notif['type'] == TAG:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
-                notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
-            # Else the notification is an invite (for iteration 2)
+                notif_msg = user_handle + ' tagged you in ' + chan_dm_name + ': ' + notif['message'][:20]
+            # If the notification is an invite
+            elif notif['type'] == INVITE:
+                notif_msg = user_handle + ' added you to ' + chan_dm_name 
+            # Else the notification must be a react
             else:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name   
+                notif_msg = user_handle + ' reacted to your message in ' + chan_dm_name
             notif_dict = {
                 'channel_id': notif['channel_id'],
                 'dm_id': notif['dm_id'],
