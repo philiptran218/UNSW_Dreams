@@ -236,13 +236,23 @@ def auth_passwordreset_request(email):
 
 def auth_passwordreset_reset():
 
-
+    invalid_code = True
     for user in password_resets:
         if reset_code == user.get('reset_code'):
             email = user.get('email')
+            invalid_code = False
+
+    if invalid_code == True:
+        raise InputError("This is an invalid code")
+
+    if len(password) < 6:
+        raise InputError("Invalid Password")
     
-
-
-
-
+    for user in data['users']:
+        if user['email'] == email:
+            user['password'] = new_password
+        update_data()
+    
     return {}
+
+    
