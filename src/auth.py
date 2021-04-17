@@ -198,3 +198,51 @@ def auth_logout_v1(token):
     return {
         'is_success': True,
     }
+
+def auth_passwordreset_request(email):
+    # invalid email entered
+    if not re.search(REGEX, email):
+        raise InputError("Invalid Email")
+
+    # Check whether the email used is registered with the site
+    user_not_found = True
+    for user in data['users']:
+        if user.get('email') == email:
+            user_not_found = False
+            break
+    
+    if user_not_found:
+        raise InputError("User not found")
+
+    reset_code = secrets.token_hex(5)
+
+    password_resets = {
+        'email': email,
+        'reset_code': reset_code
+    }
+
+    sender = '1531_w09b_blinker@gmail.com'
+    receiver = [email]
+
+    msg = MIMEText(reset_code)
+    msg['Subject'] = 'Reset Code'
+    msg['From'] = '1531_w09b_blinker@gmail.com'
+    msg['To'] = email
+
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login('1531_w09b_blinker@gmail.com', "comp1531")
+    server.sendmail(sender, receiver, msg.as_string())
+    server.quit()
+
+def auth_passwordreset_reset():
+
+
+    for user in password_resets:
+        if reset_code == user.get('reset_code'):
+            email = user.get('email')
+    
+
+
+
+
+    return {}
