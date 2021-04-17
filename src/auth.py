@@ -5,8 +5,10 @@ import hashlib
 import jwt
 from src.helper import is_valid_token
 from datetime import timezone, datetime
+from src import config
+import urllib.request
 
-DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg" 
+DEFAULT_IMG_URL = "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" 
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -167,6 +169,8 @@ def auth_register_v1(email, password, name_first, name_last):
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
+    urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/profile_imgs/default_profile.jpg")
+
     user = {
         'u_id': number_users + 1,
         'name_first': name_first,
@@ -175,7 +179,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
-        'profile_img_url': DEFAULT_IMG_URL,
+        'profile_img_url': config.url + "profile_img/default_profile.jpg",
         'stats_log': [
             {
                 'channels_joined': [{'channels_joined': 0, 'time': time_issued}],

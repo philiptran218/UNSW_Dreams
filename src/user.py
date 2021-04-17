@@ -1,4 +1,5 @@
 from src.error import InputError, AccessError
+from src import config
 import re
 from json import dumps, load
 from src.database import data, update_data
@@ -197,18 +198,18 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     ''' 
     if not is_valid_token(token):
         raise AccessError(description="Token invalid")
+    u_id = detoken(token)
 
-    token_u_id = detoken(token)
-
-    file_name = f"{img_url}.jpg"
-
-    urllib.request.urlretrieve(img_url, file_name)
-    max_y = Image.open(file_name, 'r').height
-    max_x = Image.open(file_name, 'r').width
-
-    jpg_checker = img_url.endswith('.jpg')
-    if jpg_checker != True:
+    if not img_url.endswith('.jpg'):
         raise InputError(description="Image is not of specified type")
+
+    try:
+        urllib.request.urlretrieve(img_url, f"src/profile_imgs/{u_id}.jpg")
+    except:
+        raise InputError(description="Url is not valid")
+
+    max_y = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').height
+    max_x = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').width
 
     if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
         raise InputError(description="Coordinates not in dimensions of image")
@@ -216,17 +217,18 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if x_start > max_x or x_end > max_x or y_start > max_y or y_end > max_y:
         raise InputError(description="Coordinates not in dimensions of image")
 
-    if x_start > x_end or  y_start > y_end:
+    if x_start > x_end or y_start > y_end:
         raise InputError(description="Coordinates are invalid")
 
     for user in data['users']:
-        if user['u_id'] == token_u_id:
-            user['profile_img_url'] = img_url
+        if user['u_id'] == u_id:
+            user['profile_img_url'] = config.url + f"profile_img/{u_id}.jpg"
+
     update_data()
 
-    image_object = Image.open(file_name)
-    cropped_image = image_object.crop(x_start, y_start, x_end, y_end)
-    cropped_image.save(file_name)
+    image_object = Image.open(f"src/profile_imgs/{u_id}.jpg")
+    cropped_image = image_object.crop((x_start, y_start, x_end, y_end))
+    cropped_image.save(f"src/profile_imgs/{u_id}.jpg")
 
     return {}
 
