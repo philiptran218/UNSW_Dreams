@@ -70,8 +70,7 @@ def clear_v1():
 
     imgs = os.listdir("src/profile_imgs")
     for img in imgs:
-        if img != "description.txt"
-            os.remove(f"src/profile_imgs/{img}")
+        os.remove(f"src/profile_imgs/{img}")
 
     update_data()
     return {}
