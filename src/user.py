@@ -205,7 +205,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     try:
         urllib.request.urlretrieve(img_url, f"src/profile_imgs/{u_id}.jpg")
-    except:
+    except HTTPError:
         raise InputError(description="Url is not valid")
 
     max_y = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').height
