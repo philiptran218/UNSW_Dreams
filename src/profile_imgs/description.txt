@@ -1,0 +1,2 @@
+This directory is used as storage for profile imgs so that the
+server has a local version of the image that is cropped.
