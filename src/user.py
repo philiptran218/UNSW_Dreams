@@ -222,7 +222,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     for user in data['users']:
         if user['u_id'] == u_id:
-            user['profile_img_url'] = config.url + f"profile_img/{u_id}.jpg"
+            user['profile_img_url'] = config.url + f"profile_img?u_id={u_id}"
 
     update_data()
 
@@ -276,23 +276,15 @@ def user_stats_v1(token):
     time_issued = round(time)
 
     stats_log = {
-        'channels_joined': [{user_channels, time_issued}],
-        'dms_joined': [{user_dms, time_issued}],
-        'messages_sent': [{user_msg, time_issued}],
-        'involvement_rate': involve_rate,
-    }
-    
-    # storage needs to be different from output in order to keep data persistence. 
-    stored_stats_log = {
-        'channels_joined': [{'channels_joined': user_channels, 'time': time_issued}],
-        'dms_joined': [{'dms_joined': user_dms, 'time': time_issued}],
-        'messages_sent': [{'messages_sent': user_msg, 'time': time_issued}],
+        'channels_joined': [{'num_channels_joined': user_channels, 'time_stamp': time_issued}],
+        'dms_joined': [{'num_dms_joined': user_dms, 'time_stamp': time_issued}],
+        'messages_sent': [{'num_messages_sent': user_msg, 'time_stamp': time_issued}],
         'involvement_rate': involve_rate,
     }
 
     for user in data['users']:
         if user['u_id'] == token_u_id:
-            user['stats_log'].append(stored_stats_log)
+            user['stats_log'].append(stats_log)
             update_data()
     
     return {'user_stats': stats_log}

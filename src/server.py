@@ -1,6 +1,6 @@
 import sys
 from json import dumps, loads
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_file
 from flask_cors import CORS
 from src.error import InputError
 from src import config
@@ -405,22 +405,24 @@ def users_stats():
     return dumps(output)
 
 ################################################################################
-#   user_profile_uploadphoto                                                   #
+#   user_profile_uploadphoto route                                             #
 ################################################################################
 
 @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
 def user_profile_uploadphoto():
     photo = request.get_json()
-    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['x_end']))
+    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
     return dumps(output)
 
 ################################################################################
-#   uploadphoto routes                                                         #
+#   user_profile_photo routes                                                  #
 ################################################################################
 
-@APP.route("/user/static/<path:path>")
-def send_js(path):
-    return send_from_directory('', path)
+@APP.route("/profile_img", methods=['GET'])
+def user_profile_photo():
+    photo = request.args
+    u_id = photo['u_id']
+    return send_file(f'profile_imgs/{u_id}.jpg', mimetype='image/jpg')
     
 ################################################################################
 # Example
