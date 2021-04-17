@@ -4,14 +4,17 @@ from src.error import InputError, AccessError
 from src.dm import dm_create_v1
 from src.channels import channels_create_v1
 from src.message import message_senddm_v1
-import pytest
 from src.other import clear_v1
 from datetime import timezone, datetime
+
+from src import config
+
+import pytest
 
 INVALID_VALUE = -1
 INVALID_TOKEN = -1
 INVALID_COORDINATE = -1
-LARGE_COORDINATE = 1000000000000
+LARGE_COORDINATE = 10000000000000000000
 
 DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg"
 NEW_IMG_URL = "https://img1.looper.com/img/gallery/things-only-adults-notice-in-shrek/intro-1573597941.jpg"
@@ -69,17 +72,7 @@ def test_valid_user_profile_v1(clear_data):
     assert user['user']['name_first'] == "John"
     assert user['user']['name_last'] == "Smith"
     assert user['user']['handle_str'] == "johnsmith"
-    assert user['user']['profile_img_url'] == DEFAULT_IMG_URL
-    assert user == {
-                    'user' : {
-                        'u_id': 1,
-                        'email': "validemail@gmail.com",
-                        'name_first': "John",
-                        'name_last': "Smith",
-                        'handle_str': "johnsmith",
-                        'profile_img_url': DEFAULT_IMG_URL
-                    }
-                }
+    assert user['user']['profile_img_url'] == config.url + "profile_img/default_profile.jpg"
 
 def test_profile_unregistered_user(clear_data):
     with pytest.raises(AccessError):
@@ -240,7 +233,7 @@ def expected_output_uploadphoto():
         'name_first': 'John',
         'name_last': 'Smith', 
         'handle_str': "johnsmith",
-        'profile_img_url': NEW_IMG_URL, 
+        'profile_img_url': config.url + "profile_img/1.jpg", 
     }
     }
 
@@ -249,35 +242,39 @@ def test_user_photo_invalid_token(clear_data, user_1):
         user_profile_uploadphoto_v1(INVALID_TOKEN, NEW_IMG_URL, 0, 0, 200, 200)
 
 def test_user_photo_invalid_not_jpg(clear_data, user_1):
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], INVALID_IMG_URL, 0, 0, 200, 200)
 
-def test_user_photo_invalid_x_start(clear_data, user_1):
-    with pytest.raises(AccessError):
+def test_user_photo_negative_x_start(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, INVALID_COORDINATE, 0, 200, 200)
-    with pytest.raises(AccessError):
+
+def test_user_photo_too_large_x_start(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, LARGE_COORDINATE, 0, 200, 200)
-    with pytest.raises(AccessError):
-        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 200, 0, 0, 200)
 
-def test_user_photo_invalid_y_start(clear_data, user_1):
-    with pytest.raises(AccessError):
+def test_user_photo_negative_y_start(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, INVALID_COORDINATE, 200, 200)
-    with pytest.raises(AccessError):
-        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, LARGE_COORDINATE, 200, 200)
-    with pytest.raises(AccessError):
-        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 200, 200, 0)
 
-def test_user_photo_invalid_x_end(clear_data, user_1):
-    with pytest.raises(AccessError):
+def test_user_photo_too_large_y_start(clear_data, user_1):
+    with pytest.raises(InputError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, LARGE_COORDINATE, 200, 200)
+
+def test_user_photo_neagtive_x_end(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, INVALID_COORDINATE, 200)
-    with pytest.raises(AccessError):
+    
+def test_user_photo_too_large_x_end(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, LARGE_COORDINATE, 200)
 
-def test_user_photo_invalid_y_end(clear_data, user_1):
-    with pytest.raises(AccessError):
+def test_user_photo_negative_y_end(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, INVALID_COORDINATE)
-    with pytest.raises(AccessError):
+    
+def test_user_photo_too_large_y_end(clear_data, user_1):
+    with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, LARGE_COORDINATE)
 
 def test_user_photo_valid(clear_data, user_1, user_2):

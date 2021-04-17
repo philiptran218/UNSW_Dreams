@@ -8,6 +8,7 @@ from src.channel import channel_join_v1, channel_details_v1, channel_messages_v1
 from src.channels import channels_create_v1, channels_listall_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.error import AccessError, InputError
+from src import config
 
 INVALID_TOKEN = -1
 INVALID_U_ID = -1
@@ -53,7 +54,7 @@ def expected_output_admin_user_remove():
         'name_first': 'Removed',
         'name_last': 'User', 
         'handle_str': "dansmith",
-        'profile_img_url': "https://www.usbji.org/sites/default/files/person.jpg", 
+        'profile_img_url': config.url + "profile_img/default_profile.jpg", 
     }
     }
 

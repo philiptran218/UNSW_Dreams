@@ -5,14 +5,13 @@ from src.channels import channels_create_v1
 from src.message import message_senddm_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
-import pytest
-from src.other import clear_v1
 from datetime import timezone, datetime
+from src import config
+
+import pytest
 
 INVALID_VALUE = -1
 INVALID_TOKEN = -1
-
-DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg" 
 
 ################################################################################
 # Fixtures                                                                     #
@@ -71,7 +70,7 @@ def expected_output_1():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': DEFAULT_IMG_URL, 
+                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
                 }]
             }
 
@@ -83,7 +82,7 @@ def expected_output_2():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': DEFAULT_IMG_URL, 
+                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
                 },
                 {
                 'u_id': 2,
@@ -91,7 +90,7 @@ def expected_output_2():
                 'name_last': 'Nguyen',
                 'email': 'terrynguyen@gmail.com',
                 'handle_str': 'terrynguyen',
-                'profile_img_url': DEFAULT_IMG_URL, 
+                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
                 },
                 {
                 'u_id': 3,
@@ -99,7 +98,7 @@ def expected_output_2():
                 'name_last': 'Tran',
                 'email': 'philt@gmail.com',
                 'handle_str': 'philtran',
-                'profile_img_url': DEFAULT_IMG_URL, 
+                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
                 }]
             }
 
