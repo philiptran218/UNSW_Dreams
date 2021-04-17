@@ -70,7 +70,7 @@ def expected_output_1():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
+                'profile_img_url': config.url + "profile_img?u_id=1", 
                 }]
             }
 
@@ -82,7 +82,7 @@ def expected_output_2():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
+                'profile_img_url': config.url + "profile_img?u_id=1", 
                 },
                 {
                 'u_id': 2,
@@ -90,7 +90,7 @@ def expected_output_2():
                 'name_last': 'Nguyen',
                 'email': 'terrynguyen@gmail.com',
                 'handle_str': 'terrynguyen',
-                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
+                'profile_img_url': config.url + "profile_img?u_id=2", 
                 },
                 {
                 'u_id': 3,
@@ -98,7 +98,7 @@ def expected_output_2():
                 'name_last': 'Tran',
                 'email': 'philt@gmail.com',
                 'handle_str': 'philtran',
-                'profile_img_url': config.url + f"profile_img/default_profile.jpg", 
+                'profile_img_url': config.url + "profile_img?u_id=3", 
                 }]
             }
 
@@ -119,20 +119,20 @@ def test_users_all_multiple_users(clear_data, user_1, user_2, user_3):
 def empty_stats_list(get_time):
     return {
         'dreams_stats': {
-            'channels_exist': [{0, get_time}],
-            'dms_exist': [{0, get_time}],
-            'messages_exist': [{0, get_time}],
-            'utilization_rate': 0.0
-        }
+        'channels_exist': [{'num_channels_exist': 0, 'time_stamp': get_time}],
+        'dms_exist': [{'num_dms_exist': 0, 'time_stamp': get_time}],
+        'messages_exist': [{'num_messages_exist': 0, 'time_stamp': get_time}],
+        'utilization_rate': 0.0,
+        }   
     }
 
 def stats_list(get_time):
     return {
         'dreams_stats': {
-            'channels_exist': [{1, get_time}],
-            'dms_exist': [{1, get_time}],
-            'messages_exist': [{1, get_time}],
-            'utilization_rate': 1.0
+        'channels_exist': [{'num_channels_exist': 1, 'time_stamp': get_time}],
+        'dms_exist': [{'num_dms_exist': 1, 'time_stamp': get_time}],
+        'messages_exist': [{'num_messages_exist': 1, 'time_stamp': get_time}],
+        'utilization_rate': 1.0,
         }
     }
 

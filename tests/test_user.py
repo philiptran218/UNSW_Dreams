@@ -72,7 +72,7 @@ def test_valid_user_profile_v1(clear_data):
     assert user['user']['name_first'] == "John"
     assert user['user']['name_last'] == "Smith"
     assert user['user']['handle_str'] == "johnsmith"
-    assert user['user']['profile_img_url'] == config.url + "profile_img/default_profile.jpg"
+    assert user['user']['profile_img_url'] == config.url + "profile_img?u_id=1"
 
 def test_profile_unregistered_user(clear_data):
     with pytest.raises(AccessError):
@@ -139,8 +139,6 @@ def test_setname_invalid_token(clear_data):
 
     with pytest.raises(AccessError):
         user_profile_setname_v1("invalid", "Not", "JasonBourne")
-    
-
 
 #################################################################################
 #   user_profile_setemail_v1 testing functions                                  #
@@ -233,7 +231,7 @@ def expected_output_uploadphoto():
         'name_first': 'John',
         'name_last': 'Smith', 
         'handle_str': "johnsmith",
-        'profile_img_url': config.url + "profile_img/1.jpg", 
+        'profile_img_url': config.url + "profile_img?u_id=1", 
     }
     }
 
@@ -278,7 +276,7 @@ def test_user_photo_too_large_y_end(clear_data, user_1):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, LARGE_COORDINATE)
 
 def test_user_photo_valid(clear_data, user_1, user_2):
-    user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, 200)
+    user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 600, 500)
     assert user_profile_v1(user_2['token'], user_1['auth_user_id']) == expected_output_uploadphoto()
 
 ################################################################################
@@ -288,20 +286,20 @@ def test_user_photo_valid(clear_data, user_1, user_2):
 def empty_stats_list(get_time):
     return {
         'user_stats': {
-            'channels_joined': [{0, get_time}],
-            'dms_joined': [{0, get_time}],
-            'messages_sent': [{0, get_time}],
-            'involvement_rate': 0.0,
+            'channels_joined': [{'num_channels_joined': 0, 'time_stamp': get_time}],
+            'dms_joined': [{'num_dms_joined': 0, 'time_stamp': get_time}],
+            'messages_sent': [{'num_messages_sent': 0, 'time_stamp': get_time}],
+            'involvement_rate': 0.0
         }
     }
 
 def stats_list(get_time):
     return {
         'user_stats': {
-            'channels_joined': [{1, get_time}],
-            'dms_joined': [{1, get_time}],
-            'messages_sent': [{1, get_time}],
-            'involvement_rate': 1.0,
+            'channels_joined': [{'num_channels_joined': 1, 'time_stamp': get_time}],
+            'dms_joined': [{'num_dms_joined': 1, 'time_stamp': get_time}],
+            'messages_sent': [{'num_messages_sent': 1, 'time_stamp': get_time}],
+            'involvement_rate': 1.0
         }
     }
 
