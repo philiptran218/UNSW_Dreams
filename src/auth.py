@@ -170,11 +170,6 @@ def auth_register_v1(email, password, name_first, name_last):
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
-    try:
-        os.mkdir("src/profile_imgs")
-    except OSError:
-        pass
-
     urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/profile_imgs/{number_users + 1}.jpg")
 
     user = {
