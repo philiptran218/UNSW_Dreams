@@ -203,11 +203,12 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if not img_url.endswith('.jpg'):
         raise InputError(description="Image is not of specified type")
 
-    
-    img = urllib.request.urlretrieve(img_url, f"src/profile_imgs/{u_id}.jpg")
-    if img.getcode() != 200:
+    response = urllib.request.urlopen(img_url)
+    if response.getcode() != 200:
         raise InputError(description="Url is not valid")
 
+    urllib.request.urlretrieve(img_url, f"src/profile_imgs/{u_id}.jpg")
+    
     max_y = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').height
     max_x = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').width
 
