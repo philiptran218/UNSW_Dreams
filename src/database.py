@@ -8,7 +8,11 @@ DATA = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
+<<<<<<< HEAD
     'stats_log': [],
+=======
+    'standups':[],
+>>>>>>> master
 }
 
 def data_storage():

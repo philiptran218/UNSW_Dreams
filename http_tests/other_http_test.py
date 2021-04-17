@@ -146,7 +146,6 @@ def test_other_search_invalid_token(clear_database, user_1):
 
 def test_other_search_invalid_query_str(clear_database, user_1):
     string = create_invalid_string()
-    print(len(string))
     search = requests.get(f"{config.url}search/v2?token={user_1['token']}&query_str={string}")
     assert search.status_code == INPUTERROR
 
@@ -231,4 +230,91 @@ def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_
     assert notif_3_info[1]['notification_message'] == 'philiptran tagged you in philiptran, terrancenguyen: Hello @johnsmith and'
     assert notif_3_info[2]['notification_message'] == 'philiptran added you to philiptran, terrancenguyen'
 
+def test_notifications_get_tag_edit(clear_database, user_1, user_2, channel_1):
 
+    requests.post(config.url + 'channel/invite/v2', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'u_id': user_2['auth_user_id']
+    })
+    msg = requests.post(config.url + 'message/send/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1,
+        'message': 'Hello @johnsmith'
+    })
+    msg = msg.json()
+    requests.put(config.url + 'message/edit/v2', json={
+        'token': user_1['token'],
+        'message_id': msg['message_id'],
+        'message': 'I have edited this @philiptran'
+    })
+    notif = requests.get(f"{config.url}notifications/get/v1?token={user_2['token']}")
+    notif = notif.json()['notifications']
+    assert notif[0]['channel_id'] == channel_1
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: I have edited this @"
+    
+def test_notifications_get_react(clear_database, user_1, user_2, channel_1):
+
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_1
+    })
+    msg = requests.post(config.url + 'message/send/v2', json={
+        'token': user_1['token'],
+        'channel_id': channel_1,
+        'message': 'Hi @philiptran'
+    })
+    msg = msg.json()
+    requests.post(config.url + 'message/react/v1', json={
+        'token': user_2['token'],
+        'message_id': msg['message_id'],
+        'react_id': 1
+    })
+    requests.post(config.url + 'message/react/v1', json={
+        'token': user_1['token'],
+        'message_id': msg['message_id'],
+        'react_id': 1
+    })
+    user_1_notif = requests.get(f"{config.url}notifications/get/v1?token={user_1['token']}")
+    user_1_notif = user_1_notif.json()['notifications']
+    assert len(user_1_notif) == 2
+    assert user_1_notif[0]['channel_id'] == channel_1
+    assert user_1_notif[0]['dm_id'] == -1
+    assert user_1_notif[0]['notification_message'] == "johnsmith reacted to your message in John's Channel"
+    assert user_1_notif[1]['channel_id'] == channel_1
+    assert user_1_notif[1]['dm_id'] == -1
+    assert user_1_notif[1]['notification_message'] == "philiptran reacted to your message in John's Channel"
+
+    user_2_notif = requests.get(f"{config.url}notifications/get/v1?token={user_2['token']}")
+    user_2_notif = user_2_notif.json()['notifications']
+    assert len(user_2_notif) == 1
+    assert user_2_notif[0]['channel_id'] == channel_1
+    assert user_2_notif[0]['dm_id'] == -1
+    assert user_2_notif[0]['notification_message'] == "johnsmith tagged you in John's Channel: Hi @philiptran"
+
+def test_notifications_get_max(clear_database, user_1, user_2, channel_1, channel_2):
+
+    i = 0
+    while i < 25:
+        requests.post(config.url + 'message/send/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'message': 'hi @johnsmith'
+        })
+        i += 1
+    
+    requests.post(config.url + 'channel/invite/v2', json={
+        'token': user_2['token'],
+        'channel_id': channel_2,
+        'u_id': user_1['auth_user_id']
+    })
+    notif = requests.get(f"{config.url}notifications/get/v1?token={user_1['token']}")
+    notif = notif.json()['notifications']
+    assert len(notif) == 20
+    assert notif[0]['channel_id'] == channel_2
+    assert notif[0]['dm_id'] == -1
+    assert notif[0]['notification_message'] == "philiptran added you to Phil's Channel"
+    assert notif[1]['channel_id'] == channel_1
+    assert notif[1]['dm_id'] == -1
+    assert notif[1]['notification_message'] == "johnsmith tagged you in John's Channel: hi @johnsmith"

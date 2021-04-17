@@ -1,3 +1,10 @@
+'''
+This file outlines the structure of our database and is used as a reference so that
+everyone's code works with the same data and ensures that everyone understands what
+information is in the database
+'''
+
+'''
 data = {
     'users': [],
     'channels': [],
@@ -7,9 +14,12 @@ data = {
     'sessions': [],
     'session_ids': [],
     'stats_log': [],
+    'standups':[],
 }
+'''
 
 ''' initialise empty lists for data fields '''
+
 ''' what information each list should have '''
 
 '''
@@ -66,7 +76,15 @@ messages = [
         'dm_id': -1, 
         'message': 'Hello world',
         'time_created': 1582426789,
-    }
+        'is_pinned': True/False
+        'reacts': [
+            {
+                'react_id': 1
+                'u_ids': [list of u_ids that have reacted]
+                'is_this_user_reacted': None
+            }
+        ]
+    }   
 ]
 
 DM = [
@@ -103,10 +121,23 @@ notifications = [
     }
 ]
 
-'users_stats_log': {
-    num_channels: [{num_channels_joined, time_stamp}]
-    num_dms: [{num_dms_joined, time_stamp}]
-    messages_sent: [{num_messages_sent, time_stamp}]
-    utlilisation_rate: 
+session_ids = [
+    A list of session ids.
+]
+
+stats_log = {
+    channels_exist: [{num_channels_exist, time_stamp}], 
+    dms_exist: [{num_dms_exist, time_stamp}], 
+    messages_exist: [{num_messages_exist, time_stamp}], 
+    utilization_rate 
 }
+
+stand_ups = [
+    {
+        'channel_id' = Id of channel inwhich the standup is taking place
+        'messages' = A multi-line string containing all the messages sent to the standup
+        'time_finished' = Time stand-up is going to finish
+    }
+]
 '''
+

@@ -10,21 +10,11 @@ import os
 MAX_STRING_LENGTH = 1000
 TAG = 1
 INVITE = 2
+REACT = 3
 
 # Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
-    
-def is_already_in_dm(u_id, dm_id):
-    selected_dm = None
-    for dm in data['DM']:
-        if dm['dm_id'] == dm_id:
-            selected_dm = dm
-            
-    for member in selected_dm['dm_members']:
-        if member['u_id'] == u_id:
-            return True
-    return False
 
 def is_query_str_in_msg(query_str, message):
     if query_str in message['message']:
@@ -46,8 +36,8 @@ def get_channel_dm_name(channel_id, dm_id):
 def clear_v1():
     '''
     Function:
-        Resets the internal data of the application to it's initial stateerases all information 
-        about the users, erases all the channels and the messages.
+        Resets the internal data of the application to it's initial state, erases all information 
+        about the users, channels, messages, DMs, notifications, sessions, stats and standups.
 
     Arguments:
         This fucntion doesn't take any arguments.
@@ -58,7 +48,7 @@ def clear_v1():
     Return Value:
         This function doesn't return any value.
     '''
-    
+    # Deletes all data currently stored in the database.
     delete('users')
     delete('channels')
     delete('messages')
@@ -67,7 +57,9 @@ def clear_v1():
     delete('sessions')
     delete('session_ids')
     delete('stats_log')
+    delete('standups')
 
+    # Deletes all the profile images that are stored in the folder "profile_imgs"
     imgs = os.listdir("src/profile_imgs")
     for img in imgs:
         if img != "description.txt":
@@ -112,13 +104,15 @@ def search_v1(token, query_str):
         if message['channel_id'] != -1:
             user_found = helper.is_already_in_channel(auth_user_id, message['channel_id'])
         else:
-            user_found = is_already_in_dm(auth_user_id, message['dm_id'])
+            user_found = helper.is_already_in_dm(auth_user_id, message['dm_id'])
         if user_found and is_query_str_in_msg(query_str, message):
             message_match = {
                             'message_id': message['message_id'],
                             'u_id': message['u_id'],
                             'message': message['message'],
-                            'time_created': message['time_created']
+                            'time_created': message['time_created'],
+                            'reacts': helper.get_reacts(auth_user_id, message['reacts']),
+                            'is_pinned': message['is_pinned'],
                         }
             search_matches['messages'].append(message_match)
     return search_matches
@@ -150,14 +144,17 @@ def notifications_get_v1(token):
     # Searches for user's notifications in data['notifications']
     for notif in notif_list:
         chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
+        user_handle = helper.get_handle(notif['auth_user_id'])
         if notif['u_id'] == auth_user_id and notif_count < 20:
             # If the notification is a tag
             if notif['type'] == TAG:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
-                notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
-            # Else the notification is an invite (for iteration 2)
+                notif_msg = user_handle + ' tagged you in ' + chan_dm_name + ': ' + notif['message'][:20]
+            # If the notification is an invite
+            elif notif['type'] == INVITE:
+                notif_msg = user_handle + ' added you to ' + chan_dm_name 
+            # Else the notification must be a react
             else:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name   
+                notif_msg = user_handle + ' reacted to your message in ' + chan_dm_name
             notif_dict = {
                 'channel_id': notif['channel_id'],
                 'dm_id': notif['dm_id'],

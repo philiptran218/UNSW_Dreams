@@ -17,7 +17,11 @@
 
 ## 0. Change Log
 
-N/A
+* 07/04: Added `v1` to `auth/passwordreset/reset/` route name
+* 10/04: Clarified tracking of utilization and involvement
+* 13/04: Removed the rest of a paragraph in requirements & design section that was taken out
+* 16/04: Removed duplicates of `user` and `messages` data type. To be clear, in iteration 2 `user` has had properties `reacts` and `is_pinned` added to it, and `messages` has had properties `profile_img_url` added to it.
+* 16/04: Extend due date back by 3 hours (new date: Tuesday 20th April @ 1pm)
 
 ## 1. Aims:
 
@@ -181,8 +185,6 @@ Find 2-3 people to interview as target users. Target users are people who curren
 
 Develop a series of questions to ask these target users to understand what *problems* they might have with teamwork-driven communication tools that are currently unsolved by **Dreams**. Give these questions to your target users and record their answers.
 
-Once you have done this, think about how you would solve the following problem and write down a brief description of a proposed solution.
-
 #### [Requirements] Analysis & Specification - Use Cases
 
 Once you've elicited this information, it's time to consolidate it.
@@ -218,9 +220,9 @@ For the Dream workspace:
   * The number of channels that exist currently
   * The number of DMs that exist currently
   * The number of messages that exist currently
-  * The workspace's utilization, which is a ratio of the number of users who have joined at least one channel/DM to the total number of channels and DMs, as defined by this pseudocode: `num_users_who_have_joined_at_least_one_channel_or_dm / total_num_users`
+  * The workspace's utilization, which is a ratio of the number of users who have joined at least one channel/DM to the total number of users, as defined by this pseudocode: `num_users_who_have_joined_at_least_one_channel_or_dm / total_num_users`
 
-As UNSW is very interested in its users' engagement, the analytics must be **time-series data**. This means every change to the above metrics must be timestamped and archived, rather than just the most recent change.
+As UNSW is very interested in its users' engagement, all analytics **except for utilization and involvement** must be tracked as **time-series data**. This means every change must be timestamped and archived, rather than just the most recent change. Only the **latest** utilization and involvement rates are required to be tracked.
 
 In addition to keeping track of these metrics, you are required to implement two new endpoints, the details of which can be found in Section `6.2`.
 
@@ -253,7 +255,7 @@ Depending on how you and your team have structured your project, your current me
 
 ![](docs/deploy9.png)
 
-6. Scroll down and change "Application path" to `/www/cs1531deploy/src/server.py:app` and change the Python version to `3.9.2`. Click submit.
+6. Scroll down and change "Application path" to `/www/cs1531deploy/src/server.py:APP` and change the Python version to `3.9.2`. Click submit.
 
 ![](docs/deploy10.png)
 
@@ -456,10 +458,6 @@ These interface specifications come from Andrea and Andrew, who are building the
     <td>integer (unix timestamp), [check this out](https://www.tutorialspoint.com/How-to-convert-Python-date-to-Unix-timestamp)</td>
   </tr>
   <tr>
-    <td>(outputs only) named exactly <b>messages</b></td>
-    <td>List of dictionaries, where each dictionary contains types { message_id, u_id, message, time_created }</td>
-  </tr>
-  <tr>
     <td>(outputs only) named exactly <b>channels</b></td>
     <td>List of dictionaries, where each dictionary contains types { channel_id, name }</td>
   </tr>
@@ -474,10 +472,6 @@ These interface specifications come from Andrea and Andrew, who are building the
   <tr>
     <td>(outputs only) name ends in <b>members</b></td>
     <td>List of dictionaries, where each dictionary contains types of <b>user</b></td>
-  </tr>
-  <tr>
-    <td>(outputs only) named exactly <b>user</b></td>
-    <td>Dictionary containing u_id, email, name_first, name_last, handle_str</td>
   </tr>
   <tr>
     <td>(outputs only) named exactly <b>users</b></td>
@@ -545,11 +539,11 @@ These interface specifications come from Andrea and Andrew, who are building the
     <td>List of dictionaries, where each dictionary contains types { react_id, u_ids, is_this_user_reacted } where react_id is the id of a react, and u_ids is a list of user id's of people who've reacted for that react. is_this_user_reacted is whether or not the authorised user has been one of the reacts to this post</td>
   </tr>
   <tr>
-    <td>(V2) (outputs only) named exactly <b>user</b></td>
+    <td>(outputs only) named exactly <b>user</b></td>
     <td>Dictionary containing u_id, email, name_first, name_last, handle_str, profile_img_url</td>
   </tr>
   <tr>
-    <td>(V2) (outputs only) named exactly <b>messages</b></td>
+    <td>(outputs only) named exactly <b>messages</b></td>
     <td>List of dictionaries, where each dictionary contains types { message_id, u_id, message, time_created, reacts, is_pinned  }</td>
   </tr>
 </table>
@@ -1034,7 +1028,7 @@ These interface specifications come from Andrea and Andrew, who are building the
     <td>N/A</td>
   </tr>
   <tr>
-    <td><code>auth/passwordreset/reset</code><br /><br />Given a reset code for a user, set that user's new password to the password provided</td>
+    <td><code>auth/passwordreset/reset/v1</code><br /><br />Given a reset code for a user, set that user's new password to the password provided</td>
     <td style="font-weight: bold; color: blue;">POST</td>
     <td><b>Parameters:</b><br /><code>(reset_code, new_password)</code><br /><br /><b>Return Type:</b><br /><code>{}</code></td>
     <td>
@@ -1302,7 +1296,7 @@ Note: This is most likely the most challenging part of the project. Don't get lo
 |---------|-------------------------------------|-------------------------------|-----------------------------------|
 |   1     |10am Monday 8th March (**week 4**)   |In YOUR **week 4** laboratory  |30%                                |
 |   2     |10am Tuesday 6th April (**week 8**)   |In YOUR **week 8** laboratory  |40%                                |
-|   3     |10am Tuesday 20th April (**week 10**)   |In YOUR **week 10** laboratory |30%                                |
+|   3     |1pm Tuesday 20th April (**week 10**)   |In YOUR **week 10** laboratory |30%                                |
 
 ### 7.1. Late Penalties
 

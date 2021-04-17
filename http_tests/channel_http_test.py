@@ -150,7 +150,6 @@ def test_invite_duplicate_uid(clear_database, user_1, user_2, channel_1):
     channel_details_json = get_channel_details(user_1['token'],channel_1)
 
     channel_details = channel_details_json.json()
-    print(channel_details)
 
     assert len(channel_details['owner_members']) == 1
     assert len(channel_details['all_members']) == 2

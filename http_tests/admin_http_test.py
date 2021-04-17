@@ -122,7 +122,6 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
 
     channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_2['token']}&channel_id={channel_1}&start=0") 
     msg_info = channel_msg.json()
-    print(msg_info)
     assert msg_info['messages'][0]['message'] == 'Removed User'
  
 ################################################################################

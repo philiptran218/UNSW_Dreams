@@ -313,7 +313,6 @@ def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1,test_user
 
     msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=0")
     message_detail = msg.json()
-    print(message_detail)
     assert message_detail['messages'][0]['message_id'] == 1
     assert message_detail['messages'][0]['u_id'] == test_user1['auth_user_id']
     assert message_detail['messages'][0]['message'] == 'singlemessage'
