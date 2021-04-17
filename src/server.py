@@ -9,15 +9,9 @@ from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1, dm_c
 from src.channels import channels_create_v1, channels_listall_v1,channels_list_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
-<<<<<<< HEAD
-from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1
 from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1, user_profile_uploadphoto_v1, user_stats_v1
 from src.users import users_all_v1, users_stats_v1
-=======
 from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1, message_unreact_v1, message_pin_v1, message_unpin_v1, message_sendlater_v1, message_sendlaterdm_v1
-from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1
-from src.users import users_all_v1
->>>>>>> master
 from src.other import clear_v1, search_v1, notifications_get_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.standup import standup_start_v1, standup_send_v1, standup_active_v1
@@ -392,47 +386,6 @@ def users_all():
     return dumps(output)
 
 ################################################################################
-<<<<<<< HEAD
-#   user_stats route                                                           #
-################################################################################
-
-@APP.route("/user/stats/v1", methods=['GET'])
-def user_stats():
-    user_stats = request.args
-    output = user_stats_v1(user_stats['token'])
-    return dumps(output)
-
-################################################################################
-#   users_stats route                                                          #
-################################################################################
-
-@APP.route("/users/stats/v1", methods=['GET'])
-def users_stats():
-    userall_stats = request.args
-    output = users_stats_v1(userall_stats['token'])
-    return dumps(output)
-
-################################################################################
-#   user_profile_uploadphoto route                                             #
-################################################################################
-
-@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
-def user_profile_uploadphoto():
-    photo = request.get_json()
-    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
-    return dumps(output)
-
-################################################################################
-#   user_profile_photo routes                                                  #
-################################################################################
-
-@APP.route("/profile_img", methods=['GET'])
-def user_profile_photo():
-    photo = request.args
-    u_id = photo['u_id']
-    return send_file(f'profile_imgs/{u_id}.jpg', mimetype='image/jpg')
-    
-=======
 #   message_react route                                                        #
 ################################################################################
 
@@ -522,7 +475,46 @@ def message_sendlaterdm():
     output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
     return dumps(output)
 
->>>>>>> master
+################################################################################
+#   user_stats route                                                           #
+################################################################################
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    user_stats = request.args
+    output = user_stats_v1(user_stats['token'])
+    return dumps(output)
+
+################################################################################
+#   users_stats route                                                          #
+################################################################################
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    userall_stats = request.args
+    output = users_stats_v1(userall_stats['token'])
+    return dumps(output)
+
+################################################################################
+#   user_profile_uploadphoto route                                             #
+################################################################################
+
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def user_profile_uploadphoto():
+    photo = request.get_json()
+    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
+    return dumps(output)
+
+################################################################################
+#   user_profile_photo routes                                                  #
+################################################################################
+
+@APP.route("/profile_img", methods=['GET'])
+def user_profile_photo():
+    photo = request.args
+    u_id = photo['u_id']
+    return send_file(f'profile_imgs/{u_id}.jpg', mimetype='image/jpg')
+    
 ################################################################################
 # Example
 @APP.route("/echo", methods=['GET'])
