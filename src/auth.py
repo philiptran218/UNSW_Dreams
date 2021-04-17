@@ -198,7 +198,7 @@ def auth_logout_v1(token):
     return {
         'is_success': True,
     }
-    
+
 def auth_passwordreset_request(email):
     # invalid email entered
     if not re.search(REGEX, email):
@@ -254,5 +254,5 @@ def auth_passwordreset_reset():
         update_data()
     
     return {}
-   
+
 
