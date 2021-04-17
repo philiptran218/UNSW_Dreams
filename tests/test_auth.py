@@ -1,4 +1,5 @@
 from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
+from src.auth import auth_passwordreset_request, auth_passwordreset_reset
 from src.error import InputError, AccessError
 import pytest
 from src.other import clear_v1
