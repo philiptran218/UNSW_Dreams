@@ -94,7 +94,7 @@ def expected_output_all_users():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': DEFAULT_IMG_URL,
+                'profile_img_url': config.url + "profile_img?u_id=1",
             },
             {
                 'u_id': 2,
@@ -102,7 +102,7 @@ def expected_output_all_users():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'handle_str': 'philiptran',
-                'profile_img_url': DEFAULT_IMG_URL,
+                'profile_img_url': config.url + "profile_img?u_id=2",
             },
             {
                 'u_id': 3,
@@ -110,7 +110,7 @@ def expected_output_all_users():
                 'name_first': 'Terrance',
                 'name_last': 'Nguyen',
                 'handle_str': 'terrancenguyen', 
-                'profile_img_url': DEFAULT_IMG_URL,
+                'profile_img_url': config.url + "profile_img?u_id=3",
             }
         ]   
     }
@@ -132,10 +132,10 @@ def test_all_valid(clear_database, user_1, user_2, user_3):
 def empty_stats_list(get_time):
     return {
         'dreams_stats': {
-            'channels_exist': [{0, get_time}],
-            'dms_exist': [{0, get_time}],
-            'messages_exist': [{0, get_time}],
-            'utilization_rate': 0.0
+        'channels_exist': [{'num_channels_exist': 0, 'time_stamp': get_time}],
+        'dms_exist': [{'num_dms_exist': 0, 'time_stamp': get_time}],
+        'messages_exist': [{'num_messages_exist': 0, 'time_stamp': get_time}],
+        'utilization_rate': 0.0,
         }
     }
 
@@ -143,10 +143,10 @@ def empty_stats_list(get_time):
 def stats_list(get_time):
     return {
         'dreams_stats': {
-            'channels_exist': [{1, get_time}],
-            'dms_exist': [{1, get_time}],
-            'messages_exist': [{1, get_time}],
-            'utilization_rate': 1.0
+        'channels_exist': [{'num_channels_exist': 1, 'time_stamp': get_time}],
+        'dms_exist': [{'num_dms_exist': 1, 'time_stamp': get_time}],
+        'messages_exist': [{'num_messages_exist': 1, 'time_stamp': get_time}],
+        'utilization_rate': 1.0,
         }
     }
 
@@ -163,7 +163,3 @@ def test_users_stats_valid(clear_database, user_1, user_2, test_create_dm, chann
     stats = requests.get(f"{config.url}users/stats/v1?token={user_1['token']}")
     stats_info = stats.json()
     assert stats_info == stats_list(get_time)
-
-# This is the last http tests, so run clear here to reset database to its
-# original state.
-requests.delete(config.url + 'clear/v1')
