@@ -4,6 +4,9 @@ from src.database import data, update_data
 import hashlib
 import jwt
 from src.helper import is_valid_token
+import smtplib
+import secrets
+from email.mime.text import MIMEText
 
 
 # To test whether the email is valid
@@ -198,61 +201,135 @@ def auth_logout_v1(token):
     return {
         'is_success': True,
     }
-
-def auth_passwordreset_request(email):
-    # invalid email entered
-    if not re.search(REGEX, email):
-        raise InputError("Invalid Email")
-
-    # Check whether the email used is registered with the site
-    user_not_found = True
-    for user in data['users']:
-        if user.get('email') == email:
-            user_not_found = False
-            break
     
-    if user_not_found:
-        raise InputError("User not found")
-
-    reset_code = secrets.token_hex(5)
-
-    password_resets = {
-        'email': email,
-        'reset_code': reset_code
-    }
-
-    sender = '1531_w09b_blinker@gmail.com'
-    receiver = [email]
-
-    msg = MIMEText(reset_code)
-    msg['Subject'] = 'Reset Code'
-    msg['From'] = '1531_w09b_blinker@gmail.com'
-    msg['To'] = email
-
-    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    server.login('1531_w09b_blinker@gmail.com', "comp1531")
-    server.sendmail(sender, receiver, msg.as_string())
-    server.quit()
-
-def auth_passwordreset_reset():
-
-    invalid_code = True
-    for user in password_resets:
-        if reset_code == user.get('reset_code'):
-            email = user.get('email')
-            invalid_code = False
-
-    if invalid_code == True:
-        raise InputError("This is an invalid code")
-
-    if len(password) < 6:
-        raise InputError("Invalid Password")
-    
+def is_valid_email(email):
+    valid_email = False
     for user in data['users']:
         if user['email'] == email:
-            user['password'] = new_password
-        update_data()
+            valid_email = True
+    return valid_email
     
-    return {}
+def already_requested(email):
+    requested = False
+    for request in data['password_resets']:
+        if request['email'] == email:
+            requested = True
+    return requested
+    
+def send_reset_code(email, reset_code):
+    
+    email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
+    email_msg['From'] = 'compw09b@gmail.com'
+    email_msg['To'] = email
+    email_msg['Subject'] = 'Code to reset password in Dreams'
+    '''
+    message = f\
+    Subject: Code to reset password in Dreams
+    
+    Your unique code to reset your password is {reset_code}
+    '''
+    email_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    email_server.login('compw09b@gmail.com', 'Computing1531')
+    email_server.sendmail('compw09b@gmail.com', email, email_msg.as_string())
+    email_server.quit()
 
+def auth_passwordreset_request_v1(email):
+    '''
+    Function:
+        Given an email address, if the user is a registered user, sends them an 
+        email containing a specific secret code, that when entered in 
+        auth_passwordreset_reset, shows that the user trying to reset the 
+        password is the one who got sent this email.
+        
+    Arguments: 
+        email (str) - the email of the user requesting to change their password 
+        
+    Exceptions:
+        InputError when any of:
+            - email does not belong to a registered user
+            - email is not in the correct format
+            
+    Return Values:
+        Returns an empty dictionary {}
+    '''
+    # Invalid email format entered
+    if not re.search(REGEX, email):
+        raise InputError(description="Invalid email")
+    # Checks if email belongs to a registered user
+    if not is_valid_email(email):
+        raise InputError(description="Email does not belong to a registered user")
+
+    # Creates a base64 encoded string which may be longer than 10 characters
+    reset_code = secrets.token_urlsafe(10)
+    
+    # If user requests another reset code, their old reset code is updated to 
+    # the new one
+    if already_requested(email):
+        for request in data['password_resets']:
+            if request['email'] == email:
+                request.update({'reset_code': reset_code})
+    # Otherwise a new request is appended to the password_resets list 
+    else:
+        new_request = {
+            'email': email,
+            'reset_code': reset_code
+        }
+        data['password_resets'].append(new_request)   
+    send_reset_code(email, reset_code)    
+    update_data()
+    return {}
+    
+def is_valid_reset_code(reset_code):
+    code_found = False
+    for request in data['password_resets']:
+        if request['reset_code'] == reset_code:
+            code_found = True
+    return code_found
+    
+def get_request_email(reset_code):
+    # Returns the email associated with the reset_code
+    # Assumes that the reset_code passed in is valid
+    email = None
+    for request in data['password_resets']:
+        if request['reset_code'] == reset_code:
+            email = request['email']
+    return email
+
+def auth_passwordreset_reset_v1(reset_code, new_password):    
+    '''
+    Function:
+        Given a reset code for a user, set that user's new password to the 
+        password provided
+        
+    Arguments: 
+        reset_code (str) - the code which allows the user to reset their password
+        new_password (str) - this is the user's new chosen password
+        
+    Exceptions:
+        InputError when any of:
+            - reset_code is not a valid reset code 
+            - password entered is less than 6 characters long
+            
+    Return Values:
+        Returns an empty dictionary {}
+    '''
+    # Check if the reset code is a valid code
+    if not is_valid_reset_code(reset_code):
+        raise InputError(description="Invalid password reset code")
+    # Check if the password is longer than 6 characters
+    if len(new_password) < 6:
+        raise InputError(description="Invalid password")
+
+    user_email = get_request_email(reset_code)
+    # Updating the password of the user
+    for user in data['users']:
+        if user['email'] == user_email:
+            user.update({'password': hashlib.sha256(new_password.encode()).hexdigest()})
+    
+    # The request is removed once password is updated  
+    for request in data['password_resets']:
+        if request['reset_code'] == reset_code:
+            data['password_resets'].remove(request)
+    update_data()
+    return {}
 
