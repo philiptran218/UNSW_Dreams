@@ -5,6 +5,7 @@ from src import config
 
 INVALID_TOKEN = -1
 INVALID_UID = -1
+INVALID_CODE = -1
 INPUTERROR = 400
 ACCESSERROR = 403
 
@@ -254,3 +255,52 @@ def test_auth_logout_request(clear_database, user_1):
     })
     assert request.status_code == ACCESSERROR
 
+    
+################################################################################
+# auth_passwordreset_request http tests                                        #
+################################################################################
+
+def test_passwordreset_request_pass(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/request/v1', json={
+        'email': user_1['email'],
+    })
+
+def test_passwordreset_request_invalid_email(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/request/v1', json={
+        'email': 'bademail',
+    })
+
+    assert user.status_code == INPUTERROR
+
+def test_passwordreset_request_unregistered_email(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/request/v1', json={
+        'email': 'noemail@gmail.com',
+    })
+
+    assert user.status_code == INPUTERROR
+
+################################################################################
+# auth_passwordreset_reset http tests                                        #
+################################################################################
+
+def test_passwordreset_reset_pass(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/reset/v1', json={
+        'reset_code': user_1[reset_code],
+        'new_password': 'newpassword'
+    })
+
+def test_passwordreset_reset_invalid_pw(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/reset/v1', json={
+        'reset_code': user_1[reset_code],
+        'new_password': 'short'
+    })
+
+    assert user.status_code == INPUTERROR
+
+def test_passwordreset_request_invalid_code(clear_database, user_1):
+    user = request.post(config.url + 'auth/passwordreset/reset/v1', json={
+        'reset_code': INVALID_CODE,
+        'new_password': 'newpassword'
+    })
+
+    assert user.status_code == INPUTERROR
