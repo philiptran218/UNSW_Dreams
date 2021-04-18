@@ -1,3 +1,10 @@
+'''
+This file outlines the structure of our database and is used as a reference so that
+everyone's code works with the same data and ensures that everyone understands what
+information is in the database
+'''
+
+'''
 data = {
     'users': [],
     'channels': [],
@@ -6,9 +13,13 @@ data = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
+    'stats_log': [],
+    'standups':[],
 }
+'''
 
 ''' initialise empty lists for data fields '''
+
 ''' what information each list should have '''
 
 '''
@@ -20,6 +31,14 @@ users = [
         'perm_id': 1,
         'password': 'Goodpass',
         'email': 'johnsmith@gmail.com'
+        'stats_log': [
+            {
+                channels_joined: [{num_channels_joined, time_stamp}]
+                dms_joined: [{num_dms_joined, time_stamp}]
+                messages_sent: [{num_messages_sent, time_stamp}]
+                involvelemt_rate: 
+            },
+        ]
     }
 ]
 
@@ -65,9 +84,7 @@ messages = [
                 'is_this_user_reacted': None
             }
         ]
-    }
-
-    
+    }   
 ]
 
 DM = [
@@ -103,6 +120,17 @@ notifications = [
 
     }
 ]
+
+session_ids = [
+    A list of session ids.
+]
+
+stats_log = {
+    channels_exist: [{num_channels_exist, time_stamp}], 
+    dms_exist: [{num_dms_exist, time_stamp}], 
+    messages_exist: [{num_messages_exist, time_stamp}], 
+    utilization_rate 
+}
 
 stand_ups = [
     {
