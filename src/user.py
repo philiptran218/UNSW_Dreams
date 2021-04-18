@@ -206,8 +206,8 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     try:
         urllib.request.urlopen(img_url)
-    except urllib.error.HTTPError:
-        raise InputError(description="Url is not valid")
+    except urllib.error.HTTPError as invalid_url:
+        raise InputError(description="Url is not valid") from invalid_url
 
     urllib.request.urlretrieve(img_url, f"src/static/{u_id}.jpg")
     
