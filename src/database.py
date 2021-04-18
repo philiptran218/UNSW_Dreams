@@ -8,6 +8,7 @@ DATA = {
     'notifications': [],
     'sessions': [],
     'session_ids': [],
+    'password_resets': []
 }
 
 def data_storage():
