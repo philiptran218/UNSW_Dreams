@@ -131,6 +131,13 @@ def test_invalid_logout(clear_data):
     with pytest.raises(AccessError):
         auth_logout_v1(user.get('invalid_token')).get('is_success')
         
+def test_valid_logout_multiple(clear_data, user_1, user_2):
+    # Testing logging out multiple users
+    logout_1 = auth_logout_v1(user_2['token'])
+    assert logout_1['is_success'] == True
+    logout_2 = auth_logout_v1(user_1['token'])
+    assert logout_2['is_success'] == True
+        
 
 ################################################################################
 # auth_passwordreset_request tests                                             #
@@ -154,8 +161,10 @@ using the frontend.
 ################################################################################
 
 def test_password_reset_invalid_code(clear_data, user_1):
-    auth_login_v1("johnsmith@gmail.com", "password")
-    auth_passwordreset_request_v1("johnsmith@gmail.com")
+    auth_passwordreset_request_v1('johnsmith@gmail.com')
+    auth_register_v1('compw09b@gmail.com', 'password', 'John', 'Smith')
+    auth_passwordreset_request_v1('compw09b@gmail.com')
+    auth_passwordreset_request_v1('compw09b@gmail.com')
     with pytest.raises(InputError):
         auth_passwordreset_reset_v1(INVALID_RESET_CODE, 'newpassword')
         
