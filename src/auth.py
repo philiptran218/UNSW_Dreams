@@ -12,6 +12,8 @@ from email.mime.text import MIMEText
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 SECRET = 'COMP1531PROJECT'
+EMAIL_SENDER = 'compw09b@gmail.com'
+EMAIL_PASSWORD = 'Computing1531'
 
 
 def generate_handle(name_first, name_last):
@@ -217,20 +219,14 @@ def already_requested(email):
     return requested
     
 def send_reset_code(email, reset_code):
-    
     email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
-    email_msg['From'] = 'compw09b@gmail.com'
+    email_msg['From'] = EMAIL_SENDER
     email_msg['To'] = email
     email_msg['Subject'] = 'Code to reset password in Dreams'
-    '''
-    message = f\
-    Subject: Code to reset password in Dreams
-    
-    Your unique code to reset your password is {reset_code}
-    '''
+   
     email_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    email_server.login('compw09b@gmail.com', 'Computing1531')
-    email_server.sendmail('compw09b@gmail.com', email, email_msg.as_string())
+    email_server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    email_server.sendmail(EMAIL_SENDER, email, email_msg.as_string())
     email_server.quit()
 
 def auth_passwordreset_request_v1(email):
