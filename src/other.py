@@ -62,7 +62,8 @@ def clear_v1():
     # Deletes all the profile images that are stored in the folder "static"
     imgs = os.listdir("src/static")
     for img in imgs:
-        os.remove(f"src/static/{img}")
+        if img != "description.txt":
+            os.remove(f"src/static/{img}")
 
     update_data()
     return {}
