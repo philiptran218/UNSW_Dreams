@@ -65,7 +65,7 @@ def admin_user_remove_v1(token, u_id):
         for user in data['users']:
             if user['u_id'] == u_id:
                 user['name_first'] = 'Removed'
-                user['name_last'] = 'User'
+                user['name_last'] = 'user'
     else:
         raise AccessError(description='Invalid Token')
     update_data()
@@ -93,26 +93,22 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     """ 
     token_validator = is_valid_token(token)
 
-    if token_validator:
-
-        if permission_id == OWNER or permission_id == MEMBER:
-
-            changer_perm = check_permissions(token) 
-
-            if changer_perm == OWNER:
-                validator = False
-                for user in data['users']:
-                    if user['u_id'] == u_id:
-                        validator = True
-                        user['perm_id'] = permission_id
-
-                if not validator:
-                    raise InputError (description='Inputted u_id is invalid')
-            else:
-                raise AccessError(description='Only owners can change permissions in Dreams')
-        else:
-            raise InputError(description='Permission id is invalid.')
-    else:
+    if not token_validator:
         raise AccessError(description='Invalid Token')
+
+    if permission_id == OWNER or permission_id == MEMBER:
+        raise InputError(description='Permission id is invalid.')
+    
+    if not check_permissions(token) == OWNER:
+        raise AccessError(description='Only owners can change permissions in Dreams')
+    validator = False
+    for user in data['users']:
+        if user['u_id'] == u_id:
+            validator = True
+            user['perm_id'] = permission_id
+
+    if not validator:
+        raise InputError (description='Inputted u_id is invalid')
+    
     update_data()
     return {}
