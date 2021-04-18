@@ -1,6 +1,6 @@
 import sys
 from json import dumps, loads
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.error import InputError
 from src import config
@@ -10,11 +10,12 @@ from src.channels import channels_create_v1, channels_listall_v1,channels_list_v
 from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1, auth_passwordreset_request_v1, auth_passwordreset_reset_v1
 from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
+from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1, user_profile_uploadphoto_v1, user_stats_v1
+from src.users import users_all_v1, users_stats_v1
 from src.message import message_senddm_v1, message_send_v1, message_edit_v1, message_remove_v1, message_share_v1, message_react_v1, message_unreact_v1, message_pin_v1, message_unpin_v1, message_sendlater_v1, message_sendlaterdm_v1
-from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1
-from src.users import users_all_v1
 from src.other import clear_v1, search_v1, notifications_get_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
+from src.standup import standup_start_v1, standup_send_v1, standup_active_v1
 
 from src.database import data
 
@@ -29,7 +30,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path='/static/')
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -424,7 +425,37 @@ def message_unpin():
     message_info = request.get_json()
     output = message_unpin_v1(message_info['token'], message_info['message_id'])
     return dumps(output)
-    
+
+################################################################################
+# standup_start_v1 route                                                       #
+################################################################################
+
+@APP.route('/standup/start/v1', methods=['POST'])
+def standup_start():
+    standup_info = request.get_json()
+    output = standup_start_v1(standup_info['token'],standup_info['channel_id'],standup_info['length'])
+    return dumps(output)
+
+################################################################################
+# standup_active_v1 tests                                                      #
+################################################################################
+
+@APP.route('/standup/active/v1', methods=['GET'])
+def standup_active():
+    standup_info = request.args
+    output = standup_active_v1(standup_info['token'],int(standup_info['channel_id']))
+    return dumps(output)
+
+################################################################################
+# standup_send_v1 tests                                                        #
+################################################################################
+
+@APP.route('/standup/send/v1', methods=['POST'])
+def standup_send():
+    standup_info = request.get_json()
+    output = standup_send_v1(standup_info['token'],standup_info['channel_id'],standup_info['message'])
+    return dumps(output)
+
 ################################################################################
 #   message_sendlater route                                                    #
 ################################################################################
@@ -444,6 +475,48 @@ def message_sendlaterdm():
     message_info = request.get_json()
     output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
     return dumps(output)
+
+################################################################################
+#   user_stats route                                                           #
+################################################################################
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    user_stats = request.args
+    output = user_stats_v1(user_stats['token'])
+    return dumps(output)
+
+################################################################################
+#   users_stats route                                                          #
+################################################################################
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    userall_stats = request.args
+    output = users_stats_v1(userall_stats['token'])
+    return dumps(output)
+
+################################################################################
+#   user_profile_uploadphoto route                                             #
+################################################################################
+
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def user_profile_uploadphoto():
+    photo = request.get_json()
+    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
+    return dumps(output)
+
+################################################################################
+#   user_profile_photo routes                                                  #
+################################################################################
+
+@APP.route("/static/<path:filename>")
+def send_photo(filename):
+    return send_from_directory('', filename)
+
+
+
+
 
 ################################################################################
 #   auth_passwordreset_request route                                           #

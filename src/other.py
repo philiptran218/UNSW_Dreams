@@ -5,10 +5,12 @@ import src.helper as helper
 import pytest
 import random
 import string
+import os
 
 MAX_STRING_LENGTH = 1000
 TAG = 1
 INVITE = 2
+REACT = 3
 
 # Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
@@ -34,8 +36,8 @@ def get_channel_dm_name(channel_id, dm_id):
 def clear_v1():
     '''
     Function:
-        Resets the internal data of the application to it's initial stateerases all information 
-        about the users, erases all the channels and the messages.
+        Resets the internal data of the application to it's initial state, erases all information 
+        about the users, channels, messages, DMs, notifications, sessions, stats and standups.
 
     Arguments:
         This fucntion doesn't take any arguments.
@@ -46,6 +48,7 @@ def clear_v1():
     Return Value:
         This function doesn't return any value.
     '''
+    # Deletes all data currently stored in the database.
     delete('users')
     delete('channels')
     delete('messages')
@@ -53,7 +56,16 @@ def clear_v1():
     delete('notifications')
     delete('sessions')
     delete('session_ids')
+    delete('stats_log')
+    delete('standups')
     delete('password_resets')
+
+    # Deletes all the profile images that are stored in the folder "static"
+    imgs = os.listdir("src/static")
+    for img in imgs:
+        if img != "description.txt":
+            os.remove(f"src/static/{img}")
+
     update_data()
     return {}
 
@@ -133,14 +145,17 @@ def notifications_get_v1(token):
     # Searches for user's notifications in data['notifications']
     for notif in notif_list:
         chan_dm_name = get_channel_dm_name(notif['channel_id'], notif['dm_id'])
+        user_handle = helper.get_handle(notif['auth_user_id'])
         if notif['u_id'] == auth_user_id and notif_count < 20:
             # If the notification is a tag
             if notif['type'] == TAG:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' tagged you in '
-                notif_msg = notif_msg + chan_dm_name + ': ' + notif['message'][:20]
-            # Else the notification is an invite (for iteration 2)
+                notif_msg = user_handle + ' tagged you in ' + chan_dm_name + ': ' + notif['message'][:20]
+            # If the notification is an invite
+            elif notif['type'] == INVITE:
+                notif_msg = user_handle + ' added you to ' + chan_dm_name 
+            # Else the notification must be a react
             else:
-                notif_msg = helper.get_handle(notif['auth_user_id']) + ' added you to ' + chan_dm_name   
+                notif_msg = user_handle + ' reacted to your message in ' + chan_dm_name
             notif_dict = {
                 'channel_id': notif['channel_id'],
                 'dm_id': notif['dm_id'],

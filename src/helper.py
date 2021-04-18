@@ -1,5 +1,7 @@
 from src.database import data, update_data
 import jwt
+import urllib.request
+import sys
 
 SECRET = 'COMP1531PROJECT'
 
@@ -20,7 +22,7 @@ def is_valid_uid(u_id):
     return False
 
 def is_valid_channelid(channel_id): 
-    channel_found = None
+    channel_found = False
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel_found = True       

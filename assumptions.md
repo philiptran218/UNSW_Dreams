@@ -51,4 +51,10 @@ We are assuming:
   the user's original handle)
 - if a user is tagged in a channel/DM they are not a member of, there will be no notification created
 - deleting a DM will not remove its messages
+- User and users stats are not recorded in real time. They are instead only recorded when the functions are called.
+  These stats must be kept and archived.
+- Involvement rate and utilisation rate are tracked in addition to other measures. This makes the code easier to implement.
+- The start and end coordinates for the user/profile/uploadphoto must all be greater then 0. 
+- The end coordinates of an image must be greater then the start coordinates. This will produce its own input error, not specified in the spec.
+- Images are stored under the convention "img_url.jpg" inside the pictures folder. 
 

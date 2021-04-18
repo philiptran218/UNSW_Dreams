@@ -2,11 +2,18 @@ import pytest
 import requests
 import json
 from src import config
+from datetime import timezone, datetime
 
 INVALID_TOKEN = -1
 INVALID_UID = -1
+INVALID_COORDINATE = -1
+LARGE_COORDINATE = 10000000000000000000
 INPUTERROR = 400
 ACCESSERROR = 403
+
+DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg"
+NEW_IMG_URL = "https://img1.looper.com/img/gallery/things-only-adults-notice-in-shrek/intro-1573597941.jpg"
+INVALID_IMG_URL = "https://i.insider.com/5c59e77ceb3ce80d46564023?width=700"
 
 @pytest.fixture
 def user_1():
@@ -38,6 +45,42 @@ def user_3():
     })
     return user.json()
 
+@pytest.fixture
+def test_create_dm(user_1,user_2):
+    dm = requests.post(config.url + 'dm/create/v1', json={
+        'token': user_1['token'],
+        'u_ids': [user_2['auth_user_id']]
+    })
+    dm_info = dm.json()
+    return dm_info
+
+@pytest.fixture
+def channel_1(user_1):
+    channel = requests.post(config.url + 'channels/create/v2', json={
+        'token': user_1['token'],
+        'name': 'Channel1',
+        'is_public': True
+    })
+    channel_info = channel.json()
+    return channel_info['channel_id']
+
+@pytest.fixture
+def message_1(user_1, test_create_dm):
+    msg = requests.post(config.url + 'message/senddm/v1', json={
+        'token': user_1['token'],
+        'dm_id': test_create_dm['dm_id'],
+        'message': 'Hello DM'
+    })
+    msg_info = msg.json()
+    return msg_info['message_id']
+
+@pytest.fixture
+def get_time():
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time_issued = round(time)
+    return time_issued
+
 @pytest.fixture 
 def clear_database():
     requests.delete(config.url + 'clear/v1')
@@ -54,7 +97,8 @@ def expected_output_user1_profile():
                 'email': 'johnsmith@gmail.com',
                 'name_first': 'John',
                 'name_last': 'Smith',
-                'handle_str': 'johnsmith'
+                'handle_str': 'johnsmith',
+                'profile_img_url': config.url + "static/1.jpg",
             }
         
     }
@@ -67,7 +111,8 @@ def expected_output_user1_profilev2():
                 'email': 'mynewemail@gmail.com',
                 'name_first': 'Daniel',
                 'name_last': 'Nguyen',
-                'handle_str': 'totallyoriginalhandl'
+                'handle_str': 'totallyoriginalhandl',
+                'profile_img_url': config.url + "static/1.jpg",
             }
     }
 
@@ -235,5 +280,200 @@ def test_multi_user(clear_database, user_1, user_2, user_3):
     assert user_2_profile['user']['email'] == "potato@gmail.com"
     assert user_3_profile['user']['email'] == "compgod@gmail.com"
     assert user_3_profile['user']['handle_str'] == "gamer"
+
+################################################################################
+# test_user_stats http tests                                                   #
+################################################################################
+
+def empty_stats_list(get_time):
+    return {
+        'user_stats': {
+            'channels_joined': [{'num_channels_joined': 0, 'time_stamp': get_time}],
+            'dms_joined': [{'num_dms_joined': 0, 'time_stamp': get_time}],
+            'messages_sent': [{'num_messages_sent': 0, 'time_stamp': get_time}],
+            'involvement_rate': 0.0
+        }
+    }
+
+def stats_list(get_time):
+   return {
+        'user_stats': {
+            'channels_joined': [{'num_channels_joined': 1, 'time_stamp': get_time}],
+            'dms_joined': [{'num_dms_joined': 1, 'time_stamp': get_time}],
+            'messages_sent': [{'num_messages_sent': 1, 'time_stamp': get_time}],
+            'involvement_rate': 1.0
+        }
+    }
+
+def test_user_stats_invalid_token(clear_database, user_1):
+    stats = requests.get(f"{config.url}user/stats/v1?token={INVALID_TOKEN}")
+    assert stats.status_code == ACCESSERROR
+
+def test_user_stats_valid_empty(clear_database, user_1, get_time):
+    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
+    stats_info = stats.json()
+    assert stats_info == empty_stats_list(get_time)
+
+def test_user_stats_valid_full(clear_database, user_1, user_2, test_create_dm, channel_1, message_1, get_time):
+    stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
+    stats_info = stats.json()
+    assert stats_info == stats_list(get_time)
+
+################################################################################
+# test_user_profile_uploadphoto http tests                                     #
+################################################################################
+
+def test_user_profile_uploadphoto_invalid_token(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': INVALID_TOKEN,
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == ACCESSERROR
+
+def test_user_profile_uploadphoto_invalid_img_url(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': INVALID_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_x_start_1(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': INVALID_COORDINATE,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_x_start_2(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': LARGE_COORDINATE,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_x_start_3(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 200,
+        'y_start': 0,
+        'x_end': 0,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_y_start_1(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': INVALID_COORDINATE,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_y_start_2(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': LARGE_COORDINATE,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_y_start_3(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start':  INVALID_COORDINATE,
+        'x_end': 200,
+        'y_end': 0,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_x_end_1(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': INVALID_COORDINATE,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_x_end_2(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': LARGE_COORDINATE,
+        'y_end': 200,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_y_end_1(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': INVALID_COORDINATE,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_invalid_y_end_2(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': LARGE_COORDINATE,
+    })
+    assert photo.status_code == INPUTERROR
+
+def test_user_profile_uploadphoto_valid(clear_database, user_1):
+    photo = requests.post(config.url + "/user/profile/uploadphoto/v1", json={
+        'token': user_1['token'],
+        'img_url': NEW_IMG_URL,
+        'x_start': 0,
+        'y_start': 0,
+        'x_end': 200,
+        'y_end': 200,
+    })
+    assert photo.status_code == 200
+    profile = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
+    user_1_profile = profile.json() 
+
+    assert user_1_profile['user']['profile_img_url'] == config.url + "static/1.jpg"
+
+
+
+
+
+
 
 

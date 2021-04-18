@@ -1,8 +1,10 @@
 from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
 from src.auth import auth_passwordreset_request_v1, auth_passwordreset_reset_v1
 from src.error import InputError, AccessError
-import pytest
 from src.other import clear_v1
+
+import pytest
+import os
 
 INVALID_RESET_CODE = -1
 
@@ -18,11 +20,6 @@ def user_1():
 @pytest.fixture
 def user_2():
     user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
-    return user
-
-@pytest.fixture
-def user_3():
-    user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
     return user
 
 ################################################################################

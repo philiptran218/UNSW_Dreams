@@ -8,6 +8,7 @@ from src.channel import channel_join_v1, channel_details_v1, channel_messages_v1
 from src.channels import channels_create_v1, channels_listall_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.error import AccessError, InputError
+from src import config
 
 INVALID_TOKEN = -1
 INVALID_U_ID = -1
@@ -51,8 +52,9 @@ def expected_output_admin_user_remove():
         'u_id': 2,
         'email': 'dan@gmail.com',
         'name_first': 'Removed',
-        'name_last': 'User', 
+        'name_last': 'user', 
         'handle_str': "dansmith",
+        'profile_img_url': config.url + f"static/2.jpg", 
     }
     }
 
@@ -67,7 +69,7 @@ def test_admin_user_remove_v1_valid(clear_data, test_user1, test_user2, test_mes
 
     assert(user_profile_v1(test_user1['token'], test_user2['auth_user_id']) == expected_output_admin_user_remove)
     messages = channel_messages_v1(test_user1["token"], test_channel['channel_id'], 0)
-    assert(messages['messages'][0]['message'] == 'Removed User')
+    assert(messages['messages'][0]['message'] == 'Removed user')
 
 def test_admin_user_remove_v1_invalid_u_id1(clear_data, test_user1):
     with pytest.raises(InputError):

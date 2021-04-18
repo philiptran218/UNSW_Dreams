@@ -266,10 +266,11 @@ def message_edit_v1(token, message_id, message):
         edit_msg.update({'u_id': -1})
         edit_msg.update({'message': ''})
         edit_msg.update({'reacts': ''})
-        edit_msg.update({'is_pinned': None})
+        edit_msg.update({'is_pinned': False})
     else:   
         edit_msg = message_details(message_id)
         edit_msg.update({'message': message})
+        add_tag_notification(auth_user_id, edit_msg['channel_id'], edit_msg['dm_id'], message)
     update_data()
     return {}
 
@@ -424,6 +425,17 @@ def add_react(auth_user_id, reacts, react_id):
             react['u_ids'].append(auth_user_id)
     return reacts
 
+def add_react_notification(auth_user_id, u_id, channel_id, dm_id):
+    notification = {
+        'auth_user_id': auth_user_id,
+        'u_id': u_id,
+        'channel_id': channel_id,
+        'dm_id': dm_id,
+        'type': 3,
+        'message': ''
+    }
+    data['notifications'].append(notification)
+
 def message_react_v1(token, message_id, react_id):
     '''
     Function:
@@ -467,6 +479,7 @@ def message_react_v1(token, message_id, react_id):
     if not user_found:
         raise AccessError(description="User is not in channel/dm")
     add_react(auth_user_id, reacts, react_id)
+    add_react_notification(auth_user_id, message['u_id'], message['channel_id'], message['dm_id'])
     update_data()
     return {}
 
