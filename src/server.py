@@ -1,6 +1,6 @@
 import sys
 from json import dumps, loads
-from flask import Flask, request, send_file
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from src.error import InputError
 from src import config
