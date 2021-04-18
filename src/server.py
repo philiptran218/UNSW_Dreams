@@ -446,6 +446,25 @@ def message_sendlaterdm():
     return dumps(output)
 
 ################################################################################
+#   auth_passwordreset_request route                                           #
+################################################################################
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def auth_passwordreset_request():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_request_v1(passwordreset_info['email'])
+    return dumps(output)
+
+################################################################################
+#   auth_passwordreset_reset route                                             #
+################################################################################
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_passwordreset_reset():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_reset_v1(passwordreset_info['reset_code'], passwordreset_info['new_password'])
+    return dumps(output)
+
+
+################################################################################
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
