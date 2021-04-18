@@ -96,7 +96,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     if not token_validator:
         raise AccessError(description='Invalid Token')
 
-    if permission_id == OWNER or permission_id == MEMBER:
+    if not (permission_id == OWNER or permission_id == MEMBER):
         raise InputError(description='Permission id is invalid.')
     
     if not check_permissions(token) == OWNER:
