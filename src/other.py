@@ -59,11 +59,10 @@ def clear_v1():
     delete('stats_log')
     delete('standups')
 
-    # Deletes all the profile images that are stored in the folder "profile_imgs"
-    imgs = os.listdir("src/profile_imgs")
+    # Deletes all the profile images that are stored in the folder "static"
+    imgs = os.listdir("src/static")
     for img in imgs:
-        if img != "description.txt":
-            os.remove(f"src/profile_imgs/{img}")
+        os.remove(f"src/static/{img}")
 
     update_data()
     return {}

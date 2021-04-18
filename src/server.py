@@ -29,7 +29,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path='/static/')
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -509,11 +509,9 @@ def user_profile_uploadphoto():
 #   user_profile_photo routes                                                  #
 ################################################################################
 
-@APP.route("/profile_img", methods=['GET'])
-def user_profile_photo():
-    photo = request.args
-    u_id = photo['u_id']
-    return send_file(f'profile_imgs/{u_id}.jpg', mimetype='image/jpg')
+@APP.route("/static/<path:filename>")
+def send_photo(filename):
+    return send_from_directory('', filename)
     
 ################################################################################
 # Example

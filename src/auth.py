@@ -170,7 +170,7 @@ def auth_register_v1(email, password, name_first, name_last):
     time = time.replace(tzinfo=timezone.utc).timestamp()
     time_issued = round(time)
 
-    urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/profile_imgs/{number_users + 1}.jpg")
+    urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/static/{number_users + 1}.jpg")
 
     user = {
         'u_id': number_users + 1,
@@ -180,7 +180,7 @@ def auth_register_v1(email, password, name_first, name_last):
         'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
-        'profile_img_url': config.url + f"profile_img?u_id={number_users + 1}",
+        'profile_img_url': config.url + f"static/{number_users + 1}.jpg",
         'stats_log': [
             {
                 'channels_joined': [{'channels_joined': 0, 'time': time_issued}],

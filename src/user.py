@@ -207,10 +207,10 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if response.getcode() != 200:
         raise InputError(description="Url is not valid")
 
-    urllib.request.urlretrieve(img_url, f"src/profile_imgs/{u_id}.jpg")
+    urllib.request.urlretrieve(img_url, f"src/static/{u_id}.jpg")
     
-    max_y = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').height
-    max_x = Image.open(f"src/profile_imgs/{u_id}.jpg", 'r').width
+    max_y = Image.open(f"src/static/{u_id}.jpg", 'r').height
+    max_x = Image.open(f"src/static/{u_id}.jpg", 'r').width
 
     if x_start < 0 or x_end < 0 or y_start < 0 or y_end < 0:
         raise InputError(description="Coordinates not in dimensions of image")
@@ -223,13 +223,13 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     for user in data['users']:
         if user['u_id'] == u_id:
-            user['profile_img_url'] = config.url + f"profile_img?u_id={u_id}"
+            user['profile_img_url'] = config.url + f"static/{u_id}.jpg"
 
     update_data()
 
-    image_object = Image.open(f"src/profile_imgs/{u_id}.jpg")
+    image_object = Image.open(f"src/static/{u_id}.jpg")
     cropped_image = image_object.crop((x_start, y_start, x_end, y_end))
-    cropped_image.save(f"src/profile_imgs/{u_id}.jpg")
+    cropped_image.save(f"src/static/{u_id}.jpg")
 
     return {}
 
