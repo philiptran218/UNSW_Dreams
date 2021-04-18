@@ -70,7 +70,7 @@ def expected_output_1():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + "profile_img?u_id=1", 
+                'profile_img_url': config.url + "static/1.jpg", 
                 }]
             }
 
@@ -82,7 +82,7 @@ def expected_output_2():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + "profile_img?u_id=1", 
+                'profile_img_url': config.url + "static/1.jpg", 
                 },
                 {
                 'u_id': 2,
@@ -90,7 +90,7 @@ def expected_output_2():
                 'name_last': 'Nguyen',
                 'email': 'terrynguyen@gmail.com',
                 'handle_str': 'terrynguyen',
-                'profile_img_url': config.url + "profile_img?u_id=2", 
+                'profile_img_url': config.url + "static/2.jpg", 
                 },
                 {
                 'u_id': 3,
@@ -98,7 +98,7 @@ def expected_output_2():
                 'name_last': 'Tran',
                 'email': 'philt@gmail.com',
                 'handle_str': 'philtran',
-                'profile_img_url': config.url + "profile_img?u_id=3", 
+                'profile_img_url': config.url + "static/3.jpg", 
                 }]
             }
 

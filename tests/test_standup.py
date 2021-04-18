@@ -48,9 +48,6 @@ def private_channel(user_2):
     channel = channels_create_v1(user_2['token'], "Terry's Channel", False)
     return channel['channel_id']
 
-
-
-
 @pytest.fixture
 def clear_data():
     clear_v1()
@@ -153,4 +150,4 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
     assert chan_msg[0]['time_created'] == time_end
-#add one mroe to test
+

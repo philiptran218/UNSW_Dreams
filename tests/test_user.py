@@ -72,7 +72,7 @@ def test_valid_user_profile_v1(clear_data):
     assert user['user']['name_first'] == "John"
     assert user['user']['name_last'] == "Smith"
     assert user['user']['handle_str'] == "johnsmith"
-    assert user['user']['profile_img_url'] == config.url + "profile_img?u_id=1"
+    assert user['user']['profile_img_url'] == config.url + "static/1.jpg"
 
 def test_profile_unregistered_user(clear_data):
     with pytest.raises(AccessError):
@@ -231,7 +231,7 @@ def expected_output_uploadphoto():
         'name_first': 'John',
         'name_last': 'Smith', 
         'handle_str': "johnsmith",
-        'profile_img_url': config.url + "profile_img?u_id=1", 
+        'profile_img_url': config.url + "static/1.jpg", 
     }
     }
 

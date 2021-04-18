@@ -54,7 +54,7 @@ def expected_output_admin_user_remove():
         'name_first': 'Removed',
         'name_last': 'User', 
         'handle_str': "dansmith",
-        'profile_img_url': config.url + f"profile_img?u_id=2", 
+        'profile_img_url': config.url + f"static/2.jpg", 
     }
     }
 
