@@ -118,11 +118,11 @@ def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
     users = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_2['auth_user_id']}")
     users_info = users.json()
     assert users_info['user']['name_first'] == 'Removed'
-    assert users_info['user']['name_last'] == 'User'
+    assert users_info['user']['name_last'] == 'user'
 
     channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_2['token']}&channel_id={channel_1}&start=0") 
     msg_info = channel_msg.json()
-    assert msg_info['messages'][0]['message'] == 'Removed User'
+    assert msg_info['messages'][0]['message'] == 'Removed user'
  
 ################################################################################
 # admin_userpermission_change http tests                                       #
