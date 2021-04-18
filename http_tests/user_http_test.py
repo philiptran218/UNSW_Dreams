@@ -98,7 +98,7 @@ def expected_output_user1_profile():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + "profile_img?u_id=1",
+                'profile_img_url': config.url + "static/1.jpg",
             }
         
     }
@@ -112,7 +112,7 @@ def expected_output_user1_profilev2():
                 'name_first': 'Daniel',
                 'name_last': 'Nguyen',
                 'handle_str': 'totallyoriginalhandl',
-                'profile_img_url': config.url + "profile_img?u_id=1",
+                'profile_img_url': config.url + "static/1.jpg",
             }
     }
 
@@ -468,7 +468,7 @@ def test_user_profile_uploadphoto_valid(clear_database, user_1):
     profile = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
     user_1_profile = profile.json() 
 
-    assert user_1_profile['user']['profile_img_url'] == config.url + "profile_img?u_id=1"
+    assert user_1_profile['user']['profile_img_url'] == config.url + "static/1.jpg"
 
 
 

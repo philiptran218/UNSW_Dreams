@@ -94,7 +94,7 @@ def expected_output_all_users():
                 'name_first': 'John',
                 'name_last': 'Smith',
                 'handle_str': 'johnsmith',
-                'profile_img_url': config.url + "profile_img?u_id=1",
+                'profile_img_url': config.url + "static/1.jpg",
             },
             {
                 'u_id': 2,
@@ -102,7 +102,7 @@ def expected_output_all_users():
                 'name_first': 'Philip',
                 'name_last': 'Tran',
                 'handle_str': 'philiptran',
-                'profile_img_url': config.url + "profile_img?u_id=2",
+                'profile_img_url': config.url + "static/2.jpg",
             },
             {
                 'u_id': 3,
@@ -110,7 +110,7 @@ def expected_output_all_users():
                 'name_first': 'Terrance',
                 'name_last': 'Nguyen',
                 'handle_str': 'terrancenguyen', 
-                'profile_img_url': config.url + "profile_img?u_id=3",
+                'profile_img_url': config.url + "static/3.jpg",
             }
         ]   
     }
