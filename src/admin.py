@@ -60,7 +60,7 @@ def admin_user_remove_v1(token, u_id):
 
         for message in data['messages']:
             if message['u_id'] == u_id:
-                message.update({'message': 'Removed User'})
+                message.update({'message': 'Removed user'})
 
         for user in data['users']:
             if user['u_id'] == u_id:
