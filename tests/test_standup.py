@@ -63,7 +63,8 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
     standup_info = standup_start_v1(user_1['token'],public_channel_1,10)
     assert standup_active_v1(user_1['token'], public_channel_1)['is_active'] == True
-    assert standup_info['time_finish'] == time_end
+    time_diff = standup_info['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
 
 ################################################################################
 # standup_active_v1 tests                                                      #
@@ -88,7 +89,8 @@ def test_standup_active(clear_data,user_1,public_channel_1):
     standup_start_v1(user_1['token'],public_channel_1,10)
     active_standup_info = standup_active_v1(user_1['token'],public_channel_1)
     assert(active_standup_info['is_active'])
-    assert active_standup_info['time_finish'] == time_end
+    time_diff = active_standup_info['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
     time.sleep(15)
     standup_info = standup_active_v1(user_1['token'], public_channel_1)
     assert standup_info['is_active'] == False
@@ -145,5 +147,6 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nterrynguyen: Hi there!'
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
-    assert chan_msg[0]['time_created'] == time_end
+    time_diff = chan_msg[0]['time_created'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
 
