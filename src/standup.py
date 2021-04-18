@@ -6,22 +6,12 @@ from datetime import timezone, datetime, timedelta
 import threading 
 import time
 
-#helper to check for valid channel_id
-def is_valid_channelid(channel_id): 
-    if channel_id < 1:
-        return False
-    for channel in data['channels']:
-        if channel['channel_id'] == channel_id:
-            return True       
-    return False
-
 #helper to check if msg empty
 def is_message_empty(message):
     message = message.replace(' ', '')
     message = message.replace('\n', '')
     message = message.replace('\t', '')
     return len(message) == 0
-
 
 def standup_msg_send(auth_user_id, channel_id, message):
     message_id = len(data['messages']) + 1
@@ -104,7 +94,7 @@ def standup_start_v1(token,channel_id,length):
         raise AccessError(description="Please enter a valid token")  
     auth_user_id = helper.detoken(token)    
     # Check for valid channel_id
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")       
     # Check if user is not in the channel
     if not helper.is_already_in_channel(auth_user_id, channel_id):
@@ -112,16 +102,11 @@ def standup_start_v1(token,channel_id,length):
     if standup_running(channel_id):
         raise InputError(description="An active standup is currently running in this channel") 
 
-
-
     curr_time = datetime.now()+ timedelta(seconds=length)
     curr_time = round(curr_time.replace(tzinfo=timezone.utc).timestamp())
     mythread = threading.Thread(target=standup_create,args=(auth_user_id,channel_id,length,token))
     mythread.start()
     return{'time_finish':curr_time}
-
-
-
 
 def standup_active_v1(token,channel_id):
     '''
@@ -151,7 +136,7 @@ def standup_active_v1(token,channel_id):
         raise AccessError(description="Please enter a valid token")  
     auth_user_id = helper.detoken(token)    
     # Check for valid channel_id
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")       
     # Check if user is not in the channel
     if not helper.is_already_in_channel(auth_user_id, channel_id):
@@ -169,14 +154,14 @@ def standup_send_v1(token,channel_id,message):
         raise AccessError(description="Please enter a valid token")  
     auth_user_id = helper.detoken(token)    
     # Check for valid channel_id
-    if not is_valid_channelid(channel_id):
+    if not helper.is_valid_channelid(channel_id):
         raise InputError(description="Please enter a valid channel_id")       
     # Check if user is not in the channel
     if not helper.is_already_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not a member in the channel they are sending the message to")
     # Check if message is empty
     if is_message_empty(message):
-        raise InputError(description="Empty messages cannot be posted to channels")
+        return {}
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError(description="Message is longer than 1000 characters")

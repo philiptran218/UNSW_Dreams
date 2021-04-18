@@ -6,6 +6,7 @@ from src.database import data, update_data
 from src.helper import is_valid_token, is_valid_uid, detoken, is_already_in_channel
 from datetime import timezone, datetime
 import urllib.request
+import urllib.error
 import sys
 from PIL import Image
 
@@ -203,8 +204,9 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     if not img_url.endswith('.jpg'):
         raise InputError(description="Image is not of specified type")
 
-    response = urllib.request.urlopen(img_url)
-    if response.getcode() != 200:
+    try:
+        urllib.request.urlopen(img_url)
+    except urllib.error.HTTPError:
         raise InputError(description="Url is not valid")
 
     urllib.request.urlretrieve(img_url, f"src/static/{u_id}.jpg")
