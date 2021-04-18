@@ -261,28 +261,28 @@ def test_auth_logout_request(clear_database, user_1):
 ################################################################################
 
 def test_passwordreset_request_invalid_email_format(clear_database, user_1):
-    user = request.post(config.url + 'auth/passwordreset/request/v1', json={
+    reset = requests.post(config.url + 'auth/passwordreset/request/v1', json={
         'email': 'bademail',
     })
 
-    assert user.status_code == INPUTERROR
+    assert reset.status_code == INPUTERROR
 
 def test_passwordreset_request_unregistered_email(clear_database, user_1):
-    user = request.post(config.url + 'auth/passwordreset/request/v1', json={
+    reset = requests.post(config.url + 'auth/passwordreset/request/v1', json={
         'email': 'noemail@gmail.com',
     })
 
-    assert user.status_code == INPUTERROR
+    assert reset.status_code == INPUTERROR
 
 ################################################################################
 # auth_passwordreset_reset http tests                                          #
 ################################################################################
 
 def test_passwordreset_reset_invalid_code(clear_database, user_1):
-    user = request.post(config.url + 'auth/passwordreset/reset/v1', json={
+    reset = requests.post(config.url + 'auth/passwordreset/reset/v1', json={
         'reset_code': INVALID_RESET_CODE,
         'new_password': 'newpassword'
     })
 
-    assert user.status_code == INPUTERROR
+    assert reset.status_code == INPUTERROR
 
