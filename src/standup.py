@@ -15,15 +15,15 @@ def is_message_empty(message):
 
 def standup_msg_send(auth_user_id, channel_id, message):
     message_id = len(data['messages']) + 1
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time = datetime.now()
+    time = int(time.timestamp())
     message_info = {
         'message_id': message_id,
         'channel_id': channel_id,
         'dm_id': -1,
         'u_id': auth_user_id,
         'message': message,
-        'time_created': round(time),
+        'time_created': time,
         'reacts': helper.create_reacts(),
         'is_pinned': None
     }
@@ -34,7 +34,7 @@ def standup_msg_send(auth_user_id, channel_id, message):
 #function that creates a standup and adds it to the list of standups.
 def standup_create(auth_user_id,channel_id,length,token):
     curr_time = datetime.now()+ timedelta(seconds=length)
-    curr_time = round(curr_time.replace(tzinfo=timezone.utc).timestamp())
+    curr_time = int(curr_time.timestamp())
     standup = {
         'channel_id':channel_id,
         'u_id': auth_user_id,
@@ -103,7 +103,7 @@ def standup_start_v1(token,channel_id,length):
         raise InputError(description="An active standup is currently running in this channel") 
 
     curr_time = datetime.now()+ timedelta(seconds=length)
-    curr_time = round(curr_time.replace(tzinfo=timezone.utc).timestamp())
+    curr_time = int(curr_time.timestamp())
     mythread = threading.Thread(target=standup_create,args=(auth_user_id,channel_id,length,token))
     mythread.start()
     return{'time_finish':curr_time}

@@ -58,6 +58,20 @@ def users_all_v1(token):
         users_list.append(user_info)
     return {'users': users_list}
 
+def update_stats(old_stats, stats_log):
+    change_data = False
+    if old_stats['channels_exist'][-1]['num_channels_exist'] != stats_log['channels_exist'][0]['num_channels_exist']:
+        change_data = True
+    if old_stats['dms_exist'][-1]['num_dms_exist'] != stats_log['dms_exist'][0]['num_dms_exist']:
+        change_data = True
+    if old_stats['messages_exist'][-1]['num_messages_exist'] != stats_log['messages_exist'][0]['num_messages_exist']:
+        change_data = True
+    if change_data:
+        old_stats['messages_exist'].append(stats_log['messages_exist'][0])
+        old_stats['channels_exist'].append(stats_log['channels_exist'][0])
+        old_stats['dms_exist'].append(stats_log['dms_exist'][0])
+    old_stats.update({'utilization_rate': stats_log['utilization_rate']})
+
 def users_stats_v1(token):
     '''
     Function:
@@ -82,9 +96,9 @@ def users_stats_v1(token):
     num_msg_exist = len(data['messages'])
     util_rate = get_utlilisation_rate(token)
 
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    time_issued = round(time)
+    time = datetime.now()
+    time = time.timestamp()
+    time_issued = int(time)
 
     stats_log = {
         'channels_exist': [{'num_channels_exist': num_channels_exist, 'time_stamp': time_issued}],
@@ -92,14 +106,11 @@ def users_stats_v1(token):
         'messages_exist': [{'num_messages_exist': num_msg_exist, 'time_stamp': time_issued}],
         'utilization_rate': util_rate,
     }
-
-    data['stats_log'].append(stats_log)
+    if len(data['stats_log']) == 0:
+        data['stats_log'].append(stats_log)
+    else:    
+        update_stats(data['stats_log'][0], stats_log)  
     update_data()
 
-    return {'dreams_stats': stats_log}
+    return {'dreams_stats': data['stats_log'][0]}
 
-    
-
-
-
-    

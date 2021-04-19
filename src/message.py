@@ -157,15 +157,14 @@ def message_send_v1(token, channel_id, message):
         raise InputError(description="Message is longer than 1000 characters")
     
     message_id = len(data['messages']) + 1   
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time = datetime.now().timestamp()
     message_info = {
         'message_id': message_id,
         'channel_id': channel_id,
         'dm_id': -1,
         'u_id': auth_user_id,
         'message': message,
-        'time_created': round(time),
+        'time_created': int(time),
         'reacts': helper.create_reacts(),
         'is_pinned': False
     }
@@ -335,8 +334,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
             raise InputError(description="Message is longer than 1000 characters")
 
     message_id = len(data['messages']) + 1
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time = datetime.now().timestamp()
     # If the optional message is empty or just whitespace, it will not be
     # appended to the og_message 
     if is_message_empty(message):
@@ -349,7 +347,7 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         'dm_id': dm_id,
         'u_id': auth_user_id,
         'message': og_msg['message'] + app_message,
-        'time_created': round(time),
+        'time_created': int(time),
         'reacts': og_msg['reacts'],
         'is_pinned': False,
     }
@@ -400,15 +398,14 @@ def message_senddm_v1(token, dm_id, message):
         raise InputError(description="Message is longer than 1000 characters")
     
     message_id = len(data['messages']) + 1   
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time = datetime.now().timestamp()
     message_info = {
         'message_id': message_id,
         'channel_id': -1,
         'dm_id': dm_id,
         'u_id': auth_user_id,
         'message': message,
-        'time_created': round(time),
+        'time_created': int(time),
         'reacts': helper.create_reacts(),
         'is_pinned': False
     }
@@ -578,8 +575,8 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError(description="Message is longer than 1000 characters")
-    time_now = datetime.now()
-    time_now = round(time_now.replace(tzinfo=timezone.utc).timestamp())
+    time_now = int(datetime.now().timestamp())
+    #time_now = round(time_now.replace(tzinfo=timezone.utc).timestamp())
     # Check is time_sent is in the past
     if time_sent < time_now:
         raise InputError(description="time_sent is in the past")
@@ -632,8 +629,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     # Check if message surpasses accepted length
     if len(message) > 1000:
         raise InputError(description="Message is longer than 1000 characters")
-    time_now = datetime.now()
-    time_now = round(time_now.replace(tzinfo=timezone.utc).timestamp())
+    time_now = int(datetime.now().timestamp())
     # Check is time_sent is in the past
     if time_sent < time_now:
         raise InputError(description="time_sent is in the past")
