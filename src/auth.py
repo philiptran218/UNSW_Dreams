@@ -10,7 +10,8 @@ import os
 import hashlib
 import jwt
 import smtplib
-import secrets
+import random
+import string
 import re
 
 DEFAULT_IMG_URL = "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" 
@@ -20,6 +21,7 @@ REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 SECRET = 'COMP1531PROJECT'
 EMAIL_SENDER = 'compw09b@gmail.com'
 EMAIL_PASSWORD = 'Computing1531'
+CODE_LENGTH = 10
 
 
 def generate_handle(name_first, name_last):
@@ -240,6 +242,10 @@ def already_requested(email):
             requested = True
     return requested
     
+def create_code():
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for counter in range(CODE_LENGTH))    
+    
 def send_reset_code(email, reset_code):
     email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
     email_msg['From'] = EMAIL_SENDER
@@ -277,8 +283,8 @@ def auth_passwordreset_request_v1(email):
     if not is_valid_email(email):
         raise InputError(description="Email does not belong to a registered user")
 
-    # Creates a base64 encoded string which may be longer than 10 characters
-    reset_code = secrets.token_urlsafe(10)
+    # Creates a random 10 character code
+    reset_code = create_code()
     
     # If user requests another reset code, their old reset code is updated to 
     # the new one
