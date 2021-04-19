@@ -76,9 +76,9 @@ def message_1(user_1, test_create_dm):
 
 @pytest.fixture
 def get_time():
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    time_issued = round(time)
+    time = datetime.now()
+    time = time.timestamp()
+    time_issued = int(time)
     return time_issued
 
 @pytest.fixture 
@@ -469,11 +469,4 @@ def test_user_profile_uploadphoto_valid(clear_database, user_1):
     user_1_profile = profile.json() 
 
     assert user_1_profile['user']['profile_img_url'] == config.url + "static/1.jpg"
-
-
-
-
-
-
-
 

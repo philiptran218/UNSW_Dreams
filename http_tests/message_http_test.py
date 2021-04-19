@@ -106,7 +106,7 @@ def message_2(user_1, dm_1):
 @pytest.fixture
 def message_time():
     time = datetime.now() + timedelta(0, 3)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     return send_time
 
 @pytest.fixture 
@@ -1105,7 +1105,7 @@ def test_message_sendlater_empty_message(clear_database, user_1, channel_1, mess
 
 def test_message_sendlater_past_time(clear_database, user_1, channel_1):
     time = datetime.now() - timedelta(0, 5)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     msg = requests.post(config.url + 'message/sendlater/v1', json={
         'token': user_1['token'],
         'channel_id': channel_1,
@@ -1126,7 +1126,7 @@ def check_before_send_time(token, channel_id, dm_id):
 
 def test_message_sendlater_valid_message(clear_database, user_1, channel_1):
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
 
     check_send = threading.Timer(4, check_before_send_time, args=(user_1['token'], channel_1, -1))
     check_send.start()
@@ -1206,7 +1206,7 @@ def test_message_sendlaterdm_empty_message(clear_database, user_1, dm_1, message
 
 def test_message_sendlaterdm_past_time(clear_database, user_1, dm_1):
     time = datetime.now() - timedelta(0, 5)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     msg = requests.post(config.url + 'message/sendlaterdm/v1', json={
         'token': user_1['token'],
         'dm_id': dm_1,
@@ -1217,7 +1217,7 @@ def test_message_sendlaterdm_past_time(clear_database, user_1, dm_1):
 
 def test_message_sendlaterdm_valid_message(clear_database, user_1, dm_1):
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
 
     check_send = threading.Timer(4, check_before_send_time, args=(user_1['token'], -1, dm_1))
     check_send.start()
