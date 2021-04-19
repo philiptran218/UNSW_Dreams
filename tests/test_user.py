@@ -19,7 +19,7 @@ LARGE_COORDINATE = 10000000000000000000
 DEFAULT_IMG_URL = "https://www.usbji.org/sites/default/files/person.jpg"
 NEW_IMG_URL = "https://img1.looper.com/img/gallery/things-only-adults-notice-in-shrek/intro-1573597941.jpg"
 INVALID_IMG_URL = "https://i.insider.com/5c59e77ceb3ce80d46564023?width=700"
-
+INVALID_URL = "https://tinypng.com/images/social/web.jpg"
 #################################################################################
 #   Fixtures                                                                    #
 #################################################################################
@@ -243,6 +243,10 @@ def test_user_photo_invalid_not_jpg(clear_data, user_1):
     with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], INVALID_IMG_URL, 0, 0, 200, 200)
 
+def test_user_photo_invalid_url(clear_data, user_1):
+    with pytest.raises(InputError):
+        user_profile_uploadphoto_v1(user_1['token'], INVALID_URL, 0, 0, 200, 200)
+
 def test_user_photo_negative_x_start(clear_data, user_1):
     with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, INVALID_COORDINATE, 0, 200, 200)
@@ -274,6 +278,10 @@ def test_user_photo_negative_y_end(clear_data, user_1):
 def test_user_photo_too_large_y_end(clear_data, user_1):
     with pytest.raises(InputError):
         user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 200, LARGE_COORDINATE)
+
+def test_user_photo_start_greater_than_end(clear_data, user_1):
+    with pytest.raises(InputError):
+        user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 200, 200, 0, 0)
 
 def test_user_photo_valid(clear_data, user_1, user_2):
     user_profile_uploadphoto_v1(user_1['token'], NEW_IMG_URL, 0, 0, 600, 500)

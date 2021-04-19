@@ -58,6 +58,7 @@ def clear_v1():
     delete('session_ids')
     delete('stats_log')
     delete('standups')
+    delete('password_resets')
 
     # Deletes all the profile images that are stored in the folder "static"
     imgs = os.listdir("src/static")

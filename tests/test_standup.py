@@ -29,29 +29,13 @@ def user_2():
     return user
 
 @pytest.fixture
-def user_3():
-    user = auth_register_v1('philt@gmail.com', 'badpass', 'Phil', 'Tran')
-    return user
-
-@pytest.fixture
 def public_channel_1(user_1):
     channel = channels_create_v1(user_1['token'], "John's Channel", True)
-    return channel['channel_id']
-    
-@pytest.fixture
-def public_channel_2(user_2):
-    channel = channels_create_v1(user_2['token'], "Terry's Channel", True)
-    return channel['channel_id']
-
-@pytest.fixture
-def private_channel(user_2):
-    channel = channels_create_v1(user_2['token'], "Terry's Channel", False)
     return channel['channel_id']
 
 @pytest.fixture
 def clear_data():
     clear_v1()
-
 
 ################################################################################
 # standup_start_v1 tests                                                      #
@@ -79,7 +63,8 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
     standup_info = standup_start_v1(user_1['token'],public_channel_1,10)
     assert standup_active_v1(user_1['token'], public_channel_1)['is_active'] == True
-    assert standup_info['time_finish'] == time_end
+    time_diff = standup_info['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
 
 ################################################################################
 # standup_active_v1 tests                                                      #
@@ -93,13 +78,19 @@ def test_standup_active_invalid_token(clear_data,user_1,public_channel_1):
     with pytest.raises(AccessError):
         standup_active_v1(INVALID_TOKEN,public_channel_1)
 
+def test_standup_user_not_in_channel(clear_data, user_1, user_2, public_channel_1):
+    standup_start_v1(user_1['token'],public_channel_1,10)
+    with pytest.raises(AccessError):
+        standup_active_v1(user_2['token'],public_channel_1)
+
 def test_standup_active(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
     standup_start_v1(user_1['token'],public_channel_1,10)
     active_standup_info = standup_active_v1(user_1['token'],public_channel_1)
     assert(active_standup_info['is_active'])
-    assert active_standup_info['time_finish'] == time_end
+    time_diff = active_standup_info['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
     time.sleep(15)
     standup_info = standup_active_v1(user_1['token'], public_channel_1)
     assert standup_info['is_active'] == False
@@ -135,6 +126,13 @@ def test_standup_send_user_not_member(clear_data,user_1,user_2,public_channel_1)
 def test_standup_send_invalid_token(clear_data, user_1, public_channel_1):
     with pytest.raises(AccessError):
         standup_send_v1(INVALID_TOKEN, public_channel_1,'ds')
+
+def test_standup_send_empty_msg(clear_data, user_1, public_channel_1):
+    standup_start_v1(user_1['token'], public_channel_1, 5)
+    standup_send_v1(user_1['token'], public_channel_1, '     ')
+    time.sleep(6)
+    chan_msg = channel_messages_v1(user_1['token'], public_channel_1, 0)['messages']
+    assert len(chan_msg) == 0
     
 def test_standup_send_successful_message(clear_data, user_1, user_2, public_channel_1):
     channel_join_v1(user_2['token'], public_channel_1)
@@ -149,5 +147,6 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nterrynguyen: Hi there!'
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
-    assert chan_msg[0]['time_created'] == time_end
+    time_diff = chan_msg[0]['time_created'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
 

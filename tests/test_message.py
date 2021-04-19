@@ -791,7 +791,8 @@ def test_message_sendlater_valid_message(clear_database, user1, channel1):
     assert chan_msg[0]['message'] == 'Hi everyone!'
     assert chan_msg[0]['message_id'] == message['message_id']
     assert chan_msg[0]['u_id'] == user1['auth_user_id']
-    assert chan_msg[0]['time_created'] == send_time
+    time_diff = chan_msg[0]['time_created'] - send_time
+    assert (time_diff >= -1 and time_diff <= 1)
 
 def check_message_sent(user, channel_id, dm_id, message):
     if channel_id != -1:
@@ -919,7 +920,8 @@ def test_message_sendlaterdm_valid_message(clear_database, user1, dm1):
     assert dm_msg[0]['message'] == 'Hello everyone!'
     assert dm_msg[0]['message_id'] == message['message_id']
     assert dm_msg[0]['u_id'] == user1['auth_user_id']
-    assert dm_msg[0]['time_created'] == send_time
+    time_diff = dm_msg[0]['time_created'] - send_time
+    assert (time_diff >= -1 and time_diff <= 1)
 
 def test_message_sendlaterdm_valid_multiple(clear_database, user1, user2, dm1):
     # Sending two messages that are going to be sent several seconds apart

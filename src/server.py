@@ -7,7 +7,8 @@ from src import config
 
 from src.dm import dm_invite_v1, dm_leave_v1, dm_messages_v1, dm_remove_v1, dm_create_v1, dm_details_v1, dm_list_v1, dm_messages_v1
 from src.channels import channels_create_v1, channels_listall_v1,channels_list_v1
-from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1
+from src.auth import auth_register_v1, auth_login_v1, auth_logout_v1, auth_passwordreset_request_v1, auth_passwordreset_reset_v1
+from src.other import clear_v1
 from src.channel import channel_invite_v1, channel_details_v1, channel_removeowner_v1, channel_addowner_v1, channel_leave_v1, channel_join_v1, channel_messages_v1
 from src.user import user_profile_v1, user_profile_setemail_v1, user_profile_sethandle_v1, user_profile_setname_v1, user_profile_uploadphoto_v1, user_stats_v1
 from src.users import users_all_v1, users_stats_v1
@@ -512,7 +513,30 @@ def user_profile_uploadphoto():
 @APP.route("/static/<path:filename>")
 def send_photo(filename):
     return send_from_directory('', filename)
-    
+
+
+
+
+
+################################################################################
+#   auth_passwordreset_request route                                           #
+################################################################################
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def auth_passwordreset_request():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_request_v1(passwordreset_info['email'])
+    return dumps(output)
+
+################################################################################
+#   auth_passwordreset_reset route                                             #
+################################################################################
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_passwordreset_reset():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_reset_v1(passwordreset_info['reset_code'], passwordreset_info['new_password'])
+    return dumps(output)
+
+
 ################################################################################
 # Example
 @APP.route("/echo", methods=['GET'])

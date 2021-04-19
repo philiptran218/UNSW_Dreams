@@ -1142,7 +1142,8 @@ def test_message_sendlater_valid_message(clear_database, user_1, channel_1):
     assert chan_msg[0]['message'] == 'This is successful!'
     assert chan_msg[0]['message_id'] == message['message_id']
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
-    assert chan_msg[0]['time_created'] == send_time
+    time_diff = chan_msg[0]['time_created'] - send_time
+    assert (time_diff >= -1 and time_diff <= 1)
 
 ################################################################################
 # message_sendlaterdm http tests                                               #
@@ -1232,4 +1233,6 @@ def test_message_sendlaterdm_valid_message(clear_database, user_1, dm_1):
     assert dm_msg[0]['message'] == 'Delayed message for dm_1.'
     assert dm_msg[0]['message_id'] == message['message_id']
     assert dm_msg[0]['u_id'] == user_1['auth_user_id']
-    assert dm_msg[0]['time_created'] == send_time
+    time_diff = dm_msg[0]['time_created'] - send_time
+    assert (time_diff >= -1 and time_diff <= 1)
+    

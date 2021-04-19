@@ -1,11 +1,26 @@
 from src.auth import auth_login_v1, auth_register_v1, auth_logout_v1
+from src.auth import auth_passwordreset_request_v1, auth_passwordreset_reset_v1
 from src.error import InputError, AccessError
-import pytest
 from src.other import clear_v1
+
+import pytest
+import os
+
+INVALID_RESET_CODE = -1
 
 @pytest.fixture
 def clear_data():
     clear_v1()
+
+@pytest.fixture
+def user_1():
+    user = auth_register_v1("johnsmith@gmail.com", "password", "John", "Smith")
+    return user
+
+@pytest.fixture
+def user_2():
+    user = auth_register_v1("terrynguyen@gmail.com", "password", "Terry", "Nguyen")
+    return user
 
 ################################################################################
 # auth_login_v1 tests                                                          #
@@ -98,9 +113,9 @@ def test_repeat_long_handle(clear_data):
         i += 1
         j += 1
 
-#################################################################################
-#   auth_logout_v1 testing functions                                               #
-#################################################################################
+################################################################################
+#   auth_logout_v1 testing functions                                           #
+################################################################################
 
 def test_valid_logout_token(clear_data):
     # Testing the logout function when a valid token is used
@@ -113,4 +128,47 @@ def test_invalid_logout(clear_data):
     with pytest.raises(AccessError):
         auth_logout_v1(user.get('invalid_token')).get('is_success')
         
+def test_valid_logout_multiple(clear_data, user_1, user_2):
+    # Testing logging out multiple users
+    logout_1 = auth_logout_v1(user_2['token'])
+    assert logout_1['is_success'] == True
+    logout_2 = auth_logout_v1(user_1['token'])
+    assert logout_2['is_success'] == True
+        
+
+################################################################################
+# auth_passwordreset_request tests                                             #
+################################################################################
+
+def test_password_request_invalid_email(clear_data, user_1):
+    with pytest.raises(InputError):
+        auth_passwordreset_request_v1("johnsmithy@gmail.com")
+
+def test_password_request_invalid_email_format(clear_data, user_1):
+    with pytest.raises(InputError):
+        auth_passwordreset_request_v1("john")
+        
+'''
+Our group did not write valid pytests for auth_passwordreset_request_v1 as they
+could not be tested in a black box manner. However, these cases were tested 
+using the frontend.
+'''
+################################################################################
+# auth_passwordreset_reset tests                                               #
+################################################################################
+
+def test_password_reset_invalid_code(clear_data, user_1):
+    auth_passwordreset_request_v1('johnsmith@gmail.com')
+    auth_register_v1('compw09b@gmail.com', 'password', 'John', 'Smith')
+    auth_passwordreset_request_v1('compw09b@gmail.com')
+    auth_passwordreset_request_v1('compw09b@gmail.com')
+    with pytest.raises(InputError):
+        auth_passwordreset_reset_v1(INVALID_RESET_CODE, 'newpassword')
+        
+'''
+Our group did not write valid pytests for auth_passwordreset_reset_v1 as they
+could not be tested in a black box manner. Testing for an invalid password was
+also unable to be done as it required the reset_code. However, these cases were 
+tested using the frontend.
+'''
 

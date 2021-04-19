@@ -101,7 +101,8 @@ def test_standup_start(clear_data,user_1,public_channel_1):
     standup_active = info.json()['is_active']
     
     assert standup_active
-    assert (time['time_finish']) == time_end
+    time_diff = time['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
     
 
 
@@ -128,7 +129,8 @@ def test_standup_active(clear_data,user_1,public_channel_1):
     info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
     info = info.json()
     assert(info['is_active'])
-    assert info['time_finish'] == time_end
+    time_diff = info['time_finish'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
     time.sleep(15)
     
     new_info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
@@ -228,19 +230,6 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nphiliptran: Hi there!'
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
-    assert chan_msg[0]['time_created'] == time_end
+    time_diff = chan_msg[0]['time_created'] - time_end
+    assert (time_diff >= -1 and time_diff <= 1)
 
-
-
-
-
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
