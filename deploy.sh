@@ -2,8 +2,8 @@
 
 WORKING_DIRECTORY="~/www/cs1531deploy"
 
-USERNAME="wed09blinker"
-SSH_HOST="ssh-wed09blinker.alwaysdata.net"
+USERNAME="wed09bblinker"
+SSH_HOST="ssh-wed09bblinker.alwsh-wed09blinker.alwaysdata.netsh-wed09blinker.alwaysdata.netaysdata.net"
 
 rm -rf ./**/__pycache__ ./**/.pytest_cache > /dev/null
 scp -r ./requirements.txt ./src "$USERNAME@$SSH_HOST:$WORKING_DIRECTORY"
