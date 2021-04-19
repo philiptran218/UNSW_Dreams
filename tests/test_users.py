@@ -145,3 +145,33 @@ def test_users_stats_valid_empty(clear_data, user_1, get_time):
 
 def test_users_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
     assert users_stats_v1(user_1['token']) == stats_list(get_time)
+
+def test_users_stats_channel_update(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
+    users_stats_v1(user_1['token'])
+    channels_create_v1(user_1['token'], "channel2", True)
+    output_stats = users_stats_v1(user_1['token'])
+    expected_stats = stats_list(get_time)
+    assert output_stats['dreams_stats']['channels_exist'][1]['num_channels_exist'] == expected_stats['dreams_stats']['channels_exist'][0]['num_channels_exist'] + 1
+    assert output_stats['dreams_stats']['dms_exist'][0] == expected_stats['dreams_stats']['dms_exist'][0]
+    assert output_stats['dreams_stats']['messages_exist'][0] == expected_stats['dreams_stats']['messages_exist'][0]
+    assert output_stats['dreams_stats']['utilization_rate'] == expected_stats['dreams_stats']['utilization_rate']
+
+def test_users_stats_message_update(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
+    users_stats_v1(user_1['token'])
+    message_senddm_v1(user_1['token'], dm1['dm_id'], "Another one")
+    output_stats = users_stats_v1(user_1['token'])
+    expected_stats = stats_list(get_time)
+    assert output_stats['dreams_stats']['channels_exist'][0] == expected_stats['dreams_stats']['channels_exist'][0]
+    assert output_stats['dreams_stats']['dms_exist'][0] == expected_stats['dreams_stats']['dms_exist'][0]
+    assert output_stats['dreams_stats']['messages_exist'][1]['num_messages_exist'] == expected_stats['dreams_stats']['messages_exist'][0]['num_messages_exist'] + 1
+    assert output_stats['dreams_stats']['utilization_rate'] == expected_stats['dreams_stats']['utilization_rate']
+
+def test_users_stats_dm_update(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
+    users_stats_v1(user_1['token'])
+    dm_create_v1(user_1['token'], [])
+    output_stats = users_stats_v1(user_1['token'])
+    expected_stats = stats_list(get_time)
+    assert output_stats['dreams_stats']['channels_exist'][0] == expected_stats['dreams_stats']['channels_exist'][0]
+    assert output_stats['dreams_stats']['dms_exist'][1]['num_dms_exist'] == expected_stats['dreams_stats']['dms_exist'][0]['num_dms_exist'] + 1
+    assert output_stats['dreams_stats']['messages_exist'][0] == expected_stats['dreams_stats']['messages_exist'][0]
+    assert output_stats['dreams_stats']['utilization_rate'] == expected_stats['dreams_stats']['utilization_rate']

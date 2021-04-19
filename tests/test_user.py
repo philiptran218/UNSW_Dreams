@@ -304,9 +304,9 @@ def empty_stats_list(get_time):
 def stats_list(get_time):
     return {
         'user_stats': {
-            'channels_joined': [{'num_channels_joined': 1, 'time_stamp': get_time}],
-            'dms_joined': [{'num_dms_joined': 1, 'time_stamp': get_time}],
-            'messages_sent': [{'num_messages_sent': 1, 'time_stamp': get_time}],
+            'channels_joined': {'num_channels_joined': 1, 'time_stamp': get_time},
+            'dms_joined': {'num_dms_joined': 1, 'time_stamp': get_time},
+            'messages_sent': {'num_messages_sent': 1, 'time_stamp': get_time},
             'involvement_rate': 1.0
         }
     }
@@ -319,4 +319,9 @@ def test_user_stats_valid_empty(clear_data, user_1, get_time):
     assert user_stats_v1(user_1['token']) == empty_stats_list(get_time)
 
 def test_user_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1, get_time):
-    assert user_stats_v1(user_1['token']) == stats_list(get_time)
+    output_stats = user_stats_v1(user_1['token'])
+    expected_stats = stats_list(get_time)
+    assert output_stats['user_stats']['channels_joined'][1] == expected_stats['user_stats']['channels_joined']
+    assert output_stats['user_stats']['dms_joined'][1] == expected_stats['user_stats']['dms_joined']
+    assert output_stats['user_stats']['messages_sent'][1] == expected_stats['user_stats']['messages_sent']
+    assert output_stats['user_stats']['involvement_rate'] == expected_stats['user_stats']['involvement_rate']
