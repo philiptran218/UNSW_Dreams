@@ -89,20 +89,19 @@ def test_standup_start_invalid_token(clear_data,user_1,public_channel_1):
 def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
     time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
-    #standup = : on 93 if test decided to be to be used 
-    requests.post(config.url +'standup/start/v1', json={  
+    standup = requests.post(config.url +'standup/start/v1', json={  
         'token' : user_1['token'],
         'channel_id' : public_channel_1,
-        'length' : 19
+        'length' : 10
     })
-    #time = standup.json()
+    time = standup.json()
     
 
     info = requests.get(f"{config.url}standup/active/v1?token={user_1['token']}&channel_id={public_channel_1}")  
     standup_active = info.json()['is_active']
     
     assert standup_active
-    #assert (time['time_finish']) == time_end
+    assert (time['time_finish']) == time_end
     
 
 
@@ -229,7 +228,7 @@ def test_standup_send_successful_message(clear_data, user_1, user_2, public_chan
     assert chan_msg[0]['message'] == 'johnsmith: Welcome to the standup!\nphiliptran: Hi there!'
     assert chan_msg[0]['u_id'] == user_1['auth_user_id']
     assert chan_msg[0]['message_id'] == 1
-    #assert chan_msg[0]['time_created'] == time_end
+    assert chan_msg[0]['time_created'] == time_end
 
 
 

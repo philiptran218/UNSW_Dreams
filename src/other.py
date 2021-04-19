@@ -5,6 +5,7 @@ import src.helper as helper
 import pytest
 import random
 import string
+import os
 
 MAX_STRING_LENGTH = 1000
 TAG = 1
@@ -35,8 +36,8 @@ def get_channel_dm_name(channel_id, dm_id):
 def clear_v1():
     '''
     Function:
-        Resets the internal data of the application to it's initial stateerases all information 
-        about the users, erases all the channels and the messages.
+        Resets the internal data of the application to it's initial state, erases all information 
+        about the users, channels, messages, DMs, notifications, sessions, stats and standups.
 
     Arguments:
         This fucntion doesn't take any arguments.
@@ -47,6 +48,7 @@ def clear_v1():
     Return Value:
         This function doesn't return any value.
     '''
+    # Deletes all data currently stored in the database.
     delete('users')
     delete('channels')
     delete('messages')
@@ -54,7 +56,15 @@ def clear_v1():
     delete('notifications')
     delete('sessions')
     delete('session_ids')
+    delete('stats_log')
     delete('standups')
+
+    # Deletes all the profile images that are stored in the folder "static"
+    imgs = os.listdir("src/static")
+    for img in imgs:
+        if img != "description.txt":
+            os.remove(f"src/static/{img}")
+
     update_data()
     return {}
 

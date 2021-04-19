@@ -1,10 +1,15 @@
 from src.error import InputError, AccessError
-import re
 from src.database import data, update_data
+from src.helper import is_valid_token
+from datetime import timezone, datetime
+from src import config
+import urllib.request
+import os
 import hashlib
 import jwt
-from src.helper import is_valid_token
+import re
 
+DEFAULT_IMG_URL = "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" 
 
 # To test whether the email is valid
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
@@ -159,6 +164,14 @@ def auth_register_v1(email, password, name_first, name_last):
     else:
         perm_id = 2
 
+    # Checking the time, useful for the stats log.
+
+    time = datetime.today()
+    time = time.replace(tzinfo=timezone.utc).timestamp()
+    time_issued = round(time)
+
+    urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/static/{number_users + 1}.jpg")
+
     user = {
         'u_id': number_users + 1,
         'name_first': name_first,
@@ -167,6 +180,15 @@ def auth_register_v1(email, password, name_first, name_last):
         'password': hashlib.sha256(password.encode()).hexdigest(),
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
+        'profile_img_url': config.url + f"static/{number_users + 1}.jpg",
+        'stats_log': [
+            {
+                'channels_joined': [{'channels_joined': 0, 'time': time_issued}],
+                'dms_joined': [{'dms_joined': 0, 'time': time_issued}],
+                'messages_sent': [{'messages_sent': 0, 'time': time_issued}],
+                'involvement_rate': 0.0,
+            }
+        ]
     }
     
     data['users'].append(user)
