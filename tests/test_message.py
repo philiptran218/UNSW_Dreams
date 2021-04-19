@@ -64,7 +64,7 @@ def message2(user1, dm1):
 @pytest.fixture
 def message_time():
     time = datetime.now() + timedelta(0, 3)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     return send_time
 
 @pytest.fixture
@@ -764,7 +764,7 @@ def test_message_sendlater_empty_message(clear_database, user1, channel1, messag
 def test_message_sendlater_past_time(clear_database, user1, channel1):
     # Raises InputError since the time_sent argument is in the past
     time = datetime.now() - timedelta(0, 3)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     with pytest.raises(InputError):
         message_sendlater_v1(user1['token'], channel1, 'Hi Channel1!', send_time)
 
@@ -779,7 +779,7 @@ def check_before_send_time(token, channel_id, dm_id):
 def test_message_sendlater_valid_message(clear_database, user1, channel1):
     # Testing a valid case where a message is set to send 5 seconds later
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
 
     # Checks if message is there after 4 seconds, should confirm that it has
     # not yet been sent
@@ -812,9 +812,9 @@ def test_message_sendlater_valid_multiple(clear_database, user1, user2, channel1
     # Sending two messages that are going to be sent several seconds apart
     channel_join_v1(user2['token'], channel1)
     send_time_1 = datetime.now() + timedelta(0, 2)
-    send_time_1 = round(send_time_1.replace(tzinfo=timezone.utc).timestamp())
+    send_time_1 = int(send_time_1.timestamp())
     send_time_2 = datetime.now() + timedelta(0, 5)
-    send_time_2 = round(send_time_2.replace(tzinfo=timezone.utc).timestamp())
+    send_time_2 = int(send_time_2.timestamp())
     # This thread checks messages sent 3 seconds from now
     check_send = threading.Timer(3, check_message_sent, args=(user2, channel1, -1, 'This should be first'))
     check_send.start()
@@ -840,7 +840,7 @@ def test_message_sendlater_and_send(clear_database, user1, user2, channel1):
     # Testing message_send and message_sendlater alongside each other
     channel_join_v1(user2['token'], channel1)
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
     # Thread sends a message 5 seconds from now
     send_later = threading.Thread(target=message_sendlater_v1, args=(user2['token'], channel1, 'This is last', send_time))
     send_later.start()
@@ -903,14 +903,14 @@ def test_message_sendlaterdm_empty_message(clear_database, user1, dm1, message_t
 def test_message_sendlaterdm_past_time(clear_database, user1, dm1):
     # Raises InputError since the time_sent argument is in the past
     time = datetime.now() - timedelta(0, 3)
-    send_time = round(time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(time.timestamp())
     with pytest.raises(InputError):
         message_sendlaterdm_v1(user1['token'], dm1, 'Hi DM!', send_time)
 
 def test_message_sendlaterdm_valid_message(clear_database, user1, dm1):
     # Testing a valid case where a message is set to send 5 seconds later
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
 
     check_send = threading.Timer(4, check_before_send_time, args=(user1['token'], -1, dm1))
     check_send.start()
@@ -927,9 +927,9 @@ def test_message_sendlaterdm_valid_multiple(clear_database, user1, user2, dm1):
     # Sending two messages that are going to be sent several seconds apart
     dm_invite_v1(user1['token'], dm1, user2['auth_user_id'])
     send_time_1 = datetime.now() + timedelta(0, 2)
-    send_time_1 = round(send_time_1.replace(tzinfo=timezone.utc).timestamp())
+    send_time_1 = int(send_time_1.timestamp())
     send_time_2 = datetime.now() + timedelta(0, 5)
-    send_time_2 = round(send_time_2.replace(tzinfo=timezone.utc).timestamp())
+    send_time_2 = int(send_time_2.timestamp())
     # This thread checks messages sent 3 seconds from now
     check_send = threading.Timer(3, check_message_sent, args=(user2, -1, dm1, 'This should be first'))
     check_send.start()
@@ -957,7 +957,7 @@ def test_message_sendlaterdm_and_senddm(clear_database, user1, user2, dm1):
     # Testing message_senddm and message_sendlaterdm alongside each other
     dm_invite_v1(user1['token'], dm1, user2['auth_user_id'])
     send_time = datetime.now() + timedelta(0, 5)
-    send_time = round(send_time.replace(tzinfo=timezone.utc).timestamp())
+    send_time = int(send_time.timestamp())
 
     # Thread sends a message 6 seconds from now (using senddm)
     send_last = threading.Timer(6, message_senddm_v1, args=(user2['token'], dm1, 'This is last'))

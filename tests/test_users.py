@@ -49,9 +49,9 @@ def message1(user_1, user_2, dm1):
 
 @pytest.fixture
 def get_time():
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    time_issued = round(time)
+    time = datetime.now()
+    time = time.timestamp()
+    time_issued = int(time)
     return time_issued
 
 @pytest.fixture
