@@ -5,8 +5,8 @@ from datetime import timezone, datetime
 from src import config
 
 import urllib.request
-import hashlib
 import os
+import hashlib
 import jwt
 import yagmail
 import secrets
@@ -240,24 +240,10 @@ def already_requested(email):
     return requested
     
 def send_reset_code(email, reset_code):
-    '''
-    email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
-    email_msg['From'] = EMAIL_SENDER
-    email_msg['To'] = email
-    email_msg['Subject'] = 'Code to reset password in Dreams'
-    '''
-    
     subject_str = 'Code to reset password in Dreams'
     message = f'Your unique code to reset your password is {reset_code}'
     email_server = yagmail.SMTP(user=EMAIL_SENDER, password=EMAIL_PASSWORD)
     email_server.send(to=email, subject=subject_str, contents=message)
-   
-    '''
-    email_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    email_server.login(EMAIL_SENDER, EMAIL_PASSWORD)
-    email_server.sendmail(EMAIL_SENDER, email, email_msg.as_string())
-    email_server.quit()
-    '''
 
 def auth_passwordreset_request_v1(email):
     '''
