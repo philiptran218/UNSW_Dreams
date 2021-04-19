@@ -28,6 +28,18 @@ def get_involvement_rate(user_channels, user_dms, user_msg):
         
     return involve_rate
 
+def update_stats(old_stats, stats_log):
+    if old_stats['channels_joined'][-1]['num_channels_joined'] != stats_log['channels_joined']['num_channels_joined']:
+        old_stats['channels_joined'].append(stats_log['channels_joined'])
+
+    if old_stats['dms_joined'][-1]['num_dms_joined'] != stats_log['dms_joined']['num_dms_joined']:
+        old_stats['dms_joined'].append(stats_log['dms_joined'])
+
+    if old_stats['messages_sent'][-1]['num_messages_sent'] != stats_log['messages_sent']['num_messages_sent']:
+        old_stats['messages_sent'].append(stats_log['messages_sent'])
+        
+    old_stats.update({'involvement_rate': stats_log['involvement_rate']})
+
 def user_profile_v1(token, u_id):
     """
     Function:
@@ -234,16 +246,6 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     cropped_image.save(f"src/static/{u_id}.jpg")
 
     return {}
-
-def update_stats(old_stats, stats_log):
-    if old_stats['channels_joined'][-1]['num_channels_joined'] != stats_log['channels_joined']['num_channels_joined']:
-        old_stats['channels_joined'].append(stats_log['channels_joined'])
-    if old_stats['dms_joined'][-1]['num_dms_joined'] != stats_log['dms_joined']['num_dms_joined']:
-        old_stats['dms_joined'].append(stats_log['dms_joined'])
-    if old_stats['messages_sent'][-1]['num_messages_sent'] != stats_log['messages_sent']['num_messages_sent']:
-        old_stats['messages_sent'].append(stats_log['messages_sent'])
-    old_stats.update({'involvement_rate': stats_log['involvement_rate']})
-
 
 def user_stats_v1(token):
     '''
