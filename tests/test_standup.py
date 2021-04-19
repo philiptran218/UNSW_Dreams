@@ -60,7 +60,7 @@ def test_standup_start_invalid_token(clear_data,user_1,public_channel_1):
 
 def test_standup_start(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
-    time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
+    time_end = int(time_end.timestamp())
     standup_info = standup_start_v1(user_1['token'],public_channel_1,10)
     assert standup_active_v1(user_1['token'], public_channel_1)['is_active'] == True
     time_diff = standup_info['time_finish'] - time_end
@@ -85,7 +85,7 @@ def test_standup_user_not_in_channel(clear_data, user_1, user_2, public_channel_
 
 def test_standup_active(clear_data,user_1,public_channel_1):
     time_end = datetime.now() + timedelta(0, 10)
-    time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
+    time_end = int(time_end.timestamp())
     standup_start_v1(user_1['token'],public_channel_1,10)
     active_standup_info = standup_active_v1(user_1['token'],public_channel_1)
     assert(active_standup_info['is_active'])
@@ -137,7 +137,7 @@ def test_standup_send_empty_msg(clear_data, user_1, public_channel_1):
 def test_standup_send_successful_message(clear_data, user_1, user_2, public_channel_1):
     channel_join_v1(user_2['token'], public_channel_1)
     time_end = datetime.now() + timedelta(0, 5)
-    time_end = round(time_end.replace(tzinfo=timezone.utc).timestamp())
+    time_end = int(time_end.timestamp())
     standup_start_v1(user_1['token'], public_channel_1, 5)
     standup_send_v1(user_1['token'], public_channel_1, 'Welcome to the standup!')
     standup_send_v1(user_2['token'], public_channel_1, 'Hi there!')

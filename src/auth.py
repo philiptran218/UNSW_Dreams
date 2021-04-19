@@ -172,9 +172,9 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # Checking the time, useful for the stats log.
 
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    time_issued = round(time)
+    time = datetime.now()
+    time = time.timestamp()
+    time_issued = int(time)
 
     urllib.request.urlretrieve(DEFAULT_IMG_URL, f"src/static/{number_users + 1}.jpg")
 
@@ -187,14 +187,13 @@ def auth_register_v1(email, password, name_first, name_last):
         'email': email,
         'handle_str': generate_handle(name_first, name_last),
         'profile_img_url': config.url + f"static/{number_users + 1}.jpg",
-        'stats_log': [
+        'stats_log': 
             {
-                'channels_joined': [{'channels_joined': 0, 'time': time_issued}],
-                'dms_joined': [{'dms_joined': 0, 'time': time_issued}],
-                'messages_sent': [{'messages_sent': 0, 'time': time_issued}],
+                'channels_joined': [{'num_channels_joined': 0, 'time_stamp': time_issued}],
+                'dms_joined': [{'num_dms_joined': 0, 'time_stamp': time_issued}],
+                'messages_sent': [{'num_messages_sent': 0, 'time_stamp': time_issued}],
                 'involvement_rate': 0.0,
             }
-        ]
     }
     
     data['users'].append(user)

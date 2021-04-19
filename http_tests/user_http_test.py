@@ -76,9 +76,9 @@ def message_1(user_1, test_create_dm):
 
 @pytest.fixture
 def get_time():
-    time = datetime.today()
-    time = time.replace(tzinfo=timezone.utc).timestamp()
-    time_issued = round(time)
+    time = datetime.now()
+    time = time.timestamp()
+    time_issued = int(time)
     return time_issued
 
 @pytest.fixture 
@@ -298,9 +298,9 @@ def empty_stats_list(get_time):
 def stats_list(get_time):
    return {
         'user_stats': {
-            'channels_joined': [{'num_channels_joined': 1, 'time_stamp': get_time}],
-            'dms_joined': [{'num_dms_joined': 1, 'time_stamp': get_time}],
-            'messages_sent': [{'num_messages_sent': 1, 'time_stamp': get_time}],
+            'channels_joined': {'num_channels_joined': 1, 'time_stamp': get_time},
+            'dms_joined': {'num_dms_joined': 1, 'time_stamp': get_time},
+            'messages_sent': {'num_messages_sent': 1, 'time_stamp': get_time},
             'involvement_rate': 1.0
         }
     }
@@ -316,8 +316,13 @@ def test_user_stats_valid_empty(clear_database, user_1, get_time):
 
 def test_user_stats_valid_full(clear_database, user_1, user_2, test_create_dm, channel_1, message_1, get_time):
     stats = requests.get(f"{config.url}user/stats/v1?token={user_1['token']}")
-    stats_info = stats.json()
-    assert stats_info == stats_list(get_time)
+    output_stats = stats.json()
+    expected_stats = stats_list(get_time)
+    assert output_stats['user_stats']['channels_joined'][1] == expected_stats['user_stats']['channels_joined']
+    assert output_stats['user_stats']['dms_joined'][1] == expected_stats['user_stats']['dms_joined']
+    assert output_stats['user_stats']['messages_sent'][1] == expected_stats['user_stats']['messages_sent']
+    assert output_stats['user_stats']['involvement_rate'] == expected_stats['user_stats']['involvement_rate']
+
 
 ################################################################################
 # test_user_profile_uploadphoto http tests                                     #
@@ -469,11 +474,4 @@ def test_user_profile_uploadphoto_valid(clear_database, user_1):
     user_1_profile = profile.json() 
 
     assert user_1_profile['user']['profile_img_url'] == config.url + "static/1.jpg"
-
-
-
-
-
-
-
 
