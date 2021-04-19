@@ -6,7 +6,10 @@ from datetime import timezone, datetime
 
 def get_utlilisation_rate(token):
 
-    num_users = len(data['users'])
+    num_users = 0
+    for user in data['users']:
+        if user['name_first'] != 'Removed':
+            num_users += 1
 
     utilised_id_list = []
 
@@ -21,11 +24,20 @@ def get_utlilisation_rate(token):
                     break
                 utilised_id_list.append(member['u_id'])
 
-    util_users = len(utilised_id_list)
+    util_users = len(set(utilised_id_list))
 
     util_rate = float(util_users/num_users)
         
     return util_rate
+
+def update_stats(old_stats, stats_log):
+    if old_stats['channels_exist'][-1]['num_channels_exist'] != stats_log['channels_exist'][0]['num_channels_exist']:
+        old_stats['channels_exist'].append(stats_log['channels_exist'][0])
+    if old_stats['dms_exist'][-1]['num_dms_exist'] != stats_log['dms_exist'][0]['num_dms_exist']:
+        old_stats['dms_exist'].append(stats_log['dms_exist'][0])
+    if old_stats['messages_exist'][-1]['num_messages_exist'] != stats_log['messages_exist'][0]['num_messages_exist']:
+        old_stats['messages_exist'].append(stats_log['messages_exist'][0])
+    old_stats.update({'utilization_rate': stats_log['utilization_rate']})
 
 def users_all_v1(token):
     """
@@ -58,20 +70,6 @@ def users_all_v1(token):
         users_list.append(user_info)
     return {'users': users_list}
 
-def update_stats(old_stats, stats_log):
-    change_data = False
-    if old_stats['channels_exist'][-1]['num_channels_exist'] != stats_log['channels_exist'][0]['num_channels_exist']:
-        change_data = True
-    if old_stats['dms_exist'][-1]['num_dms_exist'] != stats_log['dms_exist'][0]['num_dms_exist']:
-        change_data = True
-    if old_stats['messages_exist'][-1]['num_messages_exist'] != stats_log['messages_exist'][0]['num_messages_exist']:
-        change_data = True
-    if change_data:
-        old_stats['messages_exist'].append(stats_log['messages_exist'][0])
-        old_stats['channels_exist'].append(stats_log['channels_exist'][0])
-        old_stats['dms_exist'].append(stats_log['dms_exist'][0])
-    old_stats.update({'utilization_rate': stats_log['utilization_rate']})
-
 def users_stats_v1(token):
     '''
     Function:
@@ -92,8 +90,16 @@ def users_stats_v1(token):
         raise AccessError(description='token invalid')
 
     num_channels_exist = len(data['channels'])
-    num_dms_exist = len(data['DM'])
-    num_msg_exist = len(data['messages'])
+    num_dms_exist = 0
+    for dm in data['DM']:
+        if dm['dm_id'] != -1:
+           num_dms_exist += 1
+     
+    num_msg_exist = 0
+    for msg in data['messages']:
+        if msg['u_id'] != -1:
+            num_msg_exist += 1
+    
     util_rate = get_utlilisation_rate(token)
 
     time = datetime.now()

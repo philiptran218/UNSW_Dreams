@@ -189,9 +189,9 @@ def auth_register_v1(email, password, name_first, name_last):
         'profile_img_url': config.url + f"static/{number_users + 1}.jpg",
         'stats_log': 
             {
-                'channels_joined': [{'num_channels_joined': 0, 'time': time_issued}],
-                'dms_joined': [{'num_dms_joined': 0, 'time': time_issued}],
-                'messages_sent': [{'num_messages_sent': 0, 'time': time_issued}],
+                'channels_joined': [{'num_channels_joined': 0, 'time_stamp': time_issued}],
+                'dms_joined': [{'num_dms_joined': 0, 'time_stamp': time_issued}],
+                'messages_sent': [{'num_messages_sent': 0, 'time_stamp': time_issued}],
                 'involvement_rate': 0.0,
             }
     }

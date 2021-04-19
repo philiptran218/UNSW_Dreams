@@ -236,16 +236,12 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     return {}
 
 def update_stats(old_stats, stats_log):
-    print(old_stats)
-    print('\n')
-    print(stats_log)
     if old_stats['channels_joined'][-1]['num_channels_joined'] != stats_log['channels_joined']['num_channels_joined']:
         old_stats['channels_joined'].append(stats_log['channels_joined'])
     if old_stats['dms_joined'][-1]['num_dms_joined'] != stats_log['dms_joined']['num_dms_joined']:
         old_stats['dms_joined'].append(stats_log['dms_joined'])
     if old_stats['messages_sent'][-1]['num_messages_sent'] != stats_log['messages_sent']['num_messages_sent']:
         old_stats['messages_sent'].append(stats_log['messages_sent'])
-   
     old_stats.update({'involvement_rate': stats_log['involvement_rate']})
 
 
@@ -274,7 +270,7 @@ def user_stats_v1(token):
     user_msg = 0
 
     for channel in data['channels']:
-        if is_already_in_channel(token_u_id, channel['channel_id']) == True:
+        if is_already_in_channel(token_u_id, channel['channel_id']):
             user_channels += 1
 
     for dm in data['DM']:
@@ -301,7 +297,10 @@ def user_stats_v1(token):
 
     for user in data['users']:
         if user['u_id'] == token_u_id:
-            update_stats(user['stats_log'], stats_log)
+            if len(user['stats_log']) == 0:
+                user['stats_log'].append(stats_log)
+            else:
+                update_stats(user['stats_log'], stats_log)
+            user_stats = user['stats_log']
             update_data()
-    
-    return {'user_stats': stats_log}
+            return {'user_stats': user_stats}
