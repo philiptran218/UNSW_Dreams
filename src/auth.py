@@ -60,6 +60,51 @@ def generate_session_id():
     data['session_ids'].append(new_session_id)
     return new_session_id
 
+def is_valid_reset_code(reset_code):
+    code_found = False
+    for request in data['password_resets']:
+        if request['reset_code'] == reset_code:
+            code_found = True
+    return code_found
+    
+def get_request_email(reset_code):
+    # Returns the email associated with the reset_code
+    # Assumes that the reset_code passed in is valid
+    email = None
+    for request in data['password_resets']:
+        if request['reset_code'] == reset_code:
+            email = request['email']
+    return email
+
+def is_valid_email(email):
+    valid_email = False
+    for user in data['users']:
+        if user['email'] == email:
+            valid_email = True
+    return valid_email
+    
+def already_requested(email):
+    requested = False
+    for request in data['password_resets']:
+        if request['email'] == email:
+            requested = True
+    return requested
+    
+def create_code():
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for counter in range(CODE_LENGTH))    
+    
+def send_reset_code(email, reset_code):
+    email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
+    email_msg['From'] = EMAIL_SENDER
+    email_msg['To'] = email
+    email_msg['Subject'] = 'Code to reset password in Dreams'
+   
+    email_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    email_server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+    email_server.sendmail(EMAIL_SENDER, email, email_msg.as_string())
+    email_server.quit()
+
 def auth_login_v1(email, password):
     '''
     Function:
@@ -227,35 +272,6 @@ def auth_logout_v1(token):
     return {
         'is_success': True,
     }
-    
-def is_valid_email(email):
-    valid_email = False
-    for user in data['users']:
-        if user['email'] == email:
-            valid_email = True
-    return valid_email
-    
-def already_requested(email):
-    requested = False
-    for request in data['password_resets']:
-        if request['email'] == email:
-            requested = True
-    return requested
-    
-def create_code():
-    chars = string.ascii_letters + string.digits
-    return ''.join(random.choice(chars) for counter in range(CODE_LENGTH))    
-    
-def send_reset_code(email, reset_code):
-    email_msg = MIMEText(f'Your unique code to reset your password is {reset_code}')
-    email_msg['From'] = EMAIL_SENDER
-    email_msg['To'] = email
-    email_msg['Subject'] = 'Code to reset password in Dreams'
-   
-    email_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    email_server.login(EMAIL_SENDER, EMAIL_PASSWORD)
-    email_server.sendmail(EMAIL_SENDER, email, email_msg.as_string())
-    email_server.quit()
 
 def auth_passwordreset_request_v1(email):
     '''
@@ -302,22 +318,6 @@ def auth_passwordreset_request_v1(email):
     send_reset_code(email, reset_code)    
     update_data()
     return {}
-    
-def is_valid_reset_code(reset_code):
-    code_found = False
-    for request in data['password_resets']:
-        if request['reset_code'] == reset_code:
-            code_found = True
-    return code_found
-    
-def get_request_email(reset_code):
-    # Returns the email associated with the reset_code
-    # Assumes that the reset_code passed in is valid
-    email = None
-    for request in data['password_resets']:
-        if request['reset_code'] == reset_code:
-            email = request['email']
-    return email
 
 def auth_passwordreset_reset_v1(reset_code, new_password):    
     '''

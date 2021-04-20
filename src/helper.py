@@ -28,6 +28,8 @@ def is_valid_channelid(channel_id):
             channel_found = True       
     return channel_found  
 
+# u_id and channel_id must be validated before running this function.
+# (Functions that validate u_id and channel_id must be run before this function)
 def is_already_in_channel(u_id, channel_id):
     selected_channel = None
     for channel in data['channels']:   
@@ -39,6 +41,8 @@ def is_already_in_channel(u_id, channel_id):
             return True
     return False
 
+# u_id and dm_id must be validated before running this function.
+# (Functions that validate u_id and dm_id must be run before this function)
 def is_already_in_dm(u_id, dm_id):
     selected_dm = None
     for dm in data['DM']:
@@ -57,6 +61,8 @@ def is_valid_dm_id(dm_id):
             return True
     return False
 
+# u_id and channel_id must be validated before running this function.
+# (Functions that validate u_id and channel_id must be run before this function)
 def is_already_channel_owner(u_id, channel_id):
     selected_channel = None
     for channel in data['channels']:
@@ -68,6 +74,8 @@ def is_already_channel_owner(u_id, channel_id):
             return True
     return False
 
+# u_id and dm_id must be validated before running this function.
+# (Functions that validate u_id and dm_id must be run before this function)
 def is_dm_creator(u_id,dm_id):
     for dm in data['DM']:
         if dm['dm_id'] ==dm_id:
@@ -75,6 +83,8 @@ def is_dm_creator(u_id,dm_id):
                 return True
     return False
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def get_first_name(auth_user_id):
     first_name = None
     for user in data['users']:
@@ -82,6 +92,8 @@ def get_first_name(auth_user_id):
             first_name = user['name_first']
     return first_name
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def get_last_name(auth_user_id):
     last_name = None
     for user in data['users']:
@@ -89,6 +101,8 @@ def get_last_name(auth_user_id):
             last_name = user['name_last']
     return last_name
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def get_email(auth_user_id):
     email = None
     for user in data['users']:
@@ -96,6 +110,8 @@ def get_email(auth_user_id):
             email = user['email']
     return email
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def get_handle(auth_user_id):
     handle = None
     for user in data['users']:
@@ -103,6 +119,8 @@ def get_handle(auth_user_id):
             handle = user['handle_str']
     return handle
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def get_reacts(auth_user_id, reacts):
     if auth_user_id in reacts[0]['u_ids']:
         reacts[0]['is_this_user_reacted'] = True
@@ -117,6 +135,8 @@ def create_reacts():
         'is_this_user_reacted': None
     }]
 
+# u_id must be validated before running this function.
+# (Functions that validate u_id must be run before this function)
 def find_permissions(u_id):
     user_found = None
     for user in data['users']:
@@ -128,6 +148,8 @@ def find_permissions(u_id):
     else:
         return 2
 
+# u_id and channel_id must be validated before running this function.
+# (Functions that validate u_id and channel_id must be run before this function)
 def add_uid_to_channel(u_id, channel_id):
     new_member = {
                 'u_id': u_id,
@@ -140,6 +162,8 @@ def add_uid_to_channel(u_id, channel_id):
         if channel['channel_id'] == channel_id:
             channel['all_members'].append(new_member)
 
+# u_id and channel_id must be validated before running this function.
+# (Functions that validate u_id and channel_id must be run before this function)
 def add_owner_to_channel(u_id, channel_id):
     new_member = {
                 'u_id': u_id,
@@ -151,7 +175,9 @@ def add_owner_to_channel(u_id, channel_id):
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel['owner_members'].append(new_member)
-            
+
+# auth_user_id, u_id, channel_id and dm_id must be validated before running this function.
+# (Functions that validate auth_user_id, u_id, channel_id and dm_id must be run before this function)            
 def add_to_notifications(auth_user_id, u_id, channel_id, dm_id):
     notification = {
                     'auth_user_id': auth_user_id,

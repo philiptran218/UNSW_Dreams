@@ -43,6 +43,7 @@ data = {
     'session_ids': [],
     'stats_log': [],
     'standups':[],
+    'password_resets': []
 }
 '''
 

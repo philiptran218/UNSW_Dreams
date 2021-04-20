@@ -5,16 +5,12 @@ from src.helper import is_valid_token, detoken
 OWNER = 1
 MEMBER = 2
 
-# Checks the permissions of the user making the changes. Useful for authorising
-# and checking for errors.
-
+# Checks the permissions of the user making the changes, given that token is valid.
 def check_permissions(token):
-    
     token_u_id = detoken(token)
     for user in data['users']:
         if user['u_id'] == token_u_id:
             perm = user['perm_id'] 
-
     return perm
 
 def admin_user_remove_v1(token, u_id):
@@ -35,9 +31,8 @@ def admin_user_remove_v1(token, u_id):
     Return Type:
         Function produces no output
     """
-    token_validator = is_valid_token(token)
 
-    if token_validator:
+    if is_valid_token(token):
 
         changer_perm = check_permissions(token)
 
@@ -68,6 +63,7 @@ def admin_user_remove_v1(token, u_id):
                 user['name_last'] = 'user'
     else:
         raise AccessError(description='Invalid Token')
+
     update_data()
     return {}
 
@@ -91,9 +87,8 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
         Function produces no output
 
     """ 
-    token_validator = is_valid_token(token)
 
-    if not token_validator:
+    if not is_valid_token(token):
         raise AccessError(description='Invalid Token')
 
     if not (permission_id == OWNER or permission_id == MEMBER):
