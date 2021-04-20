@@ -324,4 +324,4 @@ def test_user_stats_valid(clear_data, user_1, user_2, channel1, dm1, message1, g
     assert output_stats['user_stats']['channels_joined'][1]['num_channels_joined'] == expected_stats['user_stats']['channels_joined']['num_channels_joined']
     assert output_stats['user_stats']['dms_joined'][1]['num_dms_joined'] == expected_stats['user_stats']['dms_joined']['num_dms_joined']
     assert output_stats['user_stats']['messages_sent'][1]['num_messages_sent'] == expected_stats['user_stats']['messages_sent']['num_messages_sent']
-    assert output_stats['user_stats']['involvement_rate'] == expected_stats['user_stats']['involvement_rate'
+    assert output_stats['user_stats']['involvement_rate'] == expected_stats['user_stats']['involvement_rate']
