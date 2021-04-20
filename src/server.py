@@ -68,6 +68,24 @@ def auth_logout():
     return dumps(output)
 
 ################################################################################
+#   auth_passwordreset_request route                                           #
+################################################################################
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def auth_passwordreset_request():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_request_v1(passwordreset_info['email'])
+    return dumps(output)
+
+################################################################################
+#   auth_passwordreset_reset route                                             #
+################################################################################
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_passwordreset_reset():
+    passwordreset_info = request.get_json()
+    output = auth_passwordreset_reset_v1(passwordreset_info['reset_code'], passwordreset_info['new_password'])
+    return dumps(output)
+
+################################################################################
 #   channel_invite route                                                       #
 ################################################################################
 
@@ -377,6 +395,34 @@ def profile_sethandle():
     return dumps(output)
 
 ################################################################################
+#   user_stats route                                                           #
+################################################################################
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    user_stats = request.args
+    output = user_stats_v1(user_stats['token'])
+    return dumps(output)
+
+################################################################################
+#   user_profile_uploadphoto route                                             #
+################################################################################
+
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def user_profile_uploadphoto():
+    photo = request.get_json()
+    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
+    return dumps(output)
+
+################################################################################
+#   user_profile_photo routes                                                  #
+################################################################################
+
+@APP.route("/static/<path:filename>")
+def send_photo(filename):
+    return send_from_directory('', filename)
+
+################################################################################
 #   users_all route                                                            #
 ################################################################################
 
@@ -384,6 +430,16 @@ def profile_sethandle():
 def users_all():
     userall_info = request.args
     output = users_all_v1(userall_info['token'])
+    return dumps(output)
+
+################################################################################
+#   users_stats route                                                          #
+################################################################################
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    userall_stats = request.args
+    output = users_stats_v1(userall_stats['token'])
     return dumps(output)
 
 ################################################################################
@@ -427,6 +483,26 @@ def message_unpin():
     return dumps(output)
 
 ################################################################################
+#   message_sendlater route                                                    #
+################################################################################
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    message_info = request.get_json()
+    output = message_sendlater_v1(message_info['token'], message_info['channel_id'], message_info['message'], message_info['time_sent'])
+    return dumps(output)
+
+################################################################################
+#   message_sendlaterdm route                                                  #
+################################################################################
+
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    message_info = request.get_json()
+    output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
+    return dumps(output)
+
+################################################################################
 # standup_start_v1 route                                                       #
 ################################################################################
 
@@ -455,87 +531,6 @@ def standup_send():
     standup_info = request.get_json()
     output = standup_send_v1(standup_info['token'],standup_info['channel_id'],standup_info['message'])
     return dumps(output)
-
-################################################################################
-#   message_sendlater route                                                    #
-################################################################################
-
-@APP.route("/message/sendlater/v1", methods=['POST'])
-def message_sendlater():
-    message_info = request.get_json()
-    output = message_sendlater_v1(message_info['token'], message_info['channel_id'], message_info['message'], message_info['time_sent'])
-    return dumps(output)
-
-################################################################################
-#   message_sendlaterdm route                                                  #
-################################################################################
-
-@APP.route("/message/sendlaterdm/v1", methods=['POST'])
-def message_sendlaterdm():
-    message_info = request.get_json()
-    output = message_sendlaterdm_v1(message_info['token'], message_info['dm_id'], message_info['message'], message_info['time_sent'])
-    return dumps(output)
-
-################################################################################
-#   user_stats route                                                           #
-################################################################################
-
-@APP.route("/user/stats/v1", methods=['GET'])
-def user_stats():
-    user_stats = request.args
-    output = user_stats_v1(user_stats['token'])
-    return dumps(output)
-
-################################################################################
-#   users_stats route                                                          #
-################################################################################
-
-@APP.route("/users/stats/v1", methods=['GET'])
-def users_stats():
-    userall_stats = request.args
-    output = users_stats_v1(userall_stats['token'])
-    return dumps(output)
-
-################################################################################
-#   user_profile_uploadphoto route                                             #
-################################################################################
-
-@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
-def user_profile_uploadphoto():
-    photo = request.get_json()
-    output = user_profile_uploadphoto_v1(photo['token'], photo['img_url'], int(photo['x_start']), int(photo['y_start']), int(photo['x_end']), int(photo['y_end']))
-    return dumps(output)
-
-################################################################################
-#   user_profile_photo routes                                                  #
-################################################################################
-
-@APP.route("/static/<path:filename>")
-def send_photo(filename):
-    return send_from_directory('', filename)
-
-
-
-
-
-################################################################################
-#   auth_passwordreset_request route                                           #
-################################################################################
-@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
-def auth_passwordreset_request():
-    passwordreset_info = request.get_json()
-    output = auth_passwordreset_request_v1(passwordreset_info['email'])
-    return dumps(output)
-
-################################################################################
-#   auth_passwordreset_reset route                                             #
-################################################################################
-@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
-def auth_passwordreset_reset():
-    passwordreset_info = request.get_json()
-    output = auth_passwordreset_reset_v1(passwordreset_info['reset_code'], passwordreset_info['new_password'])
-    return dumps(output)
-
 
 ################################################################################
 # Example

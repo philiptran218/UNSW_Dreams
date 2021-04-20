@@ -5,7 +5,6 @@ from src.helper import is_valid_token, is_valid_uid, detoken, is_already_in_chan
 from datetime import timezone, datetime
 
 def get_utlilisation_rate(token):
-
     num_users = 0
     for user in data['users']:
         if user['name_first'] != 'Removed':
@@ -53,7 +52,6 @@ def users_all_v1(token):
     Return Type:
         Function returns a list of all the users
     """
-
     if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     
@@ -85,7 +83,6 @@ def users_stats_v1(token):
         This function returns the dreams_stats data type; a dictionary with several integers / floats describing key 
         statistics about all dreams users.
     ''' 
-
     if is_valid_token(token) == False:
         raise AccessError(description='token invalid')
 

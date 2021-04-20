@@ -13,7 +13,6 @@ from PIL import Image
 REGEX = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 def get_involvement_rate(user_channels, user_dms, user_msg):
-
     num_messages = len(data['messages'])
     num_channels = len(data['channels'])
     num_dms = len(data['DM'])
@@ -27,6 +26,15 @@ def get_involvement_rate(user_channels, user_dms, user_msg):
         involve_rate = float(numer_sum/denom_sum)
         
     return involve_rate
+
+def update_stats(old_stats, stats_log):
+    if old_stats['channels_joined'][-1]['num_channels_joined'] != stats_log['channels_joined']['num_channels_joined']:
+        old_stats['channels_joined'].append(stats_log['channels_joined'])
+    if old_stats['dms_joined'][-1]['num_dms_joined'] != stats_log['dms_joined']['num_dms_joined']:
+        old_stats['dms_joined'].append(stats_log['dms_joined'])
+    if old_stats['messages_sent'][-1]['num_messages_sent'] != stats_log['messages_sent']['num_messages_sent']:
+        old_stats['messages_sent'].append(stats_log['messages_sent'])
+    old_stats.update({'involvement_rate': stats_log['involvement_rate']})
 
 def user_profile_v1(token, u_id):
     """
@@ -44,8 +52,6 @@ def user_profile_v1(token, u_id):
     Return Type:
         Function returns user's u_id, email, first name, last name and handle
     """
-
-    
     if not is_valid_token(token):
         raise AccessError(description="Token invalid")
 
@@ -65,7 +71,6 @@ def user_profile_v1(token, u_id):
                 },
             }
     return user_details
-
         
 def user_profile_setname_v1(token, name_first, name_last):
     """
@@ -101,7 +106,6 @@ def user_profile_setname_v1(token, name_first, name_last):
             user['name_last'] = name_last
     update_data()
     return {}
-        
 
 def user_profile_setemail_v1(token, email):
     """
@@ -156,8 +160,6 @@ def user_profile_sethandle_v1(token, handle_str):
     Return Type:
         Function does not return anything
     """
-
-
     if not is_valid_token(token):
         raise AccessError(description="Token invalid")
     auth_user_id = detoken(token)
@@ -203,7 +205,6 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     if not img_url.endswith('.jpg'):
         raise InputError(description="Image is not of specified type")
-
     try:
         urllib.request.urlopen(img_url)
     except urllib.error.HTTPError as invalid_url:
@@ -235,16 +236,6 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     return {}
 
-def update_stats(old_stats, stats_log):
-    if old_stats['channels_joined'][-1]['num_channels_joined'] != stats_log['channels_joined']['num_channels_joined']:
-        old_stats['channels_joined'].append(stats_log['channels_joined'])
-    if old_stats['dms_joined'][-1]['num_dms_joined'] != stats_log['dms_joined']['num_dms_joined']:
-        old_stats['dms_joined'].append(stats_log['dms_joined'])
-    if old_stats['messages_sent'][-1]['num_messages_sent'] != stats_log['messages_sent']['num_messages_sent']:
-        old_stats['messages_sent'].append(stats_log['messages_sent'])
-    old_stats.update({'involvement_rate': stats_log['involvement_rate']})
-
-
 def user_stats_v1(token):
     '''
     Function:
@@ -259,7 +250,6 @@ def user_stats_v1(token):
     Return Type:
         This function returns the users_stats data type; a dictionary with the stats and the time at which it was measured.
     ''' 
-
     if is_valid_token(token) == False:
         raise AccessError(description='token invalid')
 

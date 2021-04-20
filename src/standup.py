@@ -84,11 +84,9 @@ def standup_start_v1(token,channel_id,length):
         AccessError - the user's token is not a valid token
                     - the user is not in the channel
   
-
     Return value:
         Returns a dictionary containing the type {time_finish}
     '''
-
     # Check for token
     if not helper.is_valid_token(token):
         raise AccessError(description="Please enter a valid token")  
@@ -119,14 +117,11 @@ def standup_active_v1(token,channel_id):
                       session
         channel_id (int) - this is the ID of an existing channel
 
-
-
     Exceptions:
         InputError - the channel ID is not a valid ID
         
         AccessError - the user's token is not a valid token
                     - the user is not in the channel
-  
 
     Return value:
         Returns a dictionary containing the type {time_finish}

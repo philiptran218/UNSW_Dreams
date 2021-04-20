@@ -12,7 +12,7 @@ TAG = 1
 INVITE = 2
 REACT = 3
 
-# Helper fucntion that when given a key mapping to a list in a dictionary, empties that list. 
+# Helper function that when given a key mapping to a list in a dictionary, empties that list. 
 def delete(aspect):
     ((data.get(aspect)).clear())
 
@@ -20,7 +20,8 @@ def is_query_str_in_msg(query_str, message):
     if query_str in message['message']:
         return True
     return False
-    
+
+# channel_id and dm_id must be validated before running this function.
 def get_channel_dm_name(channel_id, dm_id):
     name = None
     if channel_id == -1:
