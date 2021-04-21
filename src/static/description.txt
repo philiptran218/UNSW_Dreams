@@ -1,1 +1,0 @@
-This folder is used to store profile imgs, giving the server access to the cropped version of the image.
