@@ -1,0 +1,1475 @@
+============================= test session starts ==============================
+platform linux -- Python 3.7.3, pytest-6.2.3, py-1.10.0, pluggy-0.13.1
+rootdir: /tmp_amd/kamen/export/kamen/3/cs1531/automark/tempstore, configfile: pytest.ini
+plugins: forked-1.3.0, xdist-2.2.1, hypothesis-6.1.1, timeout-1.4.2
+collected 199 items
+
+http_tests/admin_http_test.py ....F.........F.....                       [  5%]
+http_tests/auth_http_test.py .......FF.........                          [ 14%]
+http_tests/channel_http_test.py ....FFFF...FFFFF...F..FF..FFF..FF...FFF. [ 34%]
+..FF.....F                                                               [ 39%]
+http_tests/channels_http_test.py ..F..FF....                             [ 44%]
+http_tests/dm_http_test.py ...F..F.FF..F.F..........FF.....              [ 60%]
+http_tests/echo_http_test.py F                                           [ 61%]
+http_tests/message_http_test.py ....FFF......F...................F....FF [ 81%]
+F                                                                        [ 81%]
+http_tests/other_http_test.py ....F..F                                   [ 85%]
+http_tests/user_http_test.py F.............F.                            [ 93%]
+http_tests/users_http_test.py .F
+
+=================================== FAILURES ===================================
+_________________________ test_admin_user_remove_valid _________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 5, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUsImxvZ2luX3RpbWUiOjE2MTkxODc4NTcsInNhbHQiOiIwN2Y2ZTgxNS03NTZmLTRmMGUtOTk0MS0yYmEzNzQ5YzIzYWQifQ.h11b2EAPnFEkrcNhAiLRZNMdONAihP-uzjtFOA8RVKs'}
+user_2 = {'auth_user_id': 6, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjYsImxvZ2luX3RpbWUiOjE2MTkxODc4NTcsInNhbHQiOiJkZTMxZDMwYi03YmEwLTQxMDgtOTBmMS0yZmJkZWE1OGE0Y2MifQ.9fOrZH2dgup5TXKAxjN2yUCpV5c30QUKmlarN4W1Vwo'}
+channel_1 = 7
+
+    def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
+    
+        #To test this funciton. User 2 needs to first join a channel and send a message.
+        #After funciton is performed: two things must occur:
+        #   1: User's name must be changed to "Removed User" - tested through user/profile
+        #   2: User's messages must be changed to "Removed User"
+    
+        requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1
+        })
+    
+        channel_msg = requests.post(config.url + 'message/send/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'message': 'I just joined!!'
+        })
+    
+        requests.delete(config.url + 'admin/user/remove/v1', json={
+            'token': user_1['token'],
+            'u_id': user_2['auth_user_id'],
+        })
+    
+        users = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_2['auth_user_id']}")
+        users_info = users.json()
+>       assert users_info['user']['name_first'] == 'Removed'
+E       AssertionError: assert 'Removed user' == 'Removed'
+E         - Removed
+E         + Removed user
+
+http_tests/admin_http_test.py:120: AssertionError
+_________________________ test_admin_user_remove_valid _________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 22, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIyLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiNzE3MWRkYjMtMzdjZi00ZjkzLTg2MjktY2U2NjczYjFjYzg3In0.pqOi7E2xcRXvAh_09ENhNVAQSVTGSuj62V8JXk3zsQ0'}
+user_2 = {'auth_user_id': 23, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIzLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiMTUzNmEyZTMtYzRhZi00NDAxLWE1YmItZmI0YmYwMzNjM2M4In0.Qy9UFC60azSE8Ffua0WazH6g2uKAfKjA9OmsfUOGWFU'}
+channel_1 = 24
+
+    def test_admin_user_remove_valid(clear_database, user_1, user_2, channel_1):
+    
+        #To test this funciton. User 2 needs to first join a channel and send a message.
+        #After funciton is performed: two things must occur:
+        #   1: User's name must be changed to "Removed User" - tested through user/profile
+        #   2: User's messages must be changed to "Removed User"
+    
+        requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1
+        })
+    
+        channel_msg = requests.post(config.url + 'message/send/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'message': 'I just joined!!'
+        })
+    
+        requests.delete(config.url + 'admin/user/remove/v1', json={
+            'token': user_1['token'],
+            'u_id': user_2['auth_user_id'],
+        })
+    
+        users = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_2['auth_user_id']}")
+        users_info = users.json()
+>       assert users_info['user']['name_first'] == 'Removed'
+E       AssertionError: assert 'Removed user' == 'Removed'
+E         - Removed
+E         + Removed user
+
+http_tests/admin_http_test.py:120: AssertionError
+_________________________ test_register_multiple_users _________________________
+
+clear_database = None
+
+    def test_register_multiple_users(clear_database):
+        user_json = requests.post(config.url + 'auth/register/v2', json={
+            'email': 'el_barto@gmail.com',
+            'password': 'agreatpassword',
+            'name_first': 'Bartholomew',
+            'name_last': 'Simpson-Cartwright'
+        })
+        requests.post(config.url + 'auth/register/v2', json={
+            'email': 'elbarto@gmail.com',
+            'password': 'agreatpassword',
+            'name_first': 'Bartholomew',
+            'name_last': 'Simpson-Cartwright'
+        })
+        user = user_json.json()
+    
+        users_info_json = requests.get(f"{config.url}users/all/v1?token={user['token']}")
+        users_info = users_info_json.json()['users']
+        assert len(users_info) == 2
+        assert users_info[0]['handle_str'] == 'bartholomewsimpson-c'
+>       assert users_info[1]['handle_str'] == 'bartholomewsimpson-0'
+E       AssertionError: assert 'bartholomewsimpson-c0' == 'bartholomewsimpson-0'
+E         - bartholomewsimpson-0
+E         + bartholomewsimpson-c0
+E         ?                    +
+
+http_tests/auth_http_test.py:121: AssertionError
+_______________________________ test_login_valid _______________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 43, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjQzLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiN2M2NTBmNzAtM2I5ZS00YWNhLTg3NzUtN2Q5ODFjNWE1MzQ3In0.vdQPfMIQWSjGWmWyX8MvdVSukiFmt-O5GIWC22W_BUA'}
+
+    def test_login_valid(clear_database, user_1):
+        user = requests.post(config.url + 'auth/login/v2', json={
+            'email': 'johnsmith@gmail.com',
+            'password': 'goodpass',
+        })
+    
+        user1 = user.json()
+>       assert user1['auth_user_id'] == 1
+E       assert 43 == 1
+
+http_tests/auth_http_test.py:134: AssertionError
+__________________________ test_invite_duplicate_uid ___________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 67, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjY3LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiODQwY2JhNjMtODY2OC00YjA3LWEyZjQtMDU5YTU1MDk5MTg3In0.xNRiZyQ8shBbOLewPDVBFg9JDq3ZFYWhQWKbuW2rMPM'}
+user_2 = {'auth_user_id': 68, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjY4LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiMmFlNjNkMDQtMTRkMC00YjJlLThmZDgtMzdiZjBjOTQwZWU4In0.WjneNFubcbNFeeKTszPFKljm_8fnDU7Wxj_xD4FLJ2Y'}
+channel_1 = 69
+
+    def test_invite_duplicate_uid(clear_database, user_1, user_2, channel_1):
+    
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_1['token'],channel_1)
+    
+        channel_details = channel_details_json.json()
+        print(channel_details)
+    
+        assert len(channel_details['owner_members']) == 1
+        assert len(channel_details['all_members']) == 2
+>       assert channel_details['all_members'][0]['u_id'] == 1
+E       assert 68 == 1
+
+http_tests/channel_http_test.py:157: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{'all_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', 'profile_img_url': '', 'u_id': 68}, {'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', 'profile_img_url': '', 'u_id': 67}], 'is_public': True, 'name': 'Channel1', 'owner_members': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', 'profile_img_url': '', 'u_id': 67}]}
+___________________________ test_invite_valid_inputs ___________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 70, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjcwLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiNjFjNjNhZDAtZWJkMi00YzZhLWIzYWMtNDYwYjAxZGY3ZDk5In0.vlmJe0VJ3VE1JU1rcdh-pk4TSDiPVPXyEfz_lpdXsjI'}
+user_2 = {'auth_user_id': 71, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjcxLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiZGU1YmRjM2EtOWZmMy00MTAwLTlhOWItZTQxNjRjMjRkMTViIn0.yFlav88Tn0rv0h2f7CQW4z0GZujWawAU-2JL4MtmRUc'}
+channel_1 = 72
+
+    def test_invite_valid_inputs(clear_database, user_1, user_2, channel_1):
+    
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+    
+        assert len(channel_details['owner_members']) == 1
+        assert len(channel_details['all_members']) == 2
+>       assert channel_details['all_members'][0]['u_id'] == 1
+E       assert 70 == 1
+
+http_tests/channel_http_test.py:173: AssertionError
+_______________________ test_invite_global_owner_allowed _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 73, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjczLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiMWM2NWQyM2YtOGFjMS00YWYwLTljOGMtY2I5YmRlMTUwNjQwIn0.Y1xeF2cJiFl6oJBJUUcheajMlN3edB5j4umjbb0N5ZY'}
+user_2 = {'auth_user_id': 74, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjc0LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiNGY3ZTQyOWUtYTVlMC00YmU1LWI4NTEtN2M2YjIxNDJlZTlkIn0.DGzaFSxUXAk4fZm7RcrU71RmqwLyM8Lag12Dy15X9no'}
+user_3 = {'auth_user_id': 75, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjc1LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiMDZjY2JjNjYtNjYzNy00ZDkyLTg4YjItOGIwOTQ2MTdiYWEyIn0.2YYIzhNUPnggfjtHkeDCxb3zSjNFEfNOIrAt3sPFViM'}
+channel_2 = 76
+
+    def test_invite_global_owner_allowed(clear_database, user_1, user_2, user_3, channel_2):
+    
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_2,
+            'u_id': user_3['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_2['token'],channel_2)
+        channel_details = channel_details_json.json()
+    
+        assert len(channel_details['owner_members']) == 1
+>       assert len(channel_details['all_members']) == 2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = len([{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}])
+
+http_tests/channel_http_test.py:187: AssertionError
+_______________________ test_invite_global_owner_invited _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 77, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjc3LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiZjBlYmJjMTQtOGRlMi00YmM4LWFjMjItZDA1ZTkwYjE1ZTcxIn0.xdZKmactQCxvd5IXN2h1-KoGt8f2JrxAsRyRnUzM1nU'}
+user_2 = {'auth_user_id': 78, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjc4LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU4LCJzYWx0IjoiNjU3NmFmM2ItOTlhZS00YmY0LTkzYzMtMDQ2YjlkNTU5ODhiIn0.az4xzIVaqWiABgbfojQPfLpryY3DtO-tqQncJnJNijA'}
+channel_2 = 79
+
+    def test_invite_global_owner_invited(clear_database, user_1, user_2, channel_2):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_2,
+            'u_id': user_1['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_2['token'], channel_2)
+    
+        channel_details = channel_details_json.json()
+    
+        assert len(channel_details['owner_members']) == 2
+>       assert channel_details['owner_members'][0]['u_id'] == 2
+E       assert 77 == 2
+
+http_tests/channel_http_test.py:202: AssertionError
+______________________ test_channel_details_owner_allowed ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 87, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjg3LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiMGYwZWNkOGEtODQxMi00N2IxLTg5YWUtYzVjNWM5YTc3ZTBkIn0.c5jn_GU3t7-ecK7Il3qz6Pm9UQk0u9Lifd8_V6XV-yo'}
+user_2 = {'auth_user_id': 88, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjg4LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiNmQ4MmFhNTYtZWZiYi00ZmI4LWI3MzQtZmY2OWIzNWFjM2UxIn0.7ETa6Uo9Q2mvMmX8RFQzzmc6vmKQSGS97H8gzVa3Qj4'}
+channel_1 = 89
+
+    def test_channel_details_owner_allowed(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+>       assert channel_details == expected_output_details_1()
+E       AssertionError: assert {'all_members...Smith', ...}]} == {'all_members...Smith', ...}]}
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'all_members': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}, {'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]} != {'all_members': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}, {'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]}
+E         {'owner_members': [{'email': 'johnsmi...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+http_tests/channel_http_test.py:291: AssertionError
+_____________________ test_channel_details_member_allowed ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 90, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjkwLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiNTMxNGNhMzMtZGFiOC00YTgxLWFlZmItNTVjMzU1YzMwOTU2In0.kx1AanAhPu5mObKq0xi_zKIvsoHELGmCqKvAhOJloaw'}
+user_2 = {'auth_user_id': 91, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjkxLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiZmVmNGNjNDctZDRjOS00Y2RjLTgxYzEtMmExNjI1YTcxNjJjIn0.FPStzNqGOJtP5ntbYf2N31WoFVbSzpV3LUsj6HSj3m4'}
+channel_1 = 92
+
+    def test_channel_details_member_allowed(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_2['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+>       assert channel_details == expected_output_details_1()
+E       AssertionError: assert {'all_members...Smith', ...}]} == {'all_members...Smith', ...}]}
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'all_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}, {'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}]} != {'all_members': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}, {'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]}
+E         {'owner_members': [{'email': 'johnsmi...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+http_tests/channel_http_test.py:302: AssertionError
+__________________ test_channel_details_global_owner_allowed ___________________
+
+clear_database = None
+user_1 = {'auth_user_id': 93, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjkzLCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiOGY3MjE0NzItN2I2OS00NTZjLWE0YmUtYjQ0Y2U2ODkzMTFkIn0.x2Ily_pqUQtEwwLXfsHaMfW2yzCt60H2Y-ZsbGM7Txs'}
+user_2 = {'auth_user_id': 94, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjk0LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiY2ZiNWZkMzktMmMxYy00Y2UxLWI4YmItYzg4M2EzOGMyYzE1In0.KctFT_qfP4Wdpjk0zeHgVBEDtERgUvroxC6_GcuOats'}
+channel_2 = 95
+
+    def test_channel_details_global_owner_allowed(clear_database, user_1, user_2, channel_2):
+        channel_details_json = get_channel_details(user_1['token'], channel_2)
+>       channel_details = channel_details_json.json()
+
+http_tests/channel_http_test.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/requests/models.py:900: in json
+    return complexjson.loads(self.text, **kwargs)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/__init__.py:525: in loads
+    return _default_decoder.decode(s)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:370: in decode
+    obj, end = self.raw_decode(s)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <simplejson.decoder.JSONDecoder object at 0x7f7f4d8fcdd8>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>403 Forbidden</title>\n<h1>Forbidden</h1>\n<p>Only members can view details about this channel</p>\n'
+idx = 0, _w = <built-in method match of re.Pattern object at 0x7f7f4e1729f0>
+_PY3 = True
+
+    def raw_decode(self, s, idx=0, _w=WHITESPACE.match, _PY3=PY3):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+        beginning with a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+        Optionally, ``idx`` can be used to specify an offset in ``s`` where
+        the JSON document begins.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        if idx < 0:
+            # Ensure that raw_decode bails on negative indexes, the regex
+            # would otherwise mask this behavior. #98
+            raise JSONDecodeError('Expecting value', s, idx)
+        if _PY3 and not isinstance(s, str):
+            raise TypeError("Input string must be text, not bytes")
+        # strip UTF-8 bom
+        if len(s) > idx:
+            ord0 = ord(s[idx])
+            if ord0 == 0xfeff:
+                idx += 1
+            elif ord0 == 0xef and s[idx:idx + 3] == '\xef\xbb\xbf':
+                idx += 3
+>       return self.scan_once(s, idx=_w(s, idx).end())
+E       simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:400: JSONDecodeError
+_______________________ test_channel_details_new_channel _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 96, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjk2LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiMTBkMWM4MTMtODE2ZC00MzY1LWE2NzgtNmE0ZDM1NmExNTRmIn0.bSQoxVqxks-au3PWzEPkYmBVCb4bsNK1_ftyGKgZmWc'}
+user_2 = {'auth_user_id': 97, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjk3LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiMmZlYTRkYmUtY2VmMC00MGQxLWFkYjgtNTlmYTUwY2JmMTg1In0.mfR2AwMgu1QWZOUlS8SVsSPKtolDeqCt-d229sxigWU'}
+channel_2 = 98
+
+    def test_channel_details_new_channel(clear_database, user_1, user_2, channel_2):
+        channel_details_json = get_channel_details(user_2['token'], channel_2)
+        channel_details = channel_details_json.json()
+    
+>       assert channel_details == expected_output_details_2()
+E       AssertionError: assert {'all_members...'Tran', ...}]} == {'all_members...'Tran', ...}]}
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'all_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]} != {'all_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]}
+E         {'owner_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}]} != {'owner_members': [{'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran',...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+http_tests/channel_http_test.py:314: AssertionError
+______________________ test_channel_details_empty_channel ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 99, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjk5LCJsb2dpbl90aW1lIjoxNjE5MTg3ODU5LCJzYWx0IjoiMGE4MzI2NDgtOTljZC00MDI4LWFhNWQtZGQ0ODJjYmUwOTNlIn0.sB748YYKiXUp0RUutGsRrKeAouZv1v1UjefnqDO0VVo'}
+user_2 = {'auth_user_id': 100, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEwMCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjM4MDBjNjZkLWMxOGMtNGFmYi1hODczLTkwODcxMjkwMjk2MCJ9.QuJPHa7A1Mat66FhLONEf2xI5AGNmgJrleVnlWKnWdQ'}
+channel_2 = 101
+
+    def test_channel_details_empty_channel(clear_database, user_1, user_2, channel_2):
+        requests.post(config.url + 'channel/leave/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_2
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_2)
+>       channel_details = channel_details_json.json()
+
+http_tests/channel_http_test.py:322: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/requests/models.py:900: in json
+    return complexjson.loads(self.text, **kwargs)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/__init__.py:525: in loads
+    return _default_decoder.decode(s)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:370: in decode
+    obj, end = self.raw_decode(s)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <simplejson.decoder.JSONDecoder object at 0x7f7f4d8fcdd8>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>403 Forbidden</title>\n<h1>Forbidden</h1>\n<p>Only members can view details about this channel</p>\n'
+idx = 0, _w = <built-in method match of re.Pattern object at 0x7f7f4e1729f0>
+_PY3 = True
+
+    def raw_decode(self, s, idx=0, _w=WHITESPACE.match, _PY3=PY3):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+        beginning with a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+        Optionally, ``idx`` can be used to specify an offset in ``s`` where
+        the JSON document begins.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        if idx < 0:
+            # Ensure that raw_decode bails on negative indexes, the regex
+            # would otherwise mask this behavior. #98
+            raise JSONDecodeError('Expecting value', s, idx)
+        if _PY3 and not isinstance(s, str):
+            raise TypeError("Input string must be text, not bytes")
+        # strip UTF-8 bom
+        if len(s) > idx:
+            ord0 = ord(s[idx])
+            if ord0 == 0xfeff:
+                idx += 1
+            elif ord0 == 0xef and s[idx:idx + 3] == '\xef\xbb\xbf':
+                idx += 3
+>       return self.scan_once(s, idx=_w(s, idx).end())
+E       simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:400: JSONDecodeError
+______________________ test_channel_addowner_invalid_uid _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 111, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjExMSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjA5OGZlZTgwLTU0MDQtNDY2ZC04ZTMwLWNiNWQ3Yzk2ZGEwNiJ9.bDS7iLOLwAt9A5soYd5eC1vp5lmZulsQvmSKGuMw1q4'}
+user_2 = {'auth_user_id': 112, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjExMiwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImViMWM5OTAxLTQyNGItNDY2Ny1iYjhlLTU2MmM3NTRmYjRkZiJ9.-0qCXGTeAzyp9OzpUuAYRz4OQVMUk_Gm302NU1QtMPg'}
+channel_1 = 113
+
+    def test_channel_addowner_invalid_uid(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        addowner = requests.post(config.url + 'channel/addowner/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': INVALID_UID
+        })
+    
+>       assert addowner.status_code == ACCESSERROR
+E       assert 400 == 403
+E        +  where 400 = <Response [400]>.status_code
+
+http_tests/channel_http_test.py:387: AssertionError
+__________________ test_channel_addowner_global_owner_allowed __________________
+
+clear_database = None
+user_1 = {'auth_user_id': 120, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEyMCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjE2NzQ2ZTIzLThkMjgtNGIzYy1iNjNmLTg2M2U1NjEyNGEzZiJ9.1M0-9T-EJNZ4Hu0TAYEb5Fx--FkqcQxXV-BVvfKPCKM'}
+user_2 = {'auth_user_id': 121, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEyMSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjdlOWM5OThhLTJkM2YtNDY5Yy05N2E2LTY4ZjFjZjRiMDUyZCJ9.e5pr3bFFWSmV8t_sGw3fZjVim-F5vD7Vm4mEld9SnDA'}
+channel_2 = 122
+
+    def test_channel_addowner_global_owner_allowed(clear_database, user_1, user_2, channel_2):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_2,
+            'u_id': user_1['auth_user_id']
+        })
+        requests.post(config.url + 'channel/addowner/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_2,
+            'u_id': user_1['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_2['token'], channel_2)
+        channel_details = channel_details_json.json()
+    
+        assert channel_details['name'] == "Phil's Channel"
+        assert channel_details['is_public'] == True
+        assert len(channel_details['owner_members']) == 2
+>       assert channel_details['owner_members'][0]['u_id'] == 2
+E       assert 120 == 2
+
+http_tests/channel_http_test.py:434: AssertionError
+______________________ test_channel_addowner_valid_inputs ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 123, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEyMywibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImVkNDMzZTdjLWU1ZmEtNGRmYi1hOGE2LTJhYWQ3ODcxZmYxNSJ9.TzmHaDtnMkRv71r83SbJTfon_wtpt-qB-uIkU_6cWB8'}
+user_2 = {'auth_user_id': 124, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEyNCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6Ijc1Njc1OGFiLTc1MGUtNGY0Ni1iY2I5LTk2OWZjNWU3YWE0YiJ9.iow50aZpRYVk5oieI1tpzxMwM_-3JchZkMhyRMA4hs4'}
+channel_1 = 125, make_user_2_owner_in_channel_1 = None
+
+    def test_channel_addowner_valid_inputs(clear_database, user_1, user_2, channel_1, make_user_2_owner_in_channel_1):
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+        assert channel_details['name'] == "Channel1"
+        assert channel_details['is_public'] == True
+        assert len(channel_details['owner_members']) == 2
+>       assert channel_details['owner_members'][0]['u_id'] == 1
+E       assert 123 == 1
+
+http_tests/channel_http_test.py:447: AssertionError
+___________________ test_channel_removeowner_invalid_auth_id ___________________
+
+clear_database = None
+user_1 = {'auth_user_id': 132, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzMiwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImMzMDJjYTQ1LTBiNWYtNDQwNy05YTdhLTc2ZjAyNDkwMDFjMCJ9.xED1D3FFUDJjjBBt7h3mQdfD-2AIOYWa4fiMTIJdQrs'}
+user_2 = {'auth_user_id': 133, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzMywibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjlhYjE3Y2M3LWUyMWMtNDA4MC04ZjRmLTlhZGU5ZjdlMGUzMCJ9.posQnaehDRpWyQMFz8V5CmLfSZLb9HQKwvoinQRkpfs'}
+channel_1 = 134
+
+    def test_channel_removeowner_invalid_auth_id(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        removeowner = requests.post(config.url + 'channel/removeowner/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'u_id': user_1['auth_user_id']
+        })
+    
+>       assert removeowner.status_code == INPUTERROR
+E       assert 403 == 400
+E        +  where 403 = <Response [403]>.status_code
+
+http_tests/channel_http_test.py:487: AssertionError
+_____________________ test_channel_removeowner_invalid_uid _____________________
+
+clear_database = None
+user_1 = {'auth_user_id': 135, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzNSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjI4YTYwZWM1LTYzMzItNGNmOS04MWZmLTUyYTI1YmQ0NGFiOSJ9.RKpDIFhvtwjiZUs_iaGPWkOv-Ox1VvsNP_BNE0qUjN8'}
+user_2 = {'auth_user_id': 136, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzNiwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjMzNjM5YzVmLTMyMDItNDI2Zi04YTFhLWFmZTY1MWIwNTIxMCJ9.69TE7gXzHsKqpNW-6xuqnKYBoO6zsZicGp5vf5rSWYc'}
+channel_1 = 137
+
+    def test_channel_removeowner_invalid_uid(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        removeowner = requests.post(config.url + 'channel/removeowner/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': INVALID_UID
+        })
+    
+>       assert removeowner.status_code == ACCESSERROR
+E       assert 400 == 403
+E        +  where 400 = <Response [400]>.status_code
+
+http_tests/channel_http_test.py:501: AssertionError
+__________________ test_channel_removeowner_auth_id_not_owner __________________
+
+clear_database = None
+user_1 = {'auth_user_id': 138, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzOCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjczZjZiYWU4LTY5ZDEtNGQ3ZS1iNDU4LWNiNDhmNjllNjBjYSJ9.02f84C02mV6lB7XENvf2t3U3WX3kk1euwA5VuhdqNYc'}
+user_2 = {'auth_user_id': 139, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjEzOSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjBlOTc1NTg0LTM3NzctNGI0Ni04NzhlLTY4NzE4NTEyOTY1ZiJ9.6QwG6AZvuyKzsN_iU7hwqrpgIqBal4T7sKLLoy1U65k'}
+channel_1 = 140
+
+    def test_channel_removeowner_auth_id_not_owner(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        removeowner = requests.post(config.url + 'channel/removeowner/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'u_id': user_1['auth_user_id']
+        })
+    
+>       assert removeowner.status_code == INPUTERROR
+E       assert 403 == 400
+E        +  where 403 = <Response [403]>.status_code
+
+http_tests/channel_http_test.py:515: AssertionError
+____________________ test_channel_removeowner_valid_inputs _____________________
+
+clear_database = None
+user_1 = {'auth_user_id': 146, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE0NiwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjhiOGE1MmI0LWQzZTUtNDBjMS1hMGFlLWI2ZDdkODExY2EwMiJ9.t-KZUqkXQ7yI5V43glSjbq-PEN6bsbLIaARI1TLpUgo'}
+user_2 = {'auth_user_id': 147, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE0NywibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImFjZTBjM2EzLTUyNTItNDkxOS04ZjA0LTlmNGE2MWM4YzdlNiJ9.aXPkKsU8kbtJsYAgb_9Eg5T5CQ0TLSwoxidy_NO7M1U'}
+channel_1 = 148, make_user_2_owner_in_channel_1 = None
+
+    def test_channel_removeowner_valid_inputs(clear_database, user_1, user_2, channel_1, make_user_2_owner_in_channel_1):
+        requests.post(config.url + 'channel/removeowner/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+        assert len(channel_details['owner_members']) == 1
+>       assert channel_details['owner_members'][0]['u_id'] == 1
+E       assert 146 == 1
+
+http_tests/channel_http_test.py:550: AssertionError
+________________ test_channel_removeowner_global_owner_allowed _________________
+
+clear_database = None
+user_1 = {'auth_user_id': 149, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE0OSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImZmZjIxYzI2LWI4MjktNDNmZC1hOTdjLTZhMTZmNjBmMmM4MyJ9.z84k3luOFF2QaAVUDr4xIkHUp9ATSKu1b_SyWqs8AmI'}
+user_2 = {'auth_user_id': 150, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE1MCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjdmNDczYTZiLTliNzItNGM3Zi04NzZjLWJiNjUzMTFkZmIwZSJ9.YmF_Uaq6P1XFPm7pxbkKqnqSM98olaY_DcnWIWdMbuw'}
+user_3 = {'auth_user_id': 151, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE1MSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6ImRiMWIzZTA3LTY5YjUtNDMzYy05NzhiLWVlZGI3YWE3MzZiYiJ9.Xn3543lKdjlT1p-tnuXT7g7BD5bcQH2paRvLBePHTos'}
+channel_2 = 152
+
+    def test_channel_removeowner_global_owner_allowed(clear_database, user_1, user_2, user_3,channel_2):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_2,
+            'u_id': user_3['auth_user_id']
+        })
+        requests.post(config.url + 'channel/addowner/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_2,
+            'u_id': user_3['auth_user_id']
+        })
+        requests.post(config.url + 'channel/removeowner/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_2,
+            'u_id': user_3['auth_user_id']
+        })
+        channel_details_json = get_channel_details(user_2['token'], channel_2)
+        channel_details = channel_details_json.json()
+    
+        assert len(channel_details['owner_members']) == 1
+>       assert channel_details['owner_members'][0]['u_id'] == 2
+E       assert 150 == 2
+
+http_tests/channel_http_test.py:575: AssertionError
+__________________________ test_channel_leave_member ___________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 160, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE2MCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6Ijg3MGVhZDNiLTY0YzktNDZiMS04OWM4LTYwNjc1ZGUyYTgxMyJ9.ucPJervvd4z3QnY9YJYjsdGRGG2yqBatnQqr2xWgS10'}
+user_2 = {'auth_user_id': 161, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE2MSwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjA4OTdmMTFhLTYzZTItNGFmNC1hYmVjLTY1YzFhNTM1NzI2NCJ9.155mDfru9XUpS5JRqbiEOmAndRhvhjuhdTvAxlYMIMM'}
+channel_1 = 162
+
+    def test_channel_leave_member(clear_database, user_1, user_2, channel_1):
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        requests.post(config.url + 'channel/leave/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+        assert channel_details['name'] == "Channel1"
+        assert channel_details['is_public'] == True
+        assert len(channel_details['owner_members']) == 1
+>       assert channel_details['owner_members'][0]['u_id'] == 1
+E       assert 160 == 1
+
+http_tests/channel_http_test.py:625: AssertionError
+___________________________ test_channel_leave_owner ___________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 163, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE2MywibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjY5YjM2Y2E0LTc1YTctNGE2Mi05MTcyLTdkNDNmYzhlYTVkMyJ9.7L8quABs3Mc-8LhILU8-ValcYX1xwfmvsmdXjm5iAYE'}
+user_2 = {'auth_user_id': 164, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE2NCwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6IjY2OGYxNTgyLTczYWQtNGIzYy04ODBiLWVlMjJjOWQ4OTc5MiJ9.hqdQkNB4stv2V-uh9eFS-7KyY5jpsLlGpraDzTpjTig'}
+channel_1 = 165, make_user_2_owner_in_channel_1 = None
+
+    def test_channel_leave_owner(clear_database, user_1, user_2, channel_1, make_user_2_owner_in_channel_1):
+        requests.post(config.url + 'channel/leave/v1', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+        channel_details = channel_details_json.json()
+    
+        assert channel_details['name'] == "Channel1"
+        assert channel_details['is_public'] == True
+>       assert len(channel_details['owner_members']) == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = len([{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}, {'email': 'philtran@gmail.com', 'handle_str': 'philiptran', 'name_first': 'Philip', 'name_last': 'Tran', ...}])
+
+http_tests/channel_http_test.py:639: AssertionError
+_________________________ test_channel_leave_last_user _________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 166, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE2NiwibG9naW5fdGltZSI6MTYxOTE4Nzg1OSwic2FsdCI6Ijk5NjZhNzkyLWM5YzAtNGRlNC04MDEzLTkwYzQ4NjMxODU0MiJ9.cqx3prqhQT1U12PBh0Mlu4FzTj7YKCusXKMzRTQrOeQ'}
+channel_1 = 167
+
+    def test_channel_leave_last_user(clear_database, user_1, channel_1):
+        requests.post(config.url + 'channel/leave/v1', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+        })
+        channel_details_json = get_channel_details(user_1['token'], channel_1)
+>       channel_details = channel_details_json.json()
+
+http_tests/channel_http_test.py:650: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/requests/models.py:900: in json
+    return complexjson.loads(self.text, **kwargs)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/__init__.py:525: in loads
+    return _default_decoder.decode(s)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:370: in decode
+    obj, end = self.raw_decode(s)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <simplejson.decoder.JSONDecoder object at 0x7f7f4d8fcdd8>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>403 Forbidden</title>\n<h1>Forbidden</h1>\n<p>Only members can view details about this channel</p>\n'
+idx = 0, _w = <built-in method match of re.Pattern object at 0x7f7f4e1729f0>
+_PY3 = True
+
+    def raw_decode(self, s, idx=0, _w=WHITESPACE.match, _PY3=PY3):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+        beginning with a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+        Optionally, ``idx`` can be used to specify an offset in ``s`` where
+        the JSON document begins.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        if idx < 0:
+            # Ensure that raw_decode bails on negative indexes, the regex
+            # would otherwise mask this behavior. #98
+            raise JSONDecodeError('Expecting value', s, idx)
+        if _PY3 and not isinstance(s, str):
+            raise TypeError("Input string must be text, not bytes")
+        # strip UTF-8 bom
+        if len(s) > idx:
+            ord0 = ord(s[idx])
+            if ord0 == 0xfeff:
+                idx += 1
+            elif ord0 == 0xef and s[idx:idx + 3] == '\xef\xbb\xbf':
+                idx += 3
+>       return self.scan_once(s, idx=_w(s, idx).end())
+E       simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:400: JSONDecodeError
+_______________________ test_channel_join_global_private _______________________
+
+clear_database = None
+user_2 = {'auth_user_id': 175, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE3NSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6Ijk3NTViMGEwLTNiZGUtNDViNS04M2M1LWExNzgxNjBkM2ExYyJ9.Oi2qBr7ZJFfaS2gu1GNIRb-9UbcIlVHIMBIf9muQf8g'}
+user_1 = {'auth_user_id': 176, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE3NiwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImIxYTIwYmE2LTcwYjMtNDc0MC1hNDczLWMxYzA5NmM4NDU1MCJ9.gtLDmfiz-Jj6XG0bkIXqMkmOH1XN8EYCLbgKI6q8tCQ'}
+channel_3 = 177
+
+    def test_channel_join_global_private(clear_database, user_2, user_1, channel_3):
+    
+        requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_3
+        })
+        chan_info = get_channel_details(user_2['token'], channel_3)
+        channels = chan_info.json()
+        assert len(channels['all_members']) == 2
+        assert len(channels['owner_members']) == 2
+>       assert channels['all_members'][0]['u_id'] == user_1['auth_user_id']
+E       assert 175 == 176
+
+http_tests/channel_http_test.py:695: AssertionError
+_______________________ test_channel_join_already_joined _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 178, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE3OCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImJjOWRjNDE0LTJhYTgtNDU1Yi04NzUwLWU3MDY0Njc2YjhiMSJ9.kZ1MBtpnO9UnicZK2tEwtu9bJE7mJGHmPNP9f4KJgVY'}
+user_2 = {'auth_user_id': 179, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE3OSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImFkMWEyMjM0LTEwNzAtNGUwZC1iYjUwLWZkOWUxNDRiZGQxZCJ9.uqqegv60OPhqHMdTM6VzaKEgSHRQbQSQfDsIr0fx4bE'}
+channel_1 = 180
+
+    def test_channel_join_already_joined(clear_database, user_1, user_2, channel_1):
+    
+        requests.post(config.url + 'channel/invite/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'u_id': user_2['auth_user_id']
+        })
+        chan = requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1
+        })
+>       channels = chan.json()
+
+http_tests/channel_http_test.py:711: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/requests/models.py:900: in json
+    return complexjson.loads(self.text, **kwargs)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/__init__.py:525: in loads
+    return _default_decoder.decode(s)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:370: in decode
+    obj, end = self.raw_decode(s)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <simplejson.decoder.JSONDecoder object at 0x7f7f4d8fcdd8>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>400 Bad Request</title>\n<h1>Bad Request</h1>\n<p>philiptran is already a member of Channel1</p>\n'
+idx = 0, _w = <built-in method match of re.Pattern object at 0x7f7f4e1729f0>
+_PY3 = True
+
+    def raw_decode(self, s, idx=0, _w=WHITESPACE.match, _PY3=PY3):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+        beginning with a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+        Optionally, ``idx`` can be used to specify an offset in ``s`` where
+        the JSON document begins.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        if idx < 0:
+            # Ensure that raw_decode bails on negative indexes, the regex
+            # would otherwise mask this behavior. #98
+            raise JSONDecodeError('Expecting value', s, idx)
+        if _PY3 and not isinstance(s, str):
+            raise TypeError("Input string must be text, not bytes")
+        # strip UTF-8 bom
+        if len(s) > idx:
+            ord0 = ord(s[idx])
+            if ord0 == 0xfeff:
+                idx += 1
+            elif ord0 == 0xef and s[idx:idx + 3] == '\xef\xbb\xbf':
+                idx += 3
+>       return self.scan_once(s, idx=_w(s, idx).end())
+E       simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:400: JSONDecodeError
+__________________________ test_channel_messages_join __________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 192, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE5MiwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImEwZTc2MWI1LWFjNDAtNDM2MC1hYjNmLWY3ZTI2ZWI4YmRlYSJ9.9Nr27KeSpVp0W_krThGkLy56Cj9D3uqCNDTlRiLKFzg'}
+user_2 = {'auth_user_id': 193, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE5MywibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImE0MGNlNjQ1LTE5ZTUtNGNkYi05YzNkLTM4MmU0OGExYjcwZSJ9.cNzGPNGa3XCUsiQeX7z88tHL4jf33dz8uOWDDqKbEQk'}
+channel_1 = 194
+
+    def test_channel_messages_join(clear_database, user_1, user_2, channel_1):
+    
+        requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+        })
+        requests.post(config.url + 'message/send/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'message': "I'm now in the channel."
+        })
+        chan = get_channel_messages(user_2['token'], channel_1, 0)
+    
+        chan_info = chan.json()
+        assert len(chan_info['messages']) == 1
+>       assert chan_info['messages'][0]['message_id'] == 1
+E       assert 195 == 1
+
+http_tests/channel_http_test.py:772: AssertionError
+__________________________ test_channel_listall_valid __________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 199, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjE5OSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImRjN2M1OTQ0LTA1ODUtNDM2OS1iOGFiLTgwZjFkYjE3MDkwNyJ9.fcFSHFDxOkKIeUcOaA91Azqx-TpFMDbvB4z13fWSWdc'}
+user_2 = {'auth_user_id': 200, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIwMCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjRjMDc0ZGVjLTIyMzAtNGVhNi1iNzViLTkxZjAzNmMxMTRmYyJ9.314jxpgT89MjjctLiv0M4TnihOlYFIZWwNBcih3k1gQ'}
+channel_1 = 201, channel_2 = 202
+
+    def test_channel_listall_valid(clear_database, user_1, user_2, channel_1, channel_2):
+        chan = get_channels_listall(user_1['token'])
+    
+        chan_list = chan.json()
+>       assert chan_list == expected_output_listall_v2()
+E       AssertionError: assert {'channels': ... 'Channel2'}]} == {'channels': ... 'Channel2'}]}
+E         Differing items:
+E         {'channels': [{'channel_id': 201, 'name': 'Channel1'}, {'channel_id': 202, 'name': 'Channel2'}]} != {'channels': [{'channel_id': 1, 'name': 'Channel1'}, {'channel_id': 2, 'name': 'Channel2'}]}
+E         Use -v to get the full diff
+
+http_tests/channels_http_test.py:101: AssertionError
+___________________________ test_channel_list_valid ____________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 206, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIwNiwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjVmZDI4YWFjLTc1ZTAtNDE1Mi1hOWU4LWQwMzVkYjFmMjAwZiJ9.rfvsnbr5q3wQuNf50mXbV2UZh6oAbUO9ykfuEJXOKNg'}
+user_2 = {'auth_user_id': 207, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIwNywibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImQ4Yzk2ODRlLWUyMGMtNDg1ZS1iMWJjLWJmODA3NjQyZjFiNiJ9.Gwi8y-_I04ZfeamlLk8v7ddjVQ346Ha68YHmQCS7Qlk'}
+channel_1 = 208, channel_2 = 209
+
+    def test_channel_list_valid(clear_database, user_1, user_2, channel_1, channel_2):
+        chan = get_channels_list(user_1['token'])
+    
+        chan_list = chan.json()
+>       assert chan_list == expected_output_list_v2()
+E       AssertionError: assert {'channels': ... 'Channel1'}]} == {'channels': ... 'Channel1'}]}
+E         Differing items:
+E         {'channels': [{'channel_id': 208, 'name': 'Channel1'}]} != {'channels': [{'channel_id': 1, 'name': 'Channel1'}]}
+E         Use -v to get the full diff
+
+http_tests/channels_http_test.py:133: AssertionError
+______________________ test_valid_channels_create_v1_u_id ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 210, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIxMCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjRmNjUzOGI3LTUzNTQtNGU2NC1iZmQzLWQyMGEwNzcyMDAwYiJ9.CoCC7vcXBNcN3JctyX7JNZANZdC2MDa-OyrCIho9gx4'}
+
+    def test_valid_channels_create_v1_u_id(clear_database,user_1):
+        chan = requests.post(config.url + 'channels/create/v2', json={
+           'token': user_1['token'],
+           'name': "ValidChannelName",
+           'is_public': True
+        })
+    
+        chan_id = chan.json()
+>       assert(chan_id == {'channel_id': 1})
+E       AssertionError: assert {'channel_id': 211} == {'channel_id': 1}
+E         Differing items:
+E         {'channel_id': 211} != {'channel_id': 1}
+E         Use -v to get the full diff
+
+http_tests/channels_http_test.py:147: AssertionError
+____________________________ test_dm_details_valid _____________________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 230, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIzMCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjNiNDVmOTg5LWRlZTEtNGZjNC1iYmMzLTVjZTY1ODNjOTkyZCJ9.uNu6u2UwAjoRXOa4o2kauZr5_r6z-K-EqjKBBbKsnqo'}
+test_create_dm = {'dm_id': 232, 'dm_name': 'dansmith, validnamevalidname'}
+
+    def test_dm_details_valid(clear_data,test_user1,test_create_dm):
+        dm_det = requests.get(f"{config.url}dm/details/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}")
+        dm_info = dm_det.json()
+>       assert dm_info == expected_output_details_v2()
+E       AssertionError: assert {'members': [...amevalidname'} == {'members': [...amevalidname'}
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'members': [{'email': 'dan@gmail.com', 'handle_str': 'dansmith', 'name_first': 'dan', 'name_last': 'smith', ...}, {'email': 'validemail@g.com', 'handle_str': 'validnamevalidname', 'name_first': 'validname', 'name_last': 'validname', ...}]} != {'members': [{'email': 'validemail@g.com', 'handle_str': 'validnamevalidname', 'name_first': 'validname', 'name_last': 'validname', ...}, {'email': 'dan@gmail.com', 'handle_str': 'dansmith', 'name_first': 'dan', 'name_last': 'smith', ...}]}
+E         Use -v to get the full diff
+
+http_tests/dm_http_test.py:109: AssertionError
+______________________________ test_dm_list_valid ______________________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 237, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIzNywibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6Ijg1YjkzMDc4LTU4MzYtNDg1Mi1hYjBhLTE0NGY4NDg2ZTM2NSJ9.JXOZYI0jUI9Q7FMU017y8T63CeZ3VtQx4cJftWTdCfo'}
+test_user2 = {'auth_user_id': 238, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjIzOCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImM3ZDI0M2RiLWU5NWItNDEwOS1hYjhhLWQ2NmJjOGFmMGExOSJ9.5t6UZ12U8IXDEaJfNhHYZnfv84zKyYeU7pWc-dOuwHY'}
+test_create_dm = {'dm_id': 239, 'dm_name': 'dansmith, validnamevalidname'}
+
+    def test_dm_list_valid(clear_data, test_user1, test_user2, test_create_dm):
+        dm_list = requests.get(f"{config.url}dm/list/v1?token={test_user1['token']}")
+        dm_info = dm_list.json()
+>       assert dm_info == expected_output_list_v1()
+E       AssertionError: assert {'dms': [{'dm...evalidname'}]} == {'dms': [{'dm...evalidname'}]}
+E         Differing items:
+E         {'dms': [{'dm_id': 239, 'name': 'dansmith, validnamevalidname'}]} != {'dms': [{'dm_id': 1, 'name': 'dansmith, validnamevalidname'}]}
+E         Use -v to get the full diff
+
+http_tests/dm_http_test.py:138: AssertionError
+_________________________ test_dm_create_invalid_u_id __________________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 242, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI0MiwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImE0NWRhM2QzLTEyYWEtNDA2Mi1iMzA4LTUyNjY5MmNkNTIyYyJ9.961ciXolMPg7KoqGkCTXSzNJsenOqM9CgYSPWGlC3ZI'}
+test_user2 = {'auth_user_id': 243, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI0MywibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjU5YTJjMjBiLWE5OWEtNGZlMi05NmNmLTdkYmEyYzcyZDAzOCJ9.8vI17M261oa5uX9AerKKZItb5L7wEzMy_oSxynGKEUQ'}
+
+    def test_dm_create_invalid_u_id(clear_data,test_user1, test_user2):
+        dm = requests.post(config.url + 'dm/create/v1', json={
+            'token': test_user1['token'],
+            'u_ids': [INVALID_U_ID]
+        })
+>       assert dm.status_code == ACCESSERROR
+E       assert 400 == 403
+E        +  where 400 = <Response [400]>.status_code
+
+http_tests/dm_http_test.py:164: AssertionError
+_____________________________ test_dm_create_valid _____________________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 244, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI0NCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjA3YjI1YTQ5LTdmYWItNDk2MC05YmU2LTYxMjY3NDAzNWRiNiJ9.RNZJ-Ds4mWHW1PjadvQUQJ5OqVIvBw86L5DgXBy2UPE'}
+test_user2 = {'auth_user_id': 245, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI0NSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImZiY2EwZmQyLWIyMjQtNDBhMC04MzJjLTU1NDZiY2ExM2FkZSJ9.OxApyB3XdEx3f8sc97yRKl_HC3rV7JkLBO5oPU0Scxs'}
+
+    def test_dm_create_valid(clear_data,test_user1, test_user2):
+        dm = requests.post(config.url + 'dm/create/v1', json={
+            'token': test_user1['token'],
+            'u_ids': [test_user2['auth_user_id']]
+        })
+        dm_info = dm.json()
+>       assert dm_info == expected_output_create_v1()
+E       AssertionError: assert {'dm_id': 246...amevalidname'} == {'dm_id': 1, ...amevalidname'}
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'dm_id': 246} != {'dm_id': 1}
+E         Use -v to get the full diff
+
+http_tests/dm_http_test.py:173: AssertionError
+_______________________ test_dm_invite_user_not_a_member _______________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 253, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI1MywibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjU2ZGY1Mjk1LTFmZjctNDA3MS1hYjRlLTg4YTE3MjQwZTNjNCJ9.WFlKCb43EvX-VEVqzxlp2FCcM6Yyln-vM73KbxoGRjU'}
+test_user2 = {'auth_user_id': 254, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI1NCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImE2NDE3MDg5LTczNzAtNDMzYS1hNzI2LWM2NThkNWIxMjEyZCJ9.RfzHhG68ZkN2MIyFEkRa6yV9TCex4RoLvqpYufDDDSM'}
+test_user3 = {'auth_user_id': 255, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI1NSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImE3OGNlZTM4LTZkZDQtNDFkNS04Njc2LWU1NmFiMTZmMGY3NyJ9.m8NuMgTrG4TBMWlX4YpFK2qU6f00mZpoKqVpmMzSNsE'}
+test_create_dm = {'dm_id': 256, 'dm_name': 'dansmith, validnamevalidname'}
+
+    def test_dm_invite_user_not_a_member(clear_data,test_user1,test_user2,test_user3,test_create_dm):
+        dm_inv = requests.post(config.url + 'dm/invite/v1', json={
+            'token': test_user3['token'],
+            'dm_id': test_create_dm['dm_id'],
+            'u_id': test_user2['auth_user_id']
+        })
+>       assert dm_inv.status_code == ACCESSERROR
+E       assert 400 == 403
+E        +  where 400 = <Response [400]>.status_code
+
+http_tests/dm_http_test.py:200: AssertionError
+_________________________ test_dm_invite_already_in_dm _________________________
+
+clear_data = None
+test_user1 = {'auth_user_id': 260, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI2MCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6ImFkNWFlMWE0LTlhZjItNDY3OC1iMWM2LWY1ZjRlZWQ0MzIwZSJ9.Ib2DUhuLjLHI9WExeGoiOmXl-eLiTomTjIL0pS8GZJg'}
+test_user2 = {'auth_user_id': 261, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI2MSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MCwic2FsdCI6IjE0ZTU0NDg3LTIwZWUtNDZhYi1hY2ViLWIyZTc4MWExNDc4ZiJ9.Bl94zIS_0iTcH4_wJzIZfYOKZ3YiyojY6s_72LNQGIw'}
+test_create_dm = {'dm_id': 262, 'dm_name': 'dansmith, validnamevalidname'}
+
+    def test_dm_invite_already_in_dm(clear_data,test_user1,test_user2,test_create_dm):
+        dm_inv = requests.post(config.url + 'dm/invite/v1', json={
+            'token': test_user1['token'],
+            'dm_id': test_create_dm['dm_id'],
+            'u_id': test_user2['auth_user_id']
+        })
+>       assert dm_inv.json()== {}
+
+http_tests/dm_http_test.py:216: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/requests/models.py:900: in json
+    return complexjson.loads(self.text, **kwargs)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/__init__.py:525: in loads
+    return _default_decoder.decode(s)
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:370: in decode
+    obj, end = self.raw_decode(s)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <simplejson.decoder.JSONDecoder object at 0x7f7f4d8fcdd8>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>400 Bad Request</title>\n<h1>Bad Request</h1>\n<p>dansmith is already a member of dansmith, validnamevalidname</p>\n'
+idx = 0, _w = <built-in method match of re.Pattern object at 0x7f7f4e1729f0>
+_PY3 = True
+
+    def raw_decode(self, s, idx=0, _w=WHITESPACE.match, _PY3=PY3):
+        """Decode a JSON document from ``s`` (a ``str`` or ``unicode``
+        beginning with a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+        Optionally, ``idx`` can be used to specify an offset in ``s`` where
+        the JSON document begins.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        if idx < 0:
+            # Ensure that raw_decode bails on negative indexes, the regex
+            # would otherwise mask this behavior. #98
+            raise JSONDecodeError('Expecting value', s, idx)
+        if _PY3 and not isinstance(s, str):
+            raise TypeError("Input string must be text, not bytes")
+        # strip UTF-8 bom
+        if len(s) > idx:
+            ord0 = ord(s[idx])
+            if ord0 == 0xfeff:
+                idx += 1
+            elif ord0 == 0xef and s[idx:idx + 3] == '\xef\xbb\xbf':
+                idx += 3
+>       return self.scan_once(s, idx=_w(s, idx).end())
+E       simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/import/kamen/3/cs1531/.local/lib/python3.7/site-packages/simplejson/decoder.py:400: JSONDecodeError
+________________________ test_dm_messages_valid_single _________________________
+
+clear_data = None
+test_create_dm = {'dm_id': 298, 'dm_name': 'dansmith, validnamevalidname'}
+test_user1 = {'auth_user_id': 296, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI5NiwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjMyZTYzMTE4LTBkZGYtNDcxOC05NWU1LTViZTJlNDQ2ZmI5ZiJ9.aAMJjjTFc-1JQ35fZB3rEBVzdaHKPCP-acYY7vI0moc'}
+test_user2 = {'auth_user_id': 297, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjI5NywibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjQzNWZkMGM4LTU1N2UtNDlkMS04MGE4LWZhYjY1MWI2NTUzZCJ9.dh33AYqPToDPP-_NF4WQicna3JO8gq5rL5Ah1qQ9w_E'}
+
+    def test_dm_messages_valid_single(clear_data,test_create_dm,test_user1,test_user2):
+        requests.post(config.url + 'message/senddm/v1', json={
+            'token': test_user1['token'],
+            'dm_id': test_create_dm['dm_id'],
+            'message': 'singlemessage'
+        })
+    
+        msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=0")
+        message_detail = msg.json()
+        print(message_detail)
+>       assert message_detail['messages'][0]['message_id'] == 1
+E       assert 299 == 1
+
+http_tests/dm_http_test.py:308: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{'end': -1, 'messages': [{'is_pinned': False, 'message': 'singlemessage', 'message_id': 299, 'reacts': [{'is_this_user_reacted': False, 'react_id': 1, 'u_ids': []}], 'time_created': 1619187861, 'u_id': 296}], 'start': 0}
+__________________________ test_dm_messages_multiple ___________________________
+
+clear_data = None
+test_create_dm = {'dm_id': 302, 'dm_name': 'dansmith, validnamevalidname'}
+test_user1 = {'auth_user_id': 300, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjMwMCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjQ4ZDNlOGM0LWQ3YTctNDkwZi1iMTMyLWQ3NzU5ZTYxMjE3ZiJ9.wGAX1x15BzyC9wRXXwWREpOY3wvTRh0PKUABYYPe0Cs'}
+test_user2 = {'auth_user_id': 301, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjMwMSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6ImU5Y2VjMWZlLTJiYzEtNDUxNi1iODkzLTE0ZDMxZTljNDBjYyJ9.pCn0o89qc7ph8yTEfIyt5Oq7nWI0lmaH01xxfZpWO4A'}
+
+    def test_dm_messages_multiple(clear_data,test_create_dm,test_user1,test_user2):
+        i = 1
+        while i <= 55:
+            requests.post(config.url + 'message/senddm/v1',json={
+                'token':test_user1['token'],
+                'dm_id':test_create_dm['dm_id'],
+                'message':f"{i}"
+            })
+            i += 1
+        msg = requests.get(f"{config.url}dm/messages/v1?token={test_user1['token']}&dm_id={test_create_dm['dm_id']}&start=2")
+        message_detail = msg.json()
+    
+        i = 53
+        j = 0
+        while i >= 4:
+>           assert message_detail['messages'][j]['message_id'] == i
+E           assert 355 == 53
+
+http_tests/dm_http_test.py:329: AssertionError
+__________________________________ test_echo ___________________________________
+
+    def test_echo():
+        '''
+        A simple test to check echo
+        '''
+        resp = requests.get(config.url + 'echo', params={'data': 'hello'})
+>       assert json.loads(resp.text) == {'data': 'hello'}
+
+http_tests/echo_http_test.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.7/json/__init__.py:348: in loads
+    return _default_decoder.decode(s)
+/usr/lib/python3.7/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x7f7f4ec09390>
+s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>404 Not Found</title>\n<h1>Not Found</h1>\n<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>\n'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/usr/lib/python3.7/json/decoder.py:355: JSONDecodeError
+_______________________ test_message_send_empty_message ________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 384, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjM4NCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjM0ZWRhNjNkLTk3MDEtNGY3OC04MzEyLTIwZTk4ZTZlNzgyNiJ9.aVhl8pUxVg7L89wwftQDXlun6IMT4R1GjnQmhK61SZA'}
+channel_1 = 385
+
+    def test_message_send_empty_message(clear_database, user_1, channel_1):
+    
+        msg = requests.post(config.url + 'message/send/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'message': '        '
+        })
+>       assert msg.status_code == INPUTERROR
+E       assert 200 == 400
+E        +  where 200 = <Response [200]>.status_code
+
+http_tests/message_http_test.py:148: AssertionError
+___________________________ test_message_send_single ___________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 387, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjM4NywibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjQ3ZjdiMDcxLWE1NmQtNDU2Zi04NjE1LTViZTk1MTRhY2JhNCJ9.0nlXgvEzGxFFf04oUM96_Tso3MOcz0D6clBItALEMe0'}
+channel_1 = 388
+
+    def test_message_send_single(clear_database, user_1, channel_1):
+    
+        requests.post(config.url + 'message/send/v2', json={
+            'token': user_1['token'],
+            'channel_id': channel_1,
+            'message': 'Hi Channel'
+        })
+        channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_1['token']}&channel_id={channel_1}&start=0")
+        msg_info = channel_msg.json()['messages']
+        assert len(msg_info) == 1
+>       assert msg_info[0]['message_id'] == 1
+E       assert 389 == 1
+
+http_tests/message_http_test.py:160: AssertionError
+________________________ test_message_send_joined_user _________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 390, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjM5MCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6ImI3MDM2OTQyLTczYTEtNDk5Zi1iMDQyLWRhYThjZGFkMDhhOCJ9.8FhTYuL3vC__n-kb-6-Ftb4pDyXla1Df6FDIgOoxPq8'}
+user_2 = {'auth_user_id': 391, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjM5MSwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6Ijk2ODI0NzkxLTE5ZGItNDkyNC1iYjJlLTEzN2EwNzhhNjFmMCJ9.h8attAsOeRtajT0BSHPOT4Ow8NNjlklPRzusP8yJj3M'}
+channel_1 = 392
+
+    def test_message_send_joined_user(clear_database, user_1, user_2, channel_1):
+    
+        requests.post(config.url + 'channel/join/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1
+        })
+        requests.post(config.url + 'message/send/v2', json={
+            'token': user_2['token'],
+            'channel_id': channel_1,
+            'message': 'I just joined!!'
+        })
+        channel_msg = requests.get(f"{config.url}channel/messages/v2?token={user_2['token']}&channel_id={channel_1}&start=0")
+        msg_info = channel_msg.json()['messages']
+        assert len(msg_info) == 1
+>       assert msg_info[0]['message_id'] == 1
+E       assert 393 == 1
+
+http_tests/message_http_test.py:178: AssertionError
+___________________________ test_message_edit_empty ____________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 414, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjQxNCwibG9naW5fdGltZSI6MTYxOTE4Nzg2MSwic2FsdCI6IjBkM2IxNDM0LWMzODQtNGY3Yi04YjllLWYzN2JlYTU2ODIyNCJ9.y3Ph6nUkskSyhGN43BHl1VkF0doGrqPpFuK9GKsMEAc'}
+dm_1 = 415, message_2 = 416
+
+    def test_message_edit_empty(clear_database, user_1, dm_1, message_2):
+    
+        requests.put(config.url + 'message/edit/v2', json={
+            'token': user_1['token'],
+            'message_id': message_2,
+            'message': '      '
+        })
+        dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
+        msg_list = dm_msg.json()
+>       assert msg_list == {'messages': [], 'start': 0, 'end': -1}
+E       AssertionError: assert {'end': -1, '...], 'start': 0} == {'end': -1, '...], 'start': 0}
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'messages': [{'is_pinned': False, 'message': '      ', 'message_id': 416, 'reacts': [{'is_this_user_reacted': False, 'react_id': 1, 'u_ids': []}], ...}]} != {'messages': []}
+E         Use -v to get the full diff
+
+http_tests/message_http_test.py:259: AssertionError
+______________________ test_message_share_simple_optional ______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 483, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjQ4MywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImMyZjcxZDJkLWU1M2UtNDIwNS1iMGI2LTE3NWVkZTg3NzJiMiJ9.q2pR6EycdOQqGzSHaIZ8K2LxczFtwYfwgGFfh9fY-Do'}
+channel_1 = 484, dm_1 = 485, message_1 = 486
+
+    def test_message_share_simple_optional(clear_database, user_1, channel_1, dm_1, message_1):
+    
+        requests.post(config.url + 'message/share/v1', json={
+            'token': user_1['token'],
+            'og_message_id': message_1,
+            'message': 'Hi everyone!!!',
+            'channel_id': -1,
+            'dm_id': dm_1
+        })
+        dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
+        dm_msg_info = dm_msg.json()['messages']
+        assert len(dm_msg_info) == 1
+>       assert dm_msg_info[0]['message'] == 'Hello World Hi everyone!!!'
+E       assert 'Hi everyone!...lo World\n"""' == 'Hello World Hi everyone!!!'
+E         - Hello World Hi everyone!!!
+E         + Hi everyone!!!
+E         + 
+E         + """
+E         + Hello World
+E         + """
+
+http_tests/message_http_test.py:534: AssertionError
+______________________ test_message_senddm_empty_message _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 497, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjQ5NywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjZiOWI4MDRmLWU1MDYtNGFiMS05ZDZlLTI3MWYyZTViODhiZiJ9.3aSyzCz1g1tgsSnwFje6u_w6BOc40N8HhrNFv-QzsF4'}
+dm_1 = 498
+
+    def test_message_senddm_empty_message(clear_database, user_1, dm_1):
+    
+        msg = requests.post(config.url + 'message/senddm/v1', json={
+            'token': user_1['token'],
+            'dm_id': dm_1,
+            'message': '  \n \t  '
+        })
+>       assert msg.status_code == INPUTERROR
+E       assert 200 == 400
+E        +  where 200 = <Response [200]>.status_code
+
+http_tests/message_http_test.py:589: AssertionError
+__________________________ test_message_senddm_single __________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 500, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUwMCwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjExZmEwMGUzLTQ5ZjYtNGIyZS1hOTdmLTYxYjQ0ZmZiNGM4YSJ9.U71YHrtTpa5HPvw19nNUyGl-dJoePT32vLNZ0jwygcY'}
+dm_1 = 501
+
+    def test_message_senddm_single(clear_database, user_1, dm_1):
+    
+        requests.post(config.url + 'message/senddm/v1', json={
+            'token': user_1['token'],
+            'dm_id': dm_1,
+            'message': 'Hi dm!!!'
+        })
+        dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_1}&start=0")
+        msg_info = dm_msg.json()['messages']
+        assert len(msg_info) == 1
+>       assert msg_info[0]['message_id'] == 1
+E       assert 502 == 1
+
+http_tests/message_http_test.py:601: AssertionError
+_______________________ test_message_senddm_invited_user _______________________
+
+clear_database = None
+user_1 = {'auth_user_id': 503, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUwMywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImNlMDg5MDA4LTBjNTYtNGU2ZS1hZDc2LTMyZGYwNWRiMmM5MCJ9.ZzHFFdwnL-aNUnpxNQGChciblo_bjRb3l9jHS9VxFVo'}
+user_2 = {'auth_user_id': 504, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUwNCwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjU5ZDdhYTc5LTMzMzAtNDZmZS05MmY0LWI2MDMzYjYzZWU1ZiJ9.Kq4CdOPIYo9c506QrrV1HGlgsiLfVUThuZg9eSqj0fI'}
+dm_1 = 505, dm_2 = 506
+
+    def test_message_senddm_invited_user(clear_database, user_1, user_2, dm_1, dm_2):
+    
+        requests.post(config.url + 'dm/invite/v1', json={
+            'token': user_2['token'],
+            'dm_id': dm_2,
+            'u_id': user_1['auth_user_id']
+        })
+        requests.post(config.url + 'message/senddm/v1', json={
+            'token': user_1['token'],
+            'dm_id': dm_2,
+            'message': 'Thanks for the invite!'
+        })
+        requests.post(config.url + 'message/senddm/v1', json={
+            'token': user_2['token'],
+            'dm_id': dm_2,
+            'message': 'No worries mate!'
+        })
+        dm_msg = requests.get(f"{config.url}dm/messages/v1?token={user_1['token']}&dm_id={dm_2}&start=0")
+        msg_info = dm_msg.json()['messages']
+        assert len(msg_info) == 2
+>       assert msg_info[0]['message_id'] == 2
+E       assert 508 == 2
+
+http_tests/message_http_test.py:625: AssertionError
+________________________ test_other_search_valid_inputs ________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 515, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUxNSwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImVhZjhlMjRkLTE5ZTItNGVjMy1iOTA0LThmMDk2NDFjN2U1MiJ9.PP4mcyajh0LA--lYw2MsetpCj56K36_AI9XuGWNiOIc'}
+user_2 = {'auth_user_id': 516, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUxNiwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImJjMjBiYzI1LWNkOGUtNGY1Yy04MDg5LWIyNDZiNTgzMDE5ZiJ9.OJ3wzvcvjOhUmDCERcKcilRt4AJyU5rk9ckYaj55wcE'}
+user_3 = {'auth_user_id': 517, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUxNywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjAwMDQ5Y2EyLTI3Y2ItNGE3Zi05NDhlLWRlMzYyYWEwZWYzNiJ9.qMBSkoRCGufPMCH7WGD1wV-RHjp2TCZz0yJi91qikBs'}
+channel_1 = 518, channel_2 = 519, dm_1 = 520, dm_2 = 521
+
+    def test_other_search_valid_inputs(clear_database, user_1, user_2, user_3, channel_1, channel_2, dm_1, dm_2):
+        send_channel_message(user_1['token'], channel_1, MIXED_QUERY_STR)
+        send_dm_message(user_1['token'], dm_1, MIXED_QUERY_STR)
+        send_channel_message(user_1['token'], channel_1, UPPER_CASE_STR)
+        send_channel_message(user_2['token'], channel_2, SUB_STR)
+        send_dm_message(user_2['token'], dm_2, UPPER_CASE_STR)
+        send_dm_message(user_2['token'], dm_2, MIXED_QUERY_STR)
+        send_dm_message(user_3['token'], dm_2, MIXED_QUERY_STR)
+        search_json = requests.get(f"{config.url}search/v2?token={user_2['token']}&query_str={SUB_STR}")
+        search = search_json.json()
+        messages = search['messages']
+>       assert messages[0]['message_id'] == 2
+E       assert 523 == 2
+
+http_tests/other_http_test.py:164: AssertionError
+____________________ test_notifications_get_share_dm_invite ____________________
+
+clear_database = None
+user_1 = {'auth_user_id': 531, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUzMSwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImUzNGQ3NDA1LTY4MGUtNDcwMS04ZDJkLTZmOGExMzVlNzBmMyJ9.KlEdpIiw-XBqmiwE8bNtqRxouW4yPNslt5fuZcbbbq8'}
+user_2 = {'auth_user_id': 532, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUzMiwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjM1Y2QyMDY5LWU5MTgtNDNmZC1iN2UyLWM4NDgzYTc3YTg4MCJ9.XLZym0TDBXsUXGjvcqkXyywFh92YbIfFO476MgeCpLk'}
+user_3 = {'auth_user_id': 533, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUzMywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImFiZmJlYjBiLTQxMjQtNGE4MC05YThlLTI5Yjg1ZWZkMTk3YSJ9.qM82uTxlG2C7E8clRMSKrNW3sH9NQBxRd5KoQmCm4oY'}
+dm_2 = 534
+
+    def test_notifications_get_share_dm_invite(clear_database, user_1, user_2, user_3, dm_2):
+    
+        requests.post(config.url + 'dm/invite/v1', json={
+            'token': user_3['token'],
+            'dm_id': dm_2,
+            'u_id': user_1['auth_user_id']
+        })
+        msg = requests.post(config.url + 'message/senddm/v1', json={
+            'token': user_2['token'],
+            'dm_id': dm_2,
+            'message': 'Hello @johnsmith and @terrancenguyen'
+        })
+        msg_info = msg.json()
+        requests.post(config.url + 'message/share/v1', json={
+            'token': user_2['token'],
+            'og_message_id': msg_info['message_id'],
+            'message': "And I'll tag myself too @philiptran",
+            'channel_id': -1,
+            'dm_id': dm_2
+        })
+        notif_1 = requests.get(f"{config.url}notifications/get/v1?token={user_1['token']}")
+        notif_1_info = notif_1.json()['notifications']
+>       assert len(notif_1_info) == 3
+E       AssertionError: assert 2 == 3
+E        +  where 2 = len([{'channel_id': -1, 'dm_id': 534, 'notification_message': 'philiptran tagged you in philiptran, terrancenguyen: Hello ...'}, {'channel_id': -1, 'dm_id': 534, 'notification_message': 'terrancenguyen added you to philiptran, terrancenguyen'}])
+
+http_tests/other_http_test.py:217: AssertionError
+_____________________________ test_simple_profile ______________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 537, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjUzNywibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6ImNhZmE3NmE0LTQyODItNDlkMi04MzUyLTlkM2UwNDYzODM5OSJ9.jqW0D7qM-yro8m50PwsKiW6Y2dr43i8Eo9oBuSap1j0'}
+
+    def test_simple_profile(clear_database, user_1):
+        profile_json = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
+        profile = profile_json.json()
+>       assert profile == expected_output_user1_profile()
+E       AssertionError: assert {'user': {'em...'Smith', ...}} == {'user': {'em...'Smith', ...}}
+E         Differing items:
+E         {'user': {'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}} != {'user': {'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ...}}
+E         Use -v to get the full diff
+
+http_tests/user_http_test.py:77: AssertionError
+________________________________ test_user_func ________________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 551, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjU1MSwibG9naW5fdGltZSI6MTYxOTE4Nzg2Miwic2FsdCI6IjRhN2IxZTNjLTZiYWItNDkyMi04MzA1LWYzNzI2Mzk3YmQyMiJ9.lXHPI8enKpnt1ADOOm_EdMZLdepvpcj7TBxPlO427PA'}
+
+    def test_user_func(clear_database, user_1):
+        set_email(user_1['token'], "mynewemail@gmail.com")
+        set_name(user_1['token'], "Daniel", "Nguyen")
+        set_handle(user_1['token'], "totallyoriginalhandl")
+    
+        profile_json = requests.get(f"{config.url}user/profile/v2?token={user_1['token']}&u_id={user_1['auth_user_id']}")
+        profile = profile_json.json()
+>       assert profile == expected_output_user1_profilev2()
+E       AssertionError: assert {'user': {'em...Nguyen', ...}} == {'user': {'em...Nguyen', ...}}
+E         Differing items:
+E         {'user': {'email': 'mynewemail@gmail.com', 'handle_str': 'totallyoriginalhandl', 'name_first': 'Daniel', 'name_last': 'Nguyen', ...}} != {'user': {'email': 'mynewemail@gmail.com', 'handle_str': 'totallyoriginalhandl', 'name_first': 'Daniel', 'name_last': 'Nguyen', ...}}
+E         Use -v to get the full diff
+
+http_tests/user_http_test.py:214: AssertionError
+________________________________ test_all_valid ________________________________
+
+clear_database = None
+user_1 = {'auth_user_id': 558, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjU1OCwibG9naW5fdGltZSI6MTYxOTE4Nzg2Mywic2FsdCI6IjczOTc0MjVjLWNiNGYtNDI2Ny1iZmZiLWI5NWQyMDM2MmE3YyJ9.9SKP1gV6HaeIEg9Di8yqK-m2LUAqmkbGWTXxqQTb9xI'}
+user_2 = {'auth_user_id': 559, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjU1OSwibG9naW5fdGltZSI6MTYxOTE4Nzg2Mywic2FsdCI6IjQxY2I5ZTVkLWMxNzUtNDNhYy1iZjNjLTI3NTM3YWQ3MzJlMyJ9.MQzPf1vsoJ0JSrVIWwtsBzeixV9FiZ5Rb5iFq9Uk9dc'}
+user_3 = {'auth_user_id': 560, 'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnaWQiOjU2MCwibG9naW5fdGltZSI6MTYxOTE4Nzg2Mywic2FsdCI6IjVjMDU5Y2I1LTFmYjQtNDRkZi05NWIzLTBkMjUxNmQ2OWI4YiJ9.d_CXZgYWtlnWs0Fs3QYI_cxCur-kctSfHe94d9n2vbM'}
+
+    def test_all_valid(clear_database, user_1, user_2, user_3):
+        all_profiles_json = requests.get(f"{config.url}users/all/v1?token={user_1['token']}")
+        all_profiles = all_profiles_json.json()
+>       assert all_profiles == expected_output_all_users()
+E       AssertionError: assert {'users': [{'...guyen', ...}]} == {'users': [{'...guyen', ...}]}
+E         Differing items:
+E         {'users': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ......mail': 'terrynguyen@gmail.com', 'handle_str': 'terrancenguyen', 'name_first': 'Terrance', 'name_last': 'Nguyen', ...}]} != {'users': [{'email': 'johnsmith@gmail.com', 'handle_str': 'johnsmith', 'name_first': 'John', 'name_last': 'Smith', ......mail': 'terrynguyen@gmail.com', 'handle_str': 'terrancenguyen', 'name_first': 'Terrance', 'name_last': 'Nguyen', ...}]}
+E         Use -v to get the full diff
+
+http_tests/users_http_test.py:84: AssertionError
+=========================== short test summary info ============================
+FAILED http_tests/admin_http_test.py::test_admin_user_remove_valid - Assertio...
+FAILED http_tests/admin_http_test.py::test_admin_user_remove_valid - Assertio...
+FAILED http_tests/auth_http_test.py::test_register_multiple_users - Assertion...
+FAILED http_tests/auth_http_test.py::test_login_valid - assert 43 == 1
+FAILED http_tests/channel_http_test.py::test_invite_duplicate_uid - assert 68...
+FAILED http_tests/channel_http_test.py::test_invite_valid_inputs - assert 70 ...
+FAILED http_tests/channel_http_test.py::test_invite_global_owner_allowed - As...
+FAILED http_tests/channel_http_test.py::test_invite_global_owner_invited - as...
+FAILED http_tests/channel_http_test.py::test_channel_details_owner_allowed - ...
+FAILED http_tests/channel_http_test.py::test_channel_details_member_allowed
+FAILED http_tests/channel_http_test.py::test_channel_details_global_owner_allowed
+FAILED http_tests/channel_http_test.py::test_channel_details_new_channel - As...
+FAILED http_tests/channel_http_test.py::test_channel_details_empty_channel - ...
+FAILED http_tests/channel_http_test.py::test_channel_addowner_invalid_uid - a...
+FAILED http_tests/channel_http_test.py::test_channel_addowner_global_owner_allowed
+FAILED http_tests/channel_http_test.py::test_channel_addowner_valid_inputs - ...
+FAILED http_tests/channel_http_test.py::test_channel_removeowner_invalid_auth_id
+FAILED http_tests/channel_http_test.py::test_channel_removeowner_invalid_uid
+FAILED http_tests/channel_http_test.py::test_channel_removeowner_auth_id_not_owner
+FAILED http_tests/channel_http_test.py::test_channel_removeowner_valid_inputs
+FAILED http_tests/channel_http_test.py::test_channel_removeowner_global_owner_allowed
+FAILED http_tests/channel_http_test.py::test_channel_leave_member - assert 16...
+FAILED http_tests/channel_http_test.py::test_channel_leave_owner - AssertionE...
+FAILED http_tests/channel_http_test.py::test_channel_leave_last_user - simple...
+FAILED http_tests/channel_http_test.py::test_channel_join_global_private - as...
+FAILED http_tests/channel_http_test.py::test_channel_join_already_joined - si...
+FAILED http_tests/channel_http_test.py::test_channel_messages_join - assert 1...
+FAILED http_tests/channels_http_test.py::test_channel_listall_valid - Asserti...
+FAILED http_tests/channels_http_test.py::test_channel_list_valid - AssertionE...
+FAILED http_tests/channels_http_test.py::test_valid_channels_create_v1_u_id
+FAILED http_tests/dm_http_test.py::test_dm_details_valid - AssertionError: as...
+FAILED http_tests/dm_http_test.py::test_dm_list_valid - AssertionError: asser...
+FAILED http_tests/dm_http_test.py::test_dm_create_invalid_u_id - assert 400 =...
+FAILED http_tests/dm_http_test.py::test_dm_create_valid - AssertionError: ass...
+FAILED http_tests/dm_http_test.py::test_dm_invite_user_not_a_member - assert ...
+FAILED http_tests/dm_http_test.py::test_dm_invite_already_in_dm - simplejson....
+FAILED http_tests/dm_http_test.py::test_dm_messages_valid_single - assert 299...
+FAILED http_tests/dm_http_test.py::test_dm_messages_multiple - assert 355 == 53
+FAILED http_tests/echo_http_test.py::test_echo - json.decoder.JSONDecodeError...
+FAILED http_tests/message_http_test.py::test_message_send_empty_message - ass...
+FAILED http_tests/message_http_test.py::test_message_send_single - assert 389...
+FAILED http_tests/message_http_test.py::test_message_send_joined_user - asser...
+FAILED http_tests/message_http_test.py::test_message_edit_empty - AssertionEr...
+FAILED http_tests/message_http_test.py::test_message_share_simple_optional - ...
+FAILED http_tests/message_http_test.py::test_message_senddm_empty_message - a...
+FAILED http_tests/message_http_test.py::test_message_senddm_single - assert 5...
+FAILED http_tests/message_http_test.py::test_message_senddm_invited_user - as...
+FAILED http_tests/other_http_test.py::test_other_search_valid_inputs - assert...
+FAILED http_tests/other_http_test.py::test_notifications_get_share_dm_invite
+FAILED http_tests/user_http_test.py::test_simple_profile - AssertionError: as...
+FAILED http_tests/user_http_test.py::test_user_func - AssertionError: assert ...
+FAILED http_tests/users_http_test.py::test_all_valid - AssertionError: assert...
+======================== 52 failed, 147 passed in 5.55s ========================
